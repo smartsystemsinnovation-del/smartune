@@ -27,9 +27,13 @@ export async function getSpotifyAccessToken() {
 export async function fetchSpotifySongs() {
   const token = await getSpotifyAccessToken();
   
-  // Removing limit parameter entirely to see if it fixes the 400
-  const query = encodeURIComponent('hardstyle tevvez workout');
-  const url = `https://api.spotify.com/v1/search?q=${query}&type=track`;
+  // Broadening the query and adding a random offset/term to get different results
+  const keywords = ['hardstyle', 'tevvez', 'gym', 'workout', 'phusis', 'fitness'];
+  const randomKeyword = keywords[Math.floor(Math.random() * keywords.length)];
+  const query = encodeURIComponent(`${randomKeyword} hardstyle`);
+  
+  // Trying limit 45 (well within the 0-50 range)
+  const url = `https://api.spotify.com/v1/search?q=${query}&type=track&limit=45`;
 
   console.log('DEBUG: Final Spotify Request URL:', url);
 
@@ -48,7 +52,7 @@ export async function fetchSpotifySongs() {
 
   const data = await response.json();
   
-  // Filter for tracks with preview_url
+  // Filter for tracks with preview_url and shuffle them
   let tracks = (data.tracks?.items || [])
     .filter((track: any) => track.preview_url !== null)
     .map((track: any) => ({
@@ -59,11 +63,10 @@ export async function fetchSpotifySongs() {
       previewUrl: track.preview_url,
     }));
 
+  // Simple shuffle
+  tracks = tracks.sort(() => Math.random() - 0.5);
+
   console.log(`DEBUG: Found ${tracks.length} tracks with previews out of ${data.tracks?.items?.length || 0}`);
-  
-  // If no tracks with previews found, let's at least return what we found (fallback for testing)
-  // but technically they won't play audio. 
-  // In production, we'd want to search until we find some.
   
   return tracks;
 }

@@ -20,6 +20,7 @@ export default function MusicSwipePage() {
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<any>(null);
   const [counts, setCounts] = useState({ likes: 0, views: 0, discards: 0 });
+  const [isPlaying, setIsPlaying] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const supabase = createClient();
 
@@ -90,7 +91,8 @@ export default function MusicSwipePage() {
       console.log(`DEBUG: Attempting to play audio for: ${songs[currentIndex].title}`, previewUrl);
       
       if (audioRef.current) {
-        audioRef.current.volume = 0.5; // Ensure volume is audible
+        setIsPlaying(false);
+        audioRef.current.volume = 0.5;
         audioRef.current.src = previewUrl;
         
         // Play and handle results
@@ -98,15 +100,20 @@ export default function MusicSwipePage() {
         
         if (playPromise !== undefined) {
           playPromise
-            .then(() => console.log("DEBUG: Audio playing successfully"))
+            .then(() => {
+              console.log("DEBUG: Audio playing successfully");
+              setIsPlaying(true);
+            })
             .catch(e => {
-              console.warn("DEBUG: Autoplay failed. Browser policy usually requires a click.", e);
+              console.warn("DEBUG: Autoplay failed. User interaction needed.", e);
+              setIsPlaying(false);
             });
         }
         
         const timer = setTimeout(() => {
           if (audioRef.current) {
             audioRef.current.pause();
+            setIsPlaying(false);
             console.log("DEBUG: Auto-pause after 8s");
           }
         }, 8000);
@@ -116,11 +123,24 @@ export default function MusicSwipePage() {
           if (audioRef.current) {
             audioRef.current.pause();
             audioRef.current.src = "";
+            setIsPlaying(false);
           }
         };
       }
     }
   }, [currentIndex, songs]);
+
+  const togglePlay = () => {
+    if (!audioRef.current) return;
+    if (isPlaying) {
+      audioRef.current.pause();
+      setIsPlaying(false);
+    } else {
+      audioRef.current.play()
+        .then(() => setIsPlaying(true))
+        .catch(e => console.error("Manual play failed", e));
+    }
+  };
 
   if (loading) {
     return (
@@ -192,9 +212,28 @@ export default function MusicSwipePage() {
                 <img src={currentSong.coverUrl} alt={currentSong.title} className="w-full h-full object-cover" />
                 <div className="absolute inset-0 bg-gradient-to-t from-[#1f1f1f] via-transparent to-transparent"></div>
                 
-                <div className="absolute bottom-8 left-8 right-8">
-                  <h2 className="text-white text-2xl font-bold truncate mb-1">{currentSong.title}</h2>
-                  <p className="text-gray-400 font-medium">{currentSong.artist}</p>
+                {/* Play/Pause Button Overlay */}
+                <button 
+                  onClick={togglePlay}
+                  className="absolute inset-0 flex items-center justify-center bg-black/20 group hover:bg-black/40 transition-all opacity-100 md:opacity-0 md:group-hover:opacity-100"
+                >
+                  <div className={`w-20 h-20 rounded-full flex items-center justify-center backdrop-blur-md border border-white/30 shadow-2xl transition-transform ${isPlaying ? 'scale-110' : 'scale-100 hover:scale-110'}`}>
+                    {isPlaying ? (
+                      <svg width="32" height="32" viewBox="0 0 24 24" fill="white">
+                        <rect x="6" y="4" width="4" height="16" />
+                        <rect x="14" y="4" width="4" height="16" />
+                      </svg>
+                    ) : (
+                      <svg width="32" height="32" viewBox="0 0 24 24" fill="white" className="ml-1">
+                        <path d="M8 5v14l11-7z" />
+                      </svg>
+                    )}
+                  </div>
+                </button>
+
+                <div className="absolute bottom-8 left-8 right-8 pointer-events-none">
+                  <h2 className="text-white text-2xl font-bold truncate mb-1 text-shadow-lg">{currentSong.title}</h2>
+                  <p className="text-gray-300 font-bold tracking-wide">{currentSong.artist}</p>
                 </div>
               </div>
 
