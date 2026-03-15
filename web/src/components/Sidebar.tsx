@@ -84,9 +84,9 @@ export default function Sidebar() {
                   <span className={styles.icon}>📚</span>
                   Clases
                 </Link>
-                <Link href="/ia" className={`${styles.navItem} ${isPrefixActive('/ia') ? styles.active : ''}`} onClick={() => setIsOpen(false)}>
-                  <span className={styles.icon}>🤖</span>
-                  IA
+                <Link href="/ia-studio" className={`${styles.navItem} ${isPrefixActive('/ia-studio') ? styles.active : ''}`} onClick={() => setIsOpen(false)}>
+                  <span className={styles.icon}>🪄</span>
+                  IA Studio
                 </Link>
               </>
             )}
