@@ -1,6 +1,7 @@
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
+    kotlin("plugin.serialization")
 }
 
 android {
@@ -50,7 +51,7 @@ android {
 }
 
 dependencies {
-    // --- Nucleo de Android & Compose ---
+    // --- Core Android & Compose ---
     implementation("androidx.core:core-ktx:1.12.0")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.7.0")
     implementation("androidx.activity:activity-compose:1.8.2")
@@ -59,16 +60,30 @@ dependencies {
     implementation("androidx.compose.ui:ui-graphics")
     implementation("androidx.compose.ui:ui-tooling-preview")
     implementation("androidx.compose.material3:material3")
+    implementation("androidx.compose.material:material-icons-extended")
 
-    // --- Supabase & Networking (El motor de Smartune) ---
+    // --- Navigation ---
+    implementation("androidx.navigation:navigation-compose:2.7.7")
+
+    // --- Image Loading ---
+    implementation("io.coil-kt:coil-compose:2.5.0")
+
+    // --- Media Playback ---
+    implementation("androidx.media3:media3-exoplayer:1.2.1")
+    implementation("androidx.media3:media3-ui:1.2.1")
+
+    // --- Supabase & Networking ---
     val supabaseVersion = "2.1.3"
     implementation("io.github.jan-tennert.supabase:postgrest-kt:$supabaseVersion")
     implementation("io.github.jan-tennert.supabase:functions-kt:$supabaseVersion")
     implementation("io.github.jan-tennert.supabase:gotrue-kt:$supabaseVersion")
-    implementation("io.ktor:ktor-client-android:2.3.7")
-
-    // Importante: Necesario para que Supabase entienda los datos
     implementation("io.github.jan-tennert.supabase:compose-auth:$supabaseVersion")
+    implementation("io.ktor:ktor-client-android:2.3.7")
+    implementation("io.ktor:ktor-client-content-negotiation:2.3.7")
+    implementation("io.ktor:ktor-serialization-kotlinx-json:2.3.7")
+
+    // --- Serialization ---
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.2")
 
     // --- Testing & Debugging ---
     testImplementation("junit:junit:4.13.2")
