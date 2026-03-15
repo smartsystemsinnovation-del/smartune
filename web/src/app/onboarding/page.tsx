@@ -62,81 +62,86 @@ export default function OnboardingPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#3a007d] flex flex-col items-center justify-center p-6 relative overflow-hidden font-inter text-white">
-      {/* Background Gradient Mesh */}
-      <div className="absolute inset-0 bg-gradient-to-br from-[#4c1d95] via-[#3a007d] to-[#1e1b4b]"></div>
-      <div className="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] bg-[#9810fa]/20 rounded-full blur-[150px]"></div>
+    <div className="min-h-screen bg-[#0F0F0F] flex items-center justify-center p-6 relative overflow-hidden font-inter selection:bg-[#D000FF]/30">
+      {/* Figma Aesthetic Background */}
+      <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/dark-matter.png')] opacity-20 pointer-events-none"></div>
+      <div className="absolute top-[-20%] left-[-10%] w-[80%] h-[80%] bg-[#D000FF]/10 rounded-full blur-[150px] animate-pulse"></div>
       
-      <div className="w-full max-w-md relative z-10 flex flex-col items-center">
+      <div className="w-full max-w-lg bg-[#1A1A1A] rounded-[2.5rem] border border-white/5 p-8 md:p-14 relative z-10 shadow-[0_0_80px_rgba(0,0,0,0.8)]">
         
-        {/* Profile Circle Icon (Similar to Reference) */}
-        <div className="w-32 h-32 rounded-full border border-white/30 flex items-center justify-center mb-12 bg-white/5 backdrop-blur-sm overflow-hidden group">
-          {formData.avatar_url ? (
-            <img src={formData.avatar_url} alt="Preview" className="w-full h-full object-cover" />
-          ) : (
-            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-            </svg>
-          )}
+        {/* Glowing Profile Avatar (Figma Style) */}
+        <div className="flex justify-center mb-12">
+          <div className="relative">
+            <div className="absolute inset-0 bg-gradient-to-br from-[#D000FF] to-[#8000FF] rounded-full blur-2xl opacity-60 animate-pulse"></div>
+            <div className="relative w-32 h-32 rounded-full border-4 border-white/10 bg-gradient-to-br from-[#D000FF] to-[#8000FF] flex items-center justify-center overflow-hidden shadow-2xl">
+              {formData.avatar_url ? (
+                <img src={formData.avatar_url} alt="Profile" className="w-full h-full object-cover" />
+              ) : (
+                <svg width="50" height="50" viewBox="0 0 24 24" fill="white">
+                  <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
+                </svg>
+              )}
+            </div>
+          </div>
         </div>
 
-        <h1 className="text-2xl font-light tracking-[0.3em] uppercase mb-16 text-center opacity-90">SmarTune</h1>
-
-        <form onSubmit={handleSubmit} className="w-full space-y-12">
-          {/* User Name */}
-          <div className="relative group">
-            <div className="absolute left-0 top-1/2 -translate-y-1/2 text-white/50 group-focus-within:text-white transition-colors">
-              <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                <path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-              </svg>
+        <form onSubmit={handleSubmit} className="space-y-12">
+          {/* Underlined Inputs (Figma Node 3:2230 Style) */}
+          <div className="space-y-10">
+            {/* Username */}
+            <div className="relative group">
+              <div className="absolute left-0 bottom-4 text-white/40 group-focus-within:text-[#D000FF] transition-colors">
+                <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                  <path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                </svg>
+              </div>
+              <input
+                type="text"
+                required
+                className="w-full pl-10 pr-4 py-4 bg-transparent border-b border-white/10 focus:border-[#D000FF] outline-none transition-all text-white font-medium text-lg placeholder:text-white/20"
+                placeholder="Username"
+                value={formData.nombre}
+                onChange={e => setFormData({ ...formData, nombre: e.target.value })}
+              />
             </div>
-            <input
-              type="text"
-              required
-              className="w-full pl-9 pr-4 py-3 bg-transparent border-b border-white/30 focus:border-white outline-none transition-all text-white font-light placeholder:text-white/40"
-              placeholder="Username"
-              value={formData.nombre}
-              onChange={e => setFormData({ ...formData, nombre: e.target.value })}
-            />
+
+            {/* Avatar URL */}
+            <div className="relative group">
+              <div className="absolute left-0 bottom-4 text-white/40 group-focus-within:text-[#D000FF] transition-colors">
+                <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                  <path d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+              </div>
+              <input
+                type="url"
+                className="w-full pl-10 pr-4 py-4 bg-transparent border-b border-white/10 focus:border-[#D000FF] outline-none transition-all text-white font-medium text-lg placeholder:text-white/20"
+                placeholder="Email ID (Avatar URL)"
+                value={formData.avatar_url}
+                onChange={e => setFormData({ ...formData, avatar_url: e.target.value })}
+              />
+            </div>
+
+            {/* Instrument Select (Styled Minimalist) */}
+            <div className="relative group">
+              <div className="absolute left-0 bottom-4 text-white/40 group-focus-within:text-[#D000FF] transition-colors">
+                <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                  <path d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" />
+                </svg>
+              </div>
+              <select
+                className="w-full pl-10 pr-4 py-4 bg-transparent border-b border-white/10 focus:border-[#D000FF] outline-none transition-all text-white font-medium text-lg appearance-none cursor-pointer"
+                value={formData.instrumento}
+                onChange={e => setFormData({ ...formData, instrumento: e.target.value })}
+              >
+                {INSTRUMENTS.map(i => <option key={i} value={i} className="bg-[#1A1A1A]">{i}</option>)}
+              </select>
+            </div>
           </div>
 
-          {/* Avatar URL */}
-          <div className="relative group">
-            <div className="absolute left-0 top-1/2 -translate-y-1/2 text-white/50 group-focus-within:text-white transition-colors">
-              <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                <path d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-              </svg>
-            </div>
-            <input
-              type="url"
-              className="w-full pl-9 pr-4 py-3 bg-transparent border-b border-white/30 focus:border-white outline-none transition-all text-white font-light placeholder:text-white/40"
-              placeholder="Avatar URL"
-              value={formData.avatar_url}
-              onChange={e => setFormData({ ...formData, avatar_url: e.target.value })}
-            />
-          </div>
-
-          {/* Instrument Select (Styled Minimalist) */}
-          <div className="relative group">
-            <div className="absolute left-0 top-1/2 -translate-y-1/2 text-white/50 group-focus-within:text-white transition-colors">
-              <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                <path d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" />
-              </svg>
-            </div>
-            <select
-              className="w-full pl-9 pr-4 py-3 bg-transparent border-b border-white/30 focus:border-white outline-none transition-all text-white font-light appearance-none cursor-pointer"
-              value={formData.instrumento}
-              onChange={e => setFormData({ ...formData, instrumento: e.target.value })}
-            >
-              <option disabled value="">Select Instrument</option>
-              {INSTRUMENTS.map(i => <option key={i} value={i} className="bg-[#3a007d] text-white">{i}</option>)}
-            </select>
-          </div>
-
-          {/* Tastes (Mini Tags) */}
+          {/* Preferences (Mini Tags) */}
           <div className="space-y-4">
-            <p className="text-[10px] font-bold tracking-widest text-white/40 uppercase">GÉNEROS FAVORITOS</p>
-            <div className="flex flex-wrap gap-2">
+            <p className="text-[11px] font-black tracking-[0.2em] text-white/30 uppercase text-center">Tus Preferencias</p>
+            <div className="flex flex-wrap justify-center gap-2">
               {TASTES.map(taste => {
                 const isSelected = formData.gustos_musicales.includes(taste);
                 return (
@@ -146,8 +151,8 @@ export default function OnboardingPage() {
                     onClick={() => handleTasteToggle(taste)}
                     className={`px-4 py-1.5 rounded-full text-[11px] font-bold transition-all border ${
                       isSelected
-                        ? 'bg-white text-[#3a007d] border-white'
-                        : 'bg-transparent border-white/20 text-white/60 hover:border-white/50'
+                        ? 'bg-[#D000FF] border-[#D000FF] text-white shadow-[0_0_15px_rgba(208,0,255,0.4)]'
+                        : 'bg-transparent border-white/10 text-white/40 hover:border-white/30'
                     }`}
                   >
                     {taste}
@@ -157,21 +162,21 @@ export default function OnboardingPage() {
             </div>
           </div>
 
-          {/* Buttons Group (Strictly following Reference Image) */}
-          <div className="space-y-4 pt-12">
+          {/* Figma Style Buttons */}
+          <div className="space-y-6 pt-6">
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-4 bg-[#8b5cf6] hover:bg-[#a78bfa] text-white font-bold text-sm tracking-widest uppercase rounded-lg shadow-2xl transition-all disabled:opacity-50"
+              className="w-full py-5 bg-gradient-to-r from-[#D000FF] to-[#8000FF] text-white font-black text-lg tracking-widest uppercase rounded-2xl shadow-[0_10px_30px_rgba(208,0,255,0.3)] hover:shadow-[0_15px_40px_rgba(208,0,255,0.5)] transition-all active:scale-[0.98] disabled:opacity-50"
             >
-              {loading ? 'LOADING...' : 'CONTINUE'}
+              {loading ? 'Cargando...' : 'Registrate'}
             </button>
             <button
               type="button"
-              onClick={() => router.back()}
-              className="w-full py-4 bg-white/5 hover:bg-white/10 text-white font-bold text-sm tracking-widest uppercase rounded-lg border border-white/10 transition-all"
+              className="w-full py-5 bg-transparent text-white/60 font-black text-lg tracking-widest uppercase hover:text-white transition-colors"
+              onClick={() => router.push('/favoritos')}
             >
-              CANCEL
+              Inicia Sesión
             </button>
           </div>
         </form>
