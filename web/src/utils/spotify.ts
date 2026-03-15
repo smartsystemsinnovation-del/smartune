@@ -27,15 +27,11 @@ export async function getSpotifyAccessToken() {
 export async function fetchSpotifySongs() {
   const token = await getSpotifyAccessToken();
   
-  // Broadening the query and adding a random offset/term to get different results
-  const keywords = ['hardstyle', 'tevvez', 'gym', 'workout', 'phusis', 'fitness'];
-  const randomKeyword = keywords[Math.floor(Math.random() * keywords.length)];
-  const query = encodeURIComponent(`${randomKeyword} hardstyle`);
-  
-  // Trying limit 45 (well within the 0-50 range)
-  const url = `https://api.spotify.com/v1/search?q=${query}&type=track&limit=45`;
+  // REMOVING LIMIT COMPLETELY - Spotify defaults to 20
+  const query = encodeURIComponent(`hardstyle workout`);
+  const url = `https://api.spotify.com/v1/search?q=${query}&type=track`;
 
-  console.log('DEBUG: Final Spotify Request URL:', url);
+  console.log('DEBUG: EXTREME MINIMAL URL:', url);
 
   const response = await fetch(url, {
     headers: {
@@ -46,13 +42,13 @@ export async function fetchSpotifySongs() {
 
   if (!response.ok) {
     const errorBody = await response.text();
-    console.error('Spotify API Error:', errorBody);
+    console.error(`DEBUG: Spotify API FAILED [${response.status}]`, errorBody);
     throw new Error(`Spotify API error: ${response.status}`);
   }
 
   const data = await response.json();
   
-  // Filter for tracks with preview_url and shuffle them
+  // Filter for tracks with preview_url
   let tracks = (data.tracks?.items || [])
     .filter((track: any) => track.preview_url !== null)
     .map((track: any) => ({
@@ -63,10 +59,7 @@ export async function fetchSpotifySongs() {
       previewUrl: track.preview_url,
     }));
 
-  // Simple shuffle
-  tracks = tracks.sort(() => Math.random() - 0.5);
-
-  console.log(`DEBUG: Found ${tracks.length} tracks with previews out of ${data.tracks?.items?.length || 0}`);
+  console.log(`DEBUG: SUCCESS. Found ${tracks.length} tracks with previews.`);
   
   return tracks;
 }

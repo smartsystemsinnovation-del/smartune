@@ -176,6 +176,12 @@ export default function MusicSwipePage() {
 
   const currentSong = songs[currentIndex];
 
+  useEffect(() => {
+    if (currentSong) {
+      console.log(`DEBUG: Current song preview URL: ${currentSong.previewUrl}`);
+    }
+  }, [currentSong]);
+
   return (
     <div className="flex flex-col min-h-screen">
       <Navigation />
