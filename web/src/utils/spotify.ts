@@ -49,7 +49,7 @@ export async function fetchSpotifySongs() {
   const data = await response.json();
   
   // Filter for tracks with preview_url
-  const tracks = (data.tracks?.items || [])
+  let tracks = (data.tracks?.items || [])
     .filter((track: any) => track.preview_url !== null)
     .map((track: any) => ({
       id: track.id,
@@ -59,6 +59,11 @@ export async function fetchSpotifySongs() {
       previewUrl: track.preview_url,
     }));
 
-  console.log(`Found ${tracks.length} tracks with previews out of ${data.tracks?.items?.length || 0}`);
+  console.log(`DEBUG: Found ${tracks.length} tracks with previews out of ${data.tracks?.items?.length || 0}`);
+  
+  // If no tracks with previews found, let's at least return what we found (fallback for testing)
+  // but technically they won't play audio. 
+  // In production, we'd want to search until we find some.
+  
   return tracks;
 }

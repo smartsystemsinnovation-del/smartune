@@ -86,15 +86,38 @@ export default function MusicSwipePage() {
 
   useEffect(() => {
     if (songs[currentIndex]) {
+      const previewUrl = songs[currentIndex].previewUrl;
+      console.log(`DEBUG: Attempting to play audio for: ${songs[currentIndex].title}`, previewUrl);
+      
       if (audioRef.current) {
-        audioRef.current.src = songs[currentIndex].previewUrl;
-        audioRef.current.play().catch(e => console.log("Autoplay blocked", e));
+        audioRef.current.volume = 0.5; // Ensure volume is audible
+        audioRef.current.src = previewUrl;
+        
+        // Play and handle results
+        const playPromise = audioRef.current.play();
+        
+        if (playPromise !== undefined) {
+          playPromise
+            .then(() => console.log("DEBUG: Audio playing successfully"))
+            .catch(e => {
+              console.warn("DEBUG: Autoplay failed. Browser policy usually requires a click.", e);
+            });
+        }
         
         const timer = setTimeout(() => {
-          audioRef.current?.pause();
+          if (audioRef.current) {
+            audioRef.current.pause();
+            console.log("DEBUG: Auto-pause after 8s");
+          }
         }, 8000);
         
-        return () => clearTimeout(timer);
+        return () => {
+          clearTimeout(timer);
+          if (audioRef.current) {
+            audioRef.current.pause();
+            audioRef.current.src = "";
+          }
+        };
       }
     }
   }, [currentIndex, songs]);
