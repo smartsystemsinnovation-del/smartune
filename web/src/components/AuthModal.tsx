@@ -44,7 +44,7 @@ export default function AuthModal({ onClose, initialMode = 'login' }: AuthModalP
         provider: 'google',
         options: {
           // El user será redirigido aquí tras iniciar sesión con Google
-          redirectTo: `${window.location.origin}/dashboard`
+          redirectTo: `${window.location.origin}/auth/callback?next=/dashboard`
         }
       });
       if (error) throw error;
