@@ -22,7 +22,7 @@ export default function Sidebar() {
 
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (_event, session) => {
+      (_event: unknown, session: { user: any } | null) => {
         setUser(session?.user || null);
       }
     );

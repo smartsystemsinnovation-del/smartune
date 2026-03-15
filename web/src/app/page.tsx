@@ -36,7 +36,7 @@ function HomeContent() {
     checkUserAndParams();
     
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (_event, session) => {
+      (_event: unknown, session: { user: any } | null) => {
         setUser(session?.user || null);
         if (session?.user) {
           setShowModal(false);
