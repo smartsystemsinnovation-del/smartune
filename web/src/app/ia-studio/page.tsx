@@ -140,9 +140,19 @@ export default function IAStudioPage() {
                       <div className="absolute inset-0 bg-[#D000FF] rounded-3xl blur-2xl opacity-40 group-hover:opacity-60 transition-opacity"></div>
                       <img src={result.coverUrl} className="relative w-48 h-48 rounded-3xl object-cover border border-white/10" alt="Generated" />
                     </div>
-                    <div className="flex-1 text-center md:text-left space-y-2">
+                    <div className="flex-1 text-center md:text-left space-y-3">
                        <h3 className="text-3xl font-black">{result.title}</h3>
-                       <p className="text-[#D000FF] font-bold tracking-widest uppercase text-sm">Escucha tu creación</p>
+                       <p className="text-[#D000FF] font-bold tracking-widest uppercase text-sm">Artista: {result.artist}</p>
+                       <div className="flex flex-wrap justify-center md:justify-start gap-4 pt-2">
+                          <div className="bg-white/5 px-4 py-2 rounded-xl border border-white/10">
+                             <span className="text-[10px] text-white/40 block uppercase font-bold mb-1">Mood</span>
+                             <span className="text-sm font-bold text-white">{result.mood}</span>
+                          </div>
+                          <div className="bg-white/5 px-4 py-2 rounded-xl border border-white/10">
+                             <span className="text-[10px] text-white/40 block uppercase font-bold mb-1">Tempo</span>
+                             <span className="text-sm font-bold text-white">{result.bpm} BPM</span>
+                          </div>
+                       </div>
                     </div>
                   </div>
 

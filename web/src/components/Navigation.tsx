@@ -86,6 +86,7 @@ export default function Navigation() {
             <input type="text" className={styles.searchInput} placeholder="Buscar lecciones, artistas o géneros..." />
           </div>
           
+          <div className={styles.navLinksAuth}>
             <Link href="/" className="hover:text-[#f6339a] transition-colors">Inicio</Link>
             <Link href="/favoritos" className="hover:text-[#f6339a] transition-colors">MusicSwipe</Link>
             <Link href="/ia-studio" className="hover:text-[#f6339a] transition-colors flex items-center gap-1">
