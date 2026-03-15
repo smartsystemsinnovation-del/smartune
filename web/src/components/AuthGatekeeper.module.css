@@ -1,0 +1,158 @@
+.gatekeeperContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 600px;
+  margin: 64px auto;
+  text-align: center;
+  padding: 0 24px;
+}
+
+.iconWrapper {
+  margin-bottom: 24px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.title {
+  font-family: var(--font-inter);
+  font-size: 30px;
+  font-weight: 500;
+  color: #fff;
+  line-height: 1.2;
+  margin-bottom: 16px;
+}
+
+.title span {
+  color: var(--neon-pink);
+}
+
+.subtitle {
+  font-family: var(--font-inter);
+  font-size: 16px;
+  color: rgba(255, 255, 255, 0.6);
+  line-height: 1.5;
+  margin-bottom: 40px;
+  max-width: 500px;
+}
+
+.benefitsCard {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 24px 32px;
+  width: 100%;
+  text-align: left;
+  margin-bottom: 48px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+}
+
+.cardHeader {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+  color: #fff;
+}
+
+.cardTitle {
+  font-family: var(--font-inter);
+  font-size: 16px;
+  font-weight: 500;
+  margin: 0;
+}
+
+.benefitsList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.benefitsList li {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-family: var(--font-inter);
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.7);
+  line-height: 1.4;
+}
+
+.bullet {
+  color: var(--neon-pink);
+  font-size: 18px;
+  line-height: 1;
+}
+
+.actions {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 24px;
+  width: 100%;
+  justify-content: center;
+}
+
+.btnRegister, .btnLogin {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-family: var(--font-inter);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 180px;
+}
+
+.btnRegister {
+  background: var(--neon-pink);
+  color: #fff;
+  border: 1px solid transparent;
+  box-shadow: 0 4px 15px rgba(238, 16, 176, 0.3);
+}
+
+.btnRegister:hover {
+  filter: brightness(1.1);
+  box-shadow: 0 4px 20px rgba(238, 16, 176, 0.5);
+}
+
+.btnLogin {
+  background: #fff;
+  color: #0e9eef; /* Cyan matching the figma screenshot */
+  border: 1px solid transparent;
+}
+
+.btnLogin:hover {
+  background: #f0f0f0;
+}
+
+.loginHint {
+  font-family: var(--font-inter);
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.loginHint span {
+  color: var(--neon-pink);
+  cursor: pointer;
+  margin-left: 4px;
+}
+
+.loginHint span:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 600px) {
+  .actions {
+    flex-direction: column;
+  }
+  .btnRegister, .btnLogin {
+    width: 100%;
+  }
+}

@@ -1,0 +1,212 @@
+.main {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.dashboardContainer {
+  flex: 1;
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 40px 4%;
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+
+.headerArea {
+  animation: fadeIn 0.4s ease-out;
+}
+
+.greetingTitle {
+  font-size: 36px;
+  font-weight: 700;
+  letter-spacing: -1px;
+}
+
+.greetingTitle span {
+  background: var(--gradient-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 0 20px rgba(152, 16, 250, 0.4);
+}
+
+.greetingSubtitle {
+  font-size: 16px;
+  color: var(--text-secondary);
+  margin-top: 8px;
+}
+
+.highlight {
+  color: var(--neon-pink);
+  font-weight: 600;
+}
+
+/* TASKS GRID */
+.tasksSection {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.sectionTitle {
+  font-size: 24px;
+  font-weight: 600;
+  border-left: 4px solid var(--neon-purple);
+  padding-left: 12px;
+}
+
+.gridContainer {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 24px;
+}
+
+.practiceCard {
+  background: var(--bg-card);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.practiceCard::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  background: var(--gradient-primary);
+  opacity: 0.5;
+  transition: opacity 0.3s ease;
+}
+
+.practiceCard:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 30px -10px rgba(0,0,0,0.5);
+  border-color: rgba(246, 51, 154, 0.2);
+}
+
+.practiceCard:hover::before {
+  opacity: 1;
+}
+
+.cardInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.songTitle {
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.songArtist {
+  font-size: 14px;
+  color: var(--text-secondary);
+  font-weight: 400;
+}
+
+.badgeContainer {
+  display: flex;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.difficultyBadge, .repBadge {
+  font-size: 11px;
+  padding: 4px 10px;
+  border-radius: 100px;
+  text-transform: uppercase;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+.difficultyBadge {
+  background: rgba(14, 158, 239, 0.1);
+  color: var(--neon-blue);
+  border: 1px solid rgba(14, 158, 239, 0.3);
+}
+
+.repBadge {
+  background: rgba(152, 16, 250, 0.1);
+  color: #dab2ff;
+  border: 1px solid rgba(152, 16, 250, 0.3);
+}
+
+.cardAction {
+  margin-top: auto;
+}
+
+.btnPracticar {
+  display: inline-block;
+  width: 100%;
+  text-align: center;
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-primary);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 12px;
+  border-radius: 8px;
+  font-family: var(--font-inter);
+  font-weight: 500;
+  font-size: 14px;
+  transition: all 0.3s ease;
+}
+
+.btnPracticar:hover {
+  background: var(--gradient-primary);
+  border-color: transparent;
+  box-shadow: var(--shadow-neon);
+  color: white;
+}
+
+.emptyState {
+  padding: 40px;
+  text-align: center;
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 12px;
+  border: 1px dashed rgba(255, 255, 255, 0.1);
+  color: var(--text-secondary);
+  font-style: italic;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ------------------------------------- */
+/*  MOBILE FIRST & RESPONSIVE QUERIES    */
+/* ------------------------------------- */
+
+@media (max-width: 768px) {
+  .dashboardContainer {
+    padding: 24px 20px;
+    gap: 30px;
+  }
+
+  .greetingTitle {
+    font-size: 28px;
+  }
+
+  .greetingSubtitle {
+    font-size: 14px;
+  }
+
+  .gridContainer {
+    grid-template-columns: 1fr; /* 1 card per row on mobile */
+  }
+
+  .practiceCard {
+    padding: 20px;
+  }
+}

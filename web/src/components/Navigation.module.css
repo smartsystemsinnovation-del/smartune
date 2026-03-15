@@ -1,0 +1,185 @@
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 32px;
+  background: rgba(24, 24, 24, 0.85);
+  backdrop-filter: blur(12px);
+  width: 100%;
+  height: 80px;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.authNavbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+}
+
+.searchBar {
+  flex: 1;
+  max-width: 600px;
+  background: var(--bg-card);
+  height: 38px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  gap: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  margin-right: 24px;
+}
+
+.searchIcon {
+  width: 20px;
+  height: 20px;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.searchInput {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: white;
+  font-family: var(--font-vazirmatn);
+  font-size: 14px;
+  outline: none;
+}
+
+.searchInput::placeholder {
+  color: rgba(255, 255, 255, 0.6);
+  font-weight: 300;
+}
+
+.navLinksAuth {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  margin-right: 24px;
+  font-family: var(--font-vazirmatn);
+  font-size: 16px;
+  font-weight: 500;
+  color: white;
+}
+
+.logoContainer {
+  display: none; /* Let sidebar handle logo */
+}
+
+.userBadge {
+  background: linear-gradient(90deg, #f6339a 0%, #9810fa 100%);
+  height: 36px;
+  padding: 0 24px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-inter);
+  font-size: 14px;
+  font-weight: 500;
+  color: white;
+  box-shadow: 0px 12.5px 18.75px 0px rgba(246, 51, 154, 0.3), 0px 5px 7.5px 0px rgba(246, 51, 154, 0.3);
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.userBadge:hover {
+  transform: translateY(-2px);
+}
+
+/* Old styles for non-authenticated (if needed) */
+.navLinks {
+  display: flex;
+  gap: 2rem;
+  align-items: center;
+}
+.navLink {
+  color: var(--text-primary);
+  font-family: var(--font-vazirmatn);
+  font-weight: 500;
+  opacity: 0.8;
+  transition: opacity 0.2s;
+}
+.navLink:hover {
+  opacity: 1;
+  color: var(--neon-pink);
+}
+.logoText {
+  font-family: var(--font-vazirmatn);
+  font-size: 24px;
+  font-weight: 700;
+}
+.logoText span {
+  color: var(--neon-pink);
+}
+.btnLogout {
+  padding: 8px 16px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  color: white;
+  transition: all 0.2s;
+}
+
+.btnLogout:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.btnLogoutModern {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.6);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btnLogoutModern:hover {
+  background: rgba(246, 51, 154, 0.1);
+  border-color: rgba(246, 51, 154, 0.3);
+  color: var(--neon-pink);
+  transform: translateY(-2px);
+}
+
+@media (max-width: 768px) {
+  .searchBar {
+    display: none;
+  }
+  .navLinksAuth {
+    display: none;
+  }
+  .navbar {
+    padding: 16px;
+  }
+}
+
+.btnPremium {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(90deg, #f0b100 0%, #d08700 100%);
+  color: white;
+  padding: 0 16px;
+  height: 36px;
+  border-radius: 10px;
+  font-family: var(--font-inter);
+  font-weight: 500;
+  font-size: 14px;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(240, 177, 0, 0.3);
+  transition: transform 0.2s, filter 0.3s;
+  border: none;
+}
+
+.btnPremium:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.1);
+}

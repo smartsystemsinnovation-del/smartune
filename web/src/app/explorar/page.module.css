@@ -1,0 +1,128 @@
+.main {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.exploreContainer {
+  flex: 1;
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 40px 4%;
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+
+.pageTitle {
+  font-size: 32px;
+  font-weight: 700;
+  letter-spacing: -1px;
+}
+
+.pageTitle span {
+  color: var(--neon-blue);
+  text-shadow: 0 0 15px rgba(14, 158, 239, 0.4);
+}
+
+.subtitle {
+  color: var(--text-secondary);
+  font-size: 16px;
+  margin-top: 10px;
+}
+
+.placeholderGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 24px;
+}
+
+.exploreCard {
+  background: var(--bg-card);
+  border-radius: 12px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  transition: transform 0.3s;
+}
+
+.exploreCard:hover {
+  transform: translateY(-5px);
+  border-color: rgba(14, 158, 239, 0.3);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+}
+
+.cardCover {
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: 8px;
+  background: linear-gradient(135deg, rgba(89, 22, 139, 0.2), rgba(14, 158, 239, 0.2));
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  padding: 12px;
+}
+
+.categoryTag {
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  color: white;
+  padding: 4px 10px;
+  border-radius: 100px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.cardMeta {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 4px 0;
+}
+
+.cardTitle {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.2;
+}
+
+.cardArtist {
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+/* ------------------------------------- */
+/*  MOBILE FIRST & RESPONSIVE QUERIES    */
+/* ------------------------------------- */
+
+@media (max-width: 768px) {
+  .exploreContainer {
+    padding: 24px 20px;
+    gap: 24px;
+  }
+
+  .pageTitle {
+    font-size: 28px;
+  }
+
+  .placeholderGrid {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); /* Two columns on phone */
+    gap: 16px;
+  }
+
+  .cardTitle {
+    font-size: 14px;
+  }
+
+  .cardArtist {
+    font-size: 12px;
+  }
+}

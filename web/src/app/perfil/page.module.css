@@ -1,0 +1,61 @@
+.main {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.profileContainer {
+  flex: 1;
+  max-width: 800px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 60px 4%;
+}
+
+.profileHeader {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+  background: rgba(31, 31, 31, 0.7);
+  backdrop-filter: blur(10px);
+  padding: 40px;
+  border-radius: 20px;
+  border: 1px solid rgba(255,255,255,0.05);
+}
+
+.avatar {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: var(--gradient-primary);
+  box-shadow: var(--shadow-neon);
+}
+
+.info {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: flex-start;
+}
+
+.name {
+  font-size: 32px;
+  font-weight: 700;
+}
+
+.email {
+  color: var(--text-secondary);
+  font-size: 16px;
+}
+
+.roleBadge {
+  margin-top: 10px;
+  background: rgba(246, 51, 154, 0.1);
+  color: var(--neon-pink);
+  border: 1px solid rgba(246, 51, 154, 0.3);
+  padding: 6px 16px;
+  border-radius: 100px;
+  font-size: 14px;
+  font-weight: 600;
+}

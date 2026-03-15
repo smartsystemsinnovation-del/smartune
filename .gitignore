@@ -1,0 +1,12 @@
+node_modules/
+.env*
+.next/
+build/
+android/app/build/
+android/.gradle/
+*.log
+.DS_Store
+dist/
+.expo/
+*.apk
+*.aab

@@ -1,0 +1,2979 @@
+ 
+ 
+ 
+ 
+INSTITUTO POLITÉCNICO NACIONAL  
+CECyT 9 “Juan de Dios Bátiz”  
+ 
+ 
+Nombre Tarea: 
+Documentación Final 
+ 
+Nombre los Alumnos: 
+ 
+Curiel García Juan Jesús  
+Gutiérrez Zamora Luis Uziel  
+López Medina Leonardo Daniel  
+Patiño Villa Aldo Yahir 
+ 
+ 
+Materia: 
+Laboratorio de desarrollo de software III 
+ 
+Profesor: 
+Germán Gutierrez Galan 
+ 
+Grupo: 
+5IM9 
+ 
+Fecha de Entrega: 
+26/01/2026 
+----------------Page (0) Break----------------
+1. Antecedentes
+ 
+En un mundo donde el tiempo es limitado y las responsabilidades ocupan gran 
+parte de nuestra atención, la práctica musical enfrenta un desafío crítico de 
+eficiencia.  Según  estudios  de  la  Fender  Musical  Instruments  Corp, 
+aproximadamente el 90%  de los nuevos músicos abandonan su instrumento en 
+el primer año debido a la falta de progreso tangible y estructura. Muchos músicos, 
+desde amateurs hasta avanzados, se encuentran en una "meseta de aprendizaje" 
+provocada por la falta de un enfoque organizado. 
+La ciencia del aprendizaje respalda esta problemática: el psicólogo Anders 
+Ericsson demostró que el avance real no proviene de la mera repetición, sino de la 
+"Práctica Deliberada". Sin una herramienta de gestión, el músico promedio 
+dedica hasta el 80%  de su tiempo a tocar piezas que ya domina, en lugar de 
+aislar dificultades técnicas, lo que genera una falsa sensación de productividad pero 
+un estancamiento real. 
+Es en este contexto donde surge la necesidad de una solución tecnológica. La 
+aplicación móvil que proponemos optimiza el proceso de aprendizaje mediante la 
+implementación de Metas SMART y la Curva del Olvido de Ebbinghaus. Esta 
+última sugiere que, sin recordatorios programados y práctica espaciada, el cerebro 
+pierde hasta el 70%  de la información técnica en apenas 24 horas. 
+Nuestra herramienta ofrece una interfaz intuitiva para gestionar el tiempo, 
+establecer metas claras y medir el progreso de manera continua. A través de la 
+personalización de rutinas y recordatorios inteligentes basados en algoritmos de 
+repetición, la app ayuda a superar las barreras del "tiempo fragmentado". El valor 
+de esta propuesta radica en transformar la práctica esporádica en una disciplina 
+constante, ofreciendo un marco que motiva al músico a través de datos reales, 
+permitiéndole crecer sin importar si dispone de horas o solo de 15 minutos al día. 
+ 
+ 
+ 
+ 
+ 
+ 
+----------------Page (1) Break----------------
+2. Problemática 
+En la actualidad, los músicos amateurs y avanzados enfrentan una barrera crítica: la 
+falta de estructura frente a un ritmo de vida saturado. Estudios de Fender Musical 
+Instruments Corp revelan una estadística alarmante: el 90%  de los estudiantes 
+abandonan su instrumento durante el primer año. Las causas principales no 
+son la falta de talento, sino la frustración por la falta de resultados tangibles y la 
+incapacidad de conciliar la práctica con el trabajo o el estudio. 
+Esta irregularidad genera un ciclo de desmotivación: al no ver un progreso 
+medible, el músico pierde el interés. La ausencia de herramientas que adapten la 
+práctica a ventanas de tiempo reducidas (como bloques de 15 o 20 minutos) impide 
+que el usuario desarrolle un hábito sólido, dejando su crecimiento musical al azar 
+de su disponibilidad diaria. 
+ 
+Esta situación provoca que los músicos no logren progresar de manera continua, 
+que se frustren ante la falta de resultados y que, en muchos casos, abandonen el 
+aprendizaje de su instrumento. Además, la ausencia de herramientas accesibles que 
+adapten la práctica a sus necesidades individuales dificulta mantener una rutina 
+personalizada que motive y acompañe su progreso. 
+Por lo tanto, surge la necesidad de una solución tecnológica que permita optimizar 
+el aprendizaje musical, facilitando la organización de la práctica, el seguimiento de 
+metas y logros, y ofreciendo recursos adaptados a cada nivel de usuario. Skeletune 
+busca cubrir esta problemática mediante una aplicación accesible, que combine 
+gamificación,  seguimiento  de  progreso,  personalización  de  rutinas  y 
+recomendaciones inteligentes, ayudando a los músicos a superar las barreras de 
+tiempo y falta de estructura, y garantizando un aprendizaje más eficiente y 
+motivador. 
+ 
+3. Análisis de la Competencia 
+Al investigar a nuestra competencia, identificamos diversas aplicaciones con 
+similitudes a nuestro proyecto, aunque con enfoques distintos. Un ejemplo claro es 
+Yousician, el cual presenta las siguientes características: 
+----------------Page (2) Break----------------
+Yousician es una aplicación de aprendizaje musical enfocada en la gamificación y 
+la práctica guiada de instrumentos como guitarra, piano, bajo y ukelele. Su 
+principal fortaleza es la retroalimentación en tiempo real mediante el uso del 
+micrófono, permitiendo al usuario corregir errores básicos de ritmo y afinación 
+mientras avanza por niveles estructurados. Sin embargo, su enfoque se centra más 
+en la repetición y el progreso por puntuación que en una comprensión profunda 
+de la teoría musical, lo que limita su utilidad en contextos educativos formales o 
+de análisis musical más detallado. 
+En contraste, Skeletune no solo busca que el usuario ejecute correctamente una 
+pieza, sino que comprenda el fundamento musical detrás de lo que está 
+tocando, integrando aprendizaje teórico, análisis del desempeño y 
+retroalimentación con fines educativos. Esto permite un aprendizaje más sólido y 
+transferible, especialmente en entornos académicos. 
+Otro competidor relevante es Simply Piano, una aplicación orientada 
+principalmente a principiantes, con un enfoque accesible y progresivo para el 
+aprendizaje del piano. Su fortaleza radica en la simplicidad de su interfaz y en la 
+rapidez con la que el usuario puede comenzar a tocar canciones básicas. No 
+obstante, su contenido es limitado a un solo instrumento y presenta una 
+profundidad reducida en teoría musical y evaluación técnica, priorizando la 
+experiencia inmediata sobre el desarrollo musical integral. 
+A diferencia de Simply Piano, Skeletune está diseñada como una herramienta 
+más flexible y escalable, capaz de adaptarse a distintos niveles de aprendizaje y 
+con un enfoque que prioriza el desarrollo cognitivo-musical, no solo la ejecución 
+mecánica de notas. 
+ 
+4. Identidad 
+ 
+ 
+ 
+ 
+ 
+ 
+----------------Page (3) Break----------------
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Skeletune  —  Ritmo eterno, acordes que no mueren. 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+5. Misión y Visión  
+Nuestra misión es redefinir el aprendizaje musical con un software accesible que 
+brinde retroalimentación personalizada, análisis de progreso y acompañamiento 
+dinámico. Buscamos que academias y personas de todo el mundo aprendan a tocar 
+un instrumento de forma práctica, motivadora y flexible, más allá de los métodos 
+tradicionales. 
+7. Visión del Proyecto 
+Ser la plataforma líder en aprendizaje musical digital, reconocida por ofrecer una 
+experiencia personalizada, motivadora y accesible para todos los niveles de 
+músicos. Skeletune busca que cualquier persona, sin importar su disponibilidad de 
+tiempo, pueda desarrollar sus habilidades musicales de manera constante y 
+divertida, combinando enseñanza estructurada, gamificación y seguimiento de 
+progreso. 
+A futuro, la visión es expandir la app a más instrumentos, incorporar tecnologías 
+inteligentes que adaptan las rutinas al estilo y ritmo de cada usuario, y generar una 
+comunidad activa de estudiantes y profesores que compartan conocimientos, 
+música y experiencias. Skeletune quiere convertirse en un referente para quienes 
+desean aprender música desde casa, manteniendo siempre un equilibrio entre 
+diversión, aprendizaje y calidad educativa. 
+ 
+----------------Page (4) Break----------------
+ 
+8. Objetivos del Proyecto 
+El proyecto Skeletune busca crear una aplicación que ayude a las personas a 
+aprender a tocar instrumentos, empezando por la guitarra, de manera divertida y 
+organizada. La idea es que los usuarios puedan practicar desde su casa, a su ritmo, 
+sin sentirse abrumados por la falta de tiempo o por no saber por dónde empezar. 
+La app ofrecerá rutinas de práctica personalizadas, minijuegos para evaluar el 
+progreso y metas que el usuario pueda ir cumpliendo poco a poco. También 
+permitirá escuchar fragmentos de canciones, guardarlas en favoritos y decidir 
+cuáles practicar, de manera similar a cómo funciona una lista de reproducción. 
+Se incluirá un sistema de suscripción que dará acceso a funciones avanzadas, pero 
+también habrá una versión de prueba de 15 días para que los usuarios puedan 
+probar la app antes de pagar. Los profesores podrán subir contenido, responder 
+dudas y recibir calificaciones, siempre supervisados por los administrado res para 
+asegurar la calidad. 
+En resumen, el alcance del proyecto se centra en ofrecer una experiencia de 
+aprendizaje musical completa y flexible, que motive a los usuarios a practicar de 
+manera constante, medir su progreso y disfrutar del proceso, todo desde una 
+plataforma accesible tanto en web como en dispositivos móviles. 
+ 
+ 
+9. Historias de Usuario / Casos de Uso
+ 
+ 
+Caso  1: Activar  prueba  gratuita  o suscripción  Pr emium  
+Objetivo:  Permitir  al usuario  activar una prueba  gratuita  o adquirir  
+una suscripción  Premium.   
+ Actor es: Usuario,  Sistema,  Pasarela  de  pago. 
+ Pr econdiciones:  El usuario  debe  tener una cuenta  registrada  y no  
+haber usado  la prueba  gratuita. 
+ Flujo principal:  
+1. El usuario  accede  a la sección  de  planes. 
+ 
+----------------Page (5) Break----------------
+2. Selecciona  “Prueba gratuita” o “Plan Premium”.  
+ 
+3. Si elige la prueba  gratuita, el sistema  valida  que no  haya  sido  
+usada  antes.  
+ 
+4. Si elige Premium,   realiza el pago  mediante  la pasarela  segura. 
+ 
+5. El sistema  actualiza el plan  y habilita  las funciones  Premium.   
+ Postcondiciones:   
+ 
+● Plan   activo   (Gratis,   Prueba   o  Premium)    actualizado  
+automáticamente.   
+ 
+● Accesos  habilitados  según  el plan. 
+ 
+Caso  2: Registrar  una nueva  cuenta  
+Objetivo:  Permitir  que un  nuevo  usuario  cree  una cuenta  válida. 
+ Actor es: Usuario,  Sistema.  
+ Pr econdiciones:  No  debe  existir otra cuenta  con el mismo  correo. 
+ Flujo principal:  
+1. El usuario  llena el formulario  con correo  y contraseña.  
+ 
+2. El sistema  valida  formato  del correo  (RFC  5322)  y la 
+seguridad  de  la contraseña.  
+ 
+3. Se  envía un  correo  de  confirmación.  
+ 
+4. El usuario  confirma  el correo  dentro  de  7 días. 
+ Postcondiciones:   
+ 
+● Cuenta  creada  y activada  correctamente.   
+ 
+Caso  3: Iniciar sesión  y aplicar  seguridad  
+Objetivo:  Permitir  acceso  seguro  según  credenciales  y rol. 
+ Actor es: Usuario,  Sistema.  
+ Pr econdiciones:  El usuario  debe  tener una cuenta  activa  y 
+verificada.  
+ Flujo principal:  
+----------------Page (6) Break----------------
+1. Usuario  ingresa correo  y contraseña.  
+ 
+2. Sistema  valida  credenciales.  
+ 
+3. Si son incorrectas  tres veces seguidas,  bloquea  la cuenta  por 15  
+minutos.  
+ 
+4. Si son correctas,  carga  la interfaz  según  el rol del usuario.  
+ Postcondiciones:   
+ 
+● Acceso  concedido  o bloqueo  temporal.  
+ 
+Caso  4: Validar  pr ofesor  por administrador   
+Objetivo:  Permitir  que el administrador  valide  o rechace  solicitudes  
+de  profesores.  
+ Actor es: Administrador , Profesor , Sistema.  
+ Pr econdiciones:  Profesor  registrado  con estado  “Pendiente”. 
+ Flujo principal:  
+1. El administrador  revisa  documentación   (certificados,  diplomas,  
+etc.). 
+ 
+2. El administrador  aprueba  o rechaza.  
+ 
+3. Si aprueba,  el profesor  obtiene  permisos  de  publicación  y 
+clases  personalizadas.  
+ 
+4. Si rechaza,  el sistema  cambia  su rol a “Estudiante”. 
+ Postcondiciones:   
+ 
+● Estado  del profesor  actualizado  (V erificado,  Rechazado,   
+Pendiente).  
+Caso  5: Publicar  y aprobar  contenido  musical  
+Objetivo:  Permitir  que un  profesor  publique  una canción  o minijuego  
+tras revisión. 
+ Actor es: Profesor , Administrador , Sistema.  
+ Pr econdiciones:  Profesor  debe  estar verificado.  
+ Flujo principal:  
+----------------Page (7) Break----------------
+1. El profesor  sube  su contenido.  
+ 
+2. El sistema  marca  el contenido  como  “pendiente”. 
+ 
+3. El administrador  lo revisa  y aprueba  o rechaza.  
+ 
+4. El sistema  registra  la decisión  con fecha y motivo.  
+ Postcondiciones:   
+ 
+● Contenido  disponible  públicamente   si fue aprobado.  
+ 
+Caso  6: Participar  en  minijuego  rítmico  
+Objetivo:  Permitir  al usuario  jugar un  minijuego  y guardar  su 
+progreso.  
+ Actor es: Usuario,  Sistema.  
+ Pr econdiciones:  El usuario  debe  tener plan  Prueba  o Premium  
+activo. 
+ Flujo principal:  
+1. El usuario  selecciona  un  minijuego.  
+ 
+2. El sistema  carga  el contenido  con latencia  <100  ms. 
+ 
+3. El usuario  juega y recibe  retroalimentación  inmediata.  
+ 
+4. El puntaje  se guarda  en  su perfil. 
+ Postcondiciones:   
+ 
+● Progreso  y puntaje  almacenados   en  el historial del usuario.  
+Caso  7: Reportar  y moderar  comentarios  
+Objetivo:  Gestionar  contenido  ofensivo  o inapropiado.  
+ Actor es: Usuario,  Administrador , Sistema.  
+ Pr econdiciones:  Comentario   existente en  el sistema.  
+ Flujo principal:  
+1. Un  usuario  reporta un  comentario.  
+ 
+----------------Page (8) Break----------------
+2. El sistema  notifica  al administrador . 
+ 
+3. El administrador  revisa  y decide  acción  (editar, eliminar  o 
+bloquear).  
+ 
+4. Si hay reincidencia  (>3 veces), el usuario  infractor es 
+bloqueado.  
+ 
+5. Se  notifica  la decisión  a los implicados.  
+ Postcondiciones:   
+ 
+● Acción  registrada  en  historial de  moderación.  
+ 
+Caso  8: Consultar  historial y pr ogreso 
+Objetivo:  Permitir  a los usuarios  y administradores  consultar  el 
+progreso.  
+ Actor es: Usuario,  Administrador , Sistema.  
+ Pr econdiciones:  Usuario  debe  tener registros de  avance.  
+ Flujo principal:  
+1. Usuario  accede  a su perfil. 
+ 
+2. El sistema  muestra  logros, puntajes  y progreso  acumulado.   
+ 
+3. El administrador  puede  consultar  datos con fines de  soporte  o 
+análisis. 
+ Postcondiciones:   
+ 
+● Historial visualizado  sin alteraciones.  
+Caso  9: Realizar  compra  o pago  
+Objetivo:  Permitir  transacciones  seguras  dentro  de  la aplicación.  
+ Actor es: Usuario,  Sistema,  Pasarela  de  pago, Administrador . 
+ Pr econdiciones:  Usuario  debe  tener cuenta  activa. 
+ Flujo principal:  
+1. Usuario  selecciona  producto  o plan. 
+ 
+----------------Page (9) Break----------------
+2. Realiza  pago  mediante  pasarela  certificada.  
+ 
+3. El  sistema   activa   el  producto   inmediatamente    tras 
+confirmación.  
+ 
+4. Si hay solicitud de  reembolso,  el administrador  la evalúa  
+manualmente.   
+ Postcondiciones:   
+ 
+● Transacción  completada   y registrada. 
+ 
+ 
+ 
+Caso  10:Gestionar   notificaciones  del sistema  
+Objetivo:  Informar  al usuario  sobre eventos  relevantes.  
+ Actor es: Sistema,  Usuario.  
+ Pr econdiciones:  El usuario  debe  tener cuenta  activa. 
+ Flujo principal:  
+1. Sistema  genera  notificación  (por  pago, cambio  de  plan  o 
+alerta). 
+ 
+2. Si es crítica, también  se envía al correo. 
+ 
+3. La  notificación  se almacena  hasta por 30  días. 
+ Postcondiciones:   
+ 
+● Notificaciones   activas visibles  hasta su expiración.  
+ 
+Caso  11:Configurar   perfil  de  usuario  
+Objetivo:  Permitir  al usuario  personalizar  su perfil dentro  de  las 
+políticas.  
+ Actor es: Usuario,  Sistema,  Administrador   (para profesores).  
+ Pr econdiciones:  Usuario  autenticado.  
+ Flujo principal:  
+----------------Page (10) Break----------------
+1. Usuario   modifica   su  información   (foto,  contraseña,  
+descripción).  
+ 
+2. El sistema  valida  formato  de  imagen  (JPG/PNG   ≤5 MB)  y 
+contraseña  segura. 
+ 
+3. Si es profesor , las certificaciones  se muestran  tras aprobación  
+del administrador . 
+ Postcondiciones:   
+ 
+● Perfil actualizado  correctamente  con validaciones  aplicadas.  
+ 
+ 
+ 
+ 
+10. Requerimientos del Proyecto 
+ 
+10.1 Requerimientos funcionales del proyecto 
+RP-001 
+Título: Plataforma multiplataforma 
+Descripción: La aplicación debe funcionar como app web y app móvil, 
+manteniendo la misma experiencia y funcionalidades. 
+ Precondición: Ninguna, requisito de desarrollo inicial. 
+ Flujo/efecto: 
+● Desarrollo responsive o híbrido. 
+ 
+● Interfaz adaptativa según dispositivo (PC, tablet, smartphone). 
+ Reglas de negocio: 
+ 
+● No se permitirá que alguna funcionalidad clave esté disponible solo en un 
+dispositivo. 
+ Criterio de aceptación: Abrir la plataforma desde móvil y web → mismas 
+opciones y funcionalidades visibles. 
+----------------Page (11) Break----------------
+ Prioridad: Alta 
+ 
+RP-002 
+Título: Registro y gestión de roles 
+Descripción: Todos los usuarios deben poder registrarse y ser asignados a un rol 
+(Estudiante, Profesor, Administrador). 
+ Precondición: Ninguna. 
+ Flujo/efecto: 
+● Al registrarse se asigna rol según elección y validación administrativa (para 
+profesores). 
+ 
+● Roles determinan permisos dentro de la plataforma. 
+ Reglas de negocio: 
+ 
+● Profesor no validado → no puede publicar contenido. 
+ 
+● Estudiante → acceso a prueba, gratis o premium según plan. 
+ Criterio de aceptación: Usuario registrado con rol → permisos aplicados 
+correctamente. 
+ Prioridad: Alta 
+ 
+RP-003 
+Título: Suscripción y acceso a contenido 
+Descripción: Gestionar planes de suscripción (Prueba 15 días, Gratis y Premium) 
+para estudiantes y profesores. 
+Precondición: Usuario registrado. 
+Flujo/efecto: 
+1. Usuario inicia prueba → acceso completo 15 días. 
+ 
+2. Al expirar → pasa a Gratis con funciones limitadas. 
+ 
+----------------Page (12) Break----------------
+3. Puede pagar → acceso Premium restaurado. 
+ Reglas de negocio: 
+ 
+● Cada usuario solo tiene una prueba única. 
+ 
+● Usuarios Gratis → minijuegos y contenido avanzado bloqueados. 
+ Criterio de aceptación: Plan activado correctamente → restricciones 
+aplicadas según estado. 
+ Prioridad: Alta 
+ 
+RP-004 
+Título: Gestión de contenido musical 
+Descripción: Permite agregar, modificar y eliminar canciones, minijuegos y 
+materiales de aprendizaje. 
+Precondición: Profesor o administrador con permisos. 
+Flujo/efecto: 
+● Profesor agrega contenido → revisado y validado por administrador. 
+ 
+● El estudiante puede interactuar mediante like/dislike y practicar canciones. 
+ Reglas de negocio: 
+ 
+● Solo el administrador puede eliminar o aprobar canciones. 
+ Criterio de aceptación: Contenido agregado → visible según permisos → 
+votos registrados → administración efectiva. 
+ Prioridad: Alta 
+ 
+RP-005 
+Título: Interacción y progreso de usuario 
+Descripción: Registrar avances en canciones, minijuegos y metas personales. 
+Precondición: Usuario con cuenta activa. 
+Flujo/efecto: 
+● Progreso registrado automáticamente. 
+ 
+----------------Page (13) Break----------------
+● Visualización en perfil del usuario en tiempo real. 
+ Reglas de negocio: 
+ 
+● Historial no se pierde aunque el usuario cambie de dispositivo. 
+ Criterio de aceptación: Practica una actividad → progreso reflejado 
+correctamente. 
+ Prioridad: Alta 
+ 
+ 
+RP-006 
+Título: Comunicación interna 
+Descripción: Permitir mensajes entre estudiantes y profesores, así como 
+notificaciones de eventos importantes. 
+ Precondición: Relación activa estudiante-profesor o evento generado. 
+ Flujo/efecto: 
+● Mensajes y notificaciones almacenados y visibles en panel. 
+ 
+● Notificaciones expiran tras 30 días. 
+ Reglas de negocio: 
+ 
+● Mensajes inapropiados → reportables y moderables por administrador. 
+ Criterio de aceptación: Mensaje enviado → recibido → registrado en base 
+de datos. 
+ Prioridad: Media 
+ 
+ 
+RP-007 
+Título: Seguridad y autenticación 
+ Descripción: Garantizar seguridad de datos, transacciones y cuentas. 
+ Precondición: Ninguna. 
+ Flujo/efecto: 
+----------------Page (14) Break----------------
+● Contraseñas encriptadas. 
+ 
+● Comunicación HTTPS. 
+ 
+● Pagos seguros mediante pasarela certificada. 
+ Reglas de negocio: 
+ 
+● Administradores con roles restringidos. 
+ 
+● Bloqueo temporal por intentos fallidos. 
+ Criterio de aceptación: Intentos de acceso → autenticación correcta → 
+datos seguros. 
+ Prioridad: Alta 
+ 
+ 
+ 
+RP-008 
+Título: Mantenibilidad y escalabilidad 
+ Descripción: Garantizar que el sistema pueda crecer y adaptarse a nuevas 
+funcionalidades sin grandes cambios estructurales. 
+ Precondición: Sistema en funcionamiento. 
+ Flujo/efecto: 
+● Base de datos normalizada y con backups automáticos. 
+ 
+● Código modular y documentado. 
+ 
+● Permite agregar nuevos instrumentos, canciones y minijuegos. 
+ Reglas de negocio: 
+ 
+● No se deben modificar funciones existentes al agregar contenido nuevo. 
+ Criterio de aceptación: Se agrega nueva funcionalidad → sistema sigue 
+funcionando correctamente. 
+----------------Page (15) Break----------------
+ Prioridad: Media 
+ 
+RP-009 
+Título: Disponibilidad y confiabilidad 
+ Descripción: La plataforma debe estar disponible de manera continua y confiable. 
+ Precondición: Sistema desplegado. 
+ Flujo/efecto: 
+● Disponibilidad mínima del 99% mensual. 
+ 
+● Recuperación ante caída en menos de 30 minutos. 
+ Reglas de negocio: 
+ 
+● Datos de progreso y cuentas no deben perderse nunca. 
+ Criterio de aceptación: Sistema funcionando en horario definido → fallas 
+mínimas → recuperación rápida. 
+ Prioridad: Alta 
+ 
+ 
+10.2 Requerimientos funcionales 
+RF-001 
+Título: Registro de usuario (estudiante) 
+ Actor(es): Estudiante 
+ Descripción: Permitir que un visitante cree una cuenta con sus datos básicos para 
+poder acceder a la aplicación. 
+ Precondición: El correo electrónico ingresado no debe existir en la base de datos. 
+ Flujo principal: 
+1. El usuario accede a la pantalla de registro. 
+ 
+2. Ingresa nombre, correo, contraseña y selecciona su instrumento de interés 
+inicial (ejemplo: guitarra). 
+ 
+----------------Page (16) Break----------------
+3. El sistema valida que el correo no esté registrado. 
+ 
+4. Se envía un correo de verificación. 
+ 
+5. Una vez confirmado, la cuenta queda activa con un periodo de prueba de 15 
+días. 
+ Entradas/Validaciones: 
+ 
+● Correo con formato válido (RFC 5322). 
+ 
+● Contraseña mínima de 8 caracteres, con al menos un número. 
+ Salidas/Efectos: 
+ 
+● Nueva cuenta en la base de datos, estado “Prueba activa”. 
+ Reglas de negocio: 
+ 
+● El correo debe confirmarse en máximo 7 días. 
+ 
+● Cada persona solo puede tener una cuenta de prueba. 
+ Criterio de aceptación: Registro exitoso → correo de verificación → 
+activación → acceso a la plataforma. 
+ Prioridad: Alta 
+ Notas: Requiere integración con un servicio de correo. 
+ 
+ 
+RF-002 
+Título: Registro de usuario (profesor) 
+ Actor(es): Profesor 
+ Descripción: Permitir que un profesor se registre con datos adicionales como 
+certificaciones, experiencia y disponibilidad. 
+ Precondición: Correo no registrado previamente. 
+ Flujo principal: 
+1. El profesor llena el formulario de registro con datos básicos. 
+ 
+----------------Page (17) Break----------------
+2. Adjunta documentos que acrediten su experiencia o certificaciones (PDF o 
+imágenes). 
+ 
+3. El sistema guarda la cuenta en estado “pendiente”. 
+ 
+4. El administrador revisa la información y valida al profesor. 
+ 
+5. Una vez aprobado, su perfil queda público y puede impartir clases. 
+ Entradas/Validaciones: 
+ 
+● Correo válido, contraseña ≥ 8 caracteres. 
+ 
+● Archivos de certificación en PDF o imagen. 
+ Salidas/Efectos: 
+ 
+● Perfil creado con estado “Pendiente” o “Verificado”. 
+ Reglas de negocio: 
+ 
+● Profesores no verificados no pueden publicar contenido pago. 
+ Criterio de aceptación: Profesor completa registro → administrador valida 
+→ perfil pasa a “verificado”. 
+ Prioridad: Alta 
+ 
+RF-003 
+Título: Inicio de sesión y estado de cuenta 
+ Actor(es): Estudiante, Profesor, Administrador 
+ Descripción: Permitir que el usuario acceda con sus credenciales y visualizar el 
+estado de su cuenta (Prueba, Gratis, Premium). 
+ Precondición: Cuenta registrada y verificada. 
+ Flujo principal: 
+1. El usuario ingresa correo y contraseña. 
+ 
+2. El sistema valida credenciales. 
+ 
+----------------Page (18) Break----------------
+3. Una vez dentro, se muestra un apartado con el plan actual: 
+ 
+○ Prueba (15 días): todas las funciones activas. 
+ 
+○ Premium: acceso completo y ventajas extra. 
+ 
+○ Gratis (tras vencer prueba): acceso limitado, sin minijuegos ni 
+funciones avanzadas. 
+ Entradas/Validaciones: 
+ 
+● Email válido. 
+ 
+● Contraseña correcta. 
+ Salidas/Efectos: 
+ 
+● Sesión activa con visualización del estado de suscripción. 
+ Reglas de negocio: 
+ 
+● 3 intentos fallidos → bloqueo de 15 minutos. 
+ 
+● Usuarios en modo “Gratis” ven versión reducida. 
+ Criterio de aceptación: Iniciar sesión correctamente → mostrar estado  de 
+cuenta y acceso limitado o completo según el plan. 
+ Prioridad: Alta 
+ 
+ 
+RF-004 
+Título: Gestión de suscripción y planes 
+ Actor(es): Estudiante, Profesor 
+ Descripción: Administrar el periodo de prueba inicial, el acceso en modo Gratis y 
+la suscripción Premium. 
+ Precondición: Usuario registrado. 
+ Flujo principal: 
+----------------Page (19) Break----------------
+1. El sistema activa automáticamente la prueba Premium de 15 días al 
+registrarse. 
+ 
+2. Se controla la fecha de inicio y caducidad. 
+ 
+3. Al expirar, el usuario pasa al plan Gratis con funciones limitadas. 
+ 
+4. El usuario puede suscribirse pagando para acceder a Premium. 
+ 
+5. Profesores también deben mantener cuenta Premium para dar clases 
+personalizadas. 
+ Entradas/Validaciones: 
+ 
+● Fecha de registro. 
+ 
+● Método de pago válido (tarjeta, PayPal, etc.). 
+ Salidas/Efectos: 
+ 
+● Estado de la cuenta actualizado: Prueba, Gratis o Premium. 
+ Reglas de negocio: 
+ 
+● Cada usuario solo tiene una prueba única. 
+ 
+● Profesor sin Premium no puede impartir clases personalizadas. 
+ Criterio de aceptación: Usuario pasa de prueba → gratis o paga → 
+sistema actualiza estado. 
+ Prioridad: Alta 
+RF-005 
+Título: Gestión de canciones 
+ Actor(es): Estudiante, Administrador 
+ Descripción: Permitir que los estudiantes interactúen con el catálogo de canciones 
+y que el administrador las valide o elimine según votación. 
+ Precondición: Canción registrada en la plataforma. 
+ Flujo principal: 
+----------------Page (20) Break----------------
+1. El estudiante explora el catálogo de canciones. 
+ 
+2. Escucha una muestra breve (preview). 
+ 
+3. Decide dar like o dislike. 
+ 
+4. El sistema registra el voto en la base de datos. 
+ 
+5. El administrador consulta las métricas y puede aprobar, modificar o eliminar 
+canciones con baja aceptación. 
+ Entradas/Validaciones: 
+ 
+● Identificador único de canción. 
+ 
+● Acción de voto (like/dislike). 
+ Salidas/Efectos: 
+ 
+● Actualización del conteo de votos de cada canción. 
+ Reglas de negocio: 
+ 
+● Un usuario solo puede votar una vez por canción (puede cambiarlo después). 
+ 
+● Solo el administrador puede eliminar canciones. 
+ Criterio de aceptación: El estudiante vota → voto registrado → admin 
+visualiza datos y toma decisión. 
+ Prioridad: Media 
+ 
+ 
+RF-006 
+Título: Historial de progreso del estudiante 
+ Actor(es): Estudiante 
+ Descripción: Registrar y mostrar el avance del estudiante en canciones, 
+minijuegos y metas. 
+ Precondición: Usuario con cuenta activa. 
+ Flujo principal: 
+----------------Page (21) Break----------------
+1. El estudiante practica una canción o participa en un minijuego. 
+ 
+2. El sistema guarda los resultados (nivel alcanzado, porcentaje de aciertos, 
+tiempo invertido). 
+ 
+3. El estudiante accede a su perfil y visualiza su progreso acumulado. 
+ Entradas/Validaciones: 
+ 
+● Identificador de usuario. 
+ 
+● Resultados de cada actividad. 
+ Salidas/Efectos: 
+ 
+● Base de datos actualizada con el progreso. 
+ Reglas de negocio: 
+ 
+● Los avances deben guardarse en tiempo real. 
+ 
+● El historial debe conservarse aunque el usuario cambie de dispositivo. 
+ Criterio de aceptación: Estudiante practica → progreso se registra → 
+historial visible en su perfil. 
+ Prioridad: Alta 
+ 
+ 
+RF-007 
+Título: Minijuegos rítmicos 
+ Actor(es): Estudiante 
+ Descripción: Ofrecer minijuegos interactivos para practicar ritmo, acordes y 
+melodías de manera divertida. 
+ Precondición: Usuario en plan Prueba o Premium (no disponible en Gratis). 
+ Flujo principal: 
+1. El estudiante selecciona un minijuego disponible. 
+ 
+----------------Page (22) Break----------------
+2. El sistema carga dinámicas (ej. presionar teclas en ritmo, tocar acordes 
+simulados). 
+ 
+3. El estudiante participa y obtiene un puntaje. 
+ 
+4. El sistema muestra retroalimentación inmediata y guarda resultados en el 
+historial. 
+ Entradas/Validaciones: 
+ 
+● Selección de minijuego. 
+ 
+● Interacción en tiempo real (inputs del usuario). 
+ Salidas/Efectos: 
+ 
+● Puntaje y nivel alcanzado. 
+ 
+● Actualización del progreso en la base de datos. 
+ Reglas de negocio: 
+ 
+● Los minijuegos no estarán disponibles en cuentas “Gratis”. 
+ 
+● El puntaje se utiliza para medir avance en metas personales. 
+ Criterio de aceptación: Usuario Premium juega → obtiene puntaje → 
+progreso reflejado en historial. 
+ Prioridad: Alta 
+ 
+ 
+RF-008 
+Título: Profesores y reseñas 
+ Actor(es): Estudiante, Profesor, Administrador 
+ Descripción: Permitir que los estudiantes se suscriban a profesores, dejen reseñas 
+y calificaciones; los profesores podrán responder. 
+ Precondición: Profesor validado y visible en la plataforma. 
+ Flujo principal: 
+----------------Page (23) Break----------------
+1. El estudiante navega por el directorio de profesores. 
+ 
+2. Selecciona un profesor y revisa su perfil (biografía, reseñas, materiales). 
+ 
+3. Se suscribe (si aplica, realiza pago para clases personalizadas). 
+ 
+4. Puede dejar reseña escrita y calificación (1–5 estrellas). 
+ 
+5. El profesor recibe notificación y puede responder comentarios. 
+ Entradas/Validaciones: 
+ 
+● Texto de reseña (máx. 500 caracteres). 
+ 
+● Calificación en escala de 1 a 5. 
+ Salidas/Efectos: 
+ 
+● Reseñas visibles en el perfil del profesor. 
+ Reglas de negocio: 
+ 
+● Los comentarios ofensivos pueden ser eliminados por el administrador. 
+ 
+● Profesor no verificado no aparece en búsquedas. 
+ Criterio de aceptación: Estudiante deja reseña → reseña publicada → 
+profesor puede responder → admin puede moderar. 
+ Prioridad: Media 
+RF-009 
+Título: Notificaciones internas 
+ Actor(es): Estudiante, Profesor, Administrador 
+ Descripción: Permitir que el sistema envíe notificaciones sobre eventos 
+importantes (nueva canción, progreso alcanzado, mensajes de profesor, cambios de 
+plan). 
+ Precondición: Usuario autenticado. 
+ Flujo principal: 
+----------------Page (24) Break----------------
+1. El sistema detecta un evento (ejemplo: nuevo contenido, suscripción a 
+profesor, mensaje recibido). 
+ 
+2. Genera notificación en el panel del usuario. 
+ 
+3. El usuario abre la notificación y accede al detalle. 
+ Entradas/Validaciones: 
+ 
+● ID de usuario receptor. 
+ 
+● Tipo de evento. 
+ Salidas/Efectos: 
+ 
+● Notificación almacenada en base de datos y mostrada en interfaz. 
+ Reglas de negocio: 
+ 
+● Las notificaciones expiran después de 30 días. 
+ 
+● Solo las notificaciones de pago se reenvían por correo electrónico. 
+ Criterio de aceptación: Evento generado → notificación aparece → 
+usuario accede al detalle. 
+ Prioridad: Media 
+ 
+ 
+RF-010 
+Título: Mensajes privados entre estudiante y profesor 
+ Actor(es): Estudiante, Profesor 
+ Descripción: Permitir que un estudiante envíe mensajes privados a su profesor y 
+que el profesor pueda responder. 
+ Precondición: Relación estudiante-profesor activa (suscripción o clase 
+contratada). 
+ Flujo principal: 
+1. El estudiante abre el perfil del profesor y selecciona “Enviar mensaje”. 
+ 
+----------------Page (25) Break----------------
+2. Escribe el texto y lo envía. 
+ 
+3. El sistema guarda el mensaje en la base de datos y notifica al profesor. 
+ 
+4. El profesor responde desde su bandeja de entrada. 
+ Entradas/Validaciones: 
+ 
+● Texto del mensaje (máx. 1000 caracteres). 
+ Salidas/Efectos: 
+ 
+● Conversación disponible en bandeja de entrada de ambos. 
+ Reglas de negocio: 
+ 
+● Mensajes con lenguaje inapropiado podrán ser reportados. 
+ 
+● Solo estudiantes suscritos a un profesor pueden escribirle. 
+ Criterio de aceptación: Estudiante envía mensaje → profesor recibe → 
+puede responder → conversación registrada. 
+ Prioridad: Alta 
+ 
+ 
+ 
+RF-011 
+Título: Configuración de perfil 
+ Actor(es): Estudiante, Profesor 
+ Descripción: Permitir que cada usuario edite información básica de su perfil. 
+ Precondición: Cuenta activa. 
+ Flujo principal: 
+1. El usuario accede a la sección de configuración. 
+ 
+2. Puede modificar datos como nombre, contraseña, preferencia de 
+instrumento, foto de perfil. 
+ 
+----------------Page (26) Break----------------
+3. El sistema valida cambios y los guarda. 
+ Entradas/Validaciones: 
+ 
+● Foto de perfil (jpg/png máx. 5MB). 
+ 
+● Contraseña ≥8 caracteres. 
+ Salidas/Efectos: 
+ 
+● Actualización en base de datos y visualización en el perfil público/privado. 
+ Reglas de negocio: 
+ 
+● El correo no puede modificarse una vez registrado. 
+ 
+● Profesores pueden agregar certificaciones solo si el administrador valida los 
+documentos. 
+ Criterio de aceptación: Usuario edita perfil → cambios guardados → 
+reflejados en el sistema. 
+ Prioridad: Media 
+ 
+ 
+ 
+ 
+RF-012 
+Título: Tienda de materiales y upgrades 
+ Actor(es): Estudiante, Profesor 
+ Descripción: Permitir la compra de materiales adicionales (ej. partituras, pistas 
+premium) y upgrades del plan. 
+ Precondición: Usuario autenticado. 
+ Flujo principal: 
+1. El usuario accede a la tienda. 
+ 
+2. Visualiza productos y planes disponibles. 
+ 
+----------------Page (27) Break----------------
+3. Selecciona uno, realiza pago con método soportado. 
+ 
+4. El sistema valida transacción y habilita acceso inmediato. 
+ Entradas/Validaciones: 
+ 
+● Selección de producto/plan. 
+ 
+● Datos de pago. 
+ Salidas/Efectos: 
+ 
+● Producto digital disponible en la cuenta del usuario. 
+ Reglas de negocio: 
+ 
+● Todos los pagos deben confirmarse vía pasarela de pago segura. 
+ 
+● Los upgrades de plan aplican de inmediato. 
+ Criterio de aceptación: Usuario selecciona producto → paga → sistema 
+habilita acceso. 
+ Prioridad: Alta 
+ 
+ 
+ 
+ 
+RF-013 
+Título: Moderación de contenido y comentarios 
+ Actor(es): Administrador 
+ Descripción: El administrador podrá revisar y moderar reseñas, mensajes 
+reportados y contenido subido por profesores o estudiantes. 
+ Precondición: Reporte generado o contenido pendiente de revisión. 
+ Flujo principal: 
+1. El sistema lista contenido marcado como sospechoso o reportado. 
+ 
+----------------Page (28) Break----------------
+2. El administrador lo revisa manualmente. 
+ 
+3. Decide aprobar, editar o eliminar. 
+ 
+4. El sistema registra la acción y notifica al usuario implicado. 
+ Entradas/Validaciones: 
+ 
+● Identificador de contenido reportado. 
+ Salidas/Efectos: 
+ 
+● Contenido eliminado o aprobado. 
+ Reglas de negocio: 
+ 
+● Todo reporte debe resolverse en máximo 72 horas. 
+ 
+● El sistema debe conservar historial de moderación. 
+ Criterio de aceptación: Contenido reportado → admin lo revisa → acción 
+registrada → usuario notificado. 
+ Prioridad: Alta
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+10.3 Requerimientos no funcion ales 
+RNF-001 
+Título: Usabilidad – Interfaz amigable 
+ Descripción: La plataforma debe ser intuitiva y fácil de usar, con un diseño  
+minimalista, estilo oscuro con detalles en neón morado y opción de modo claro. 
+ Precondición: Usuario accede a la plataforma. 
+ Flujo/efecto: 
+----------------Page (29) Break----------------
+● Interfaz consistente en todas las secciones. 
+ 
+● Navegación mediante barra lateral y menú superior. 
+ Reglas de negocio: 
+ 
+● Las funciones básicas deben ser accesibles en menos de 5 clics. 
+ Criterio de aceptación: Usuario nuevo puede encontrar todas las funciones 
+principales sin ayuda externa. 
+ Prioridad: Alta 
+ 
+ 
+RNF-002 
+Título: Accesibilidad multiplataforma 
+ Descripción: La plataforma debe funcionar correctamente en dispositivos 
+móviles, tabletas y navegadores web. 
+ Precondición: Ninguna. 
+ Flujo/efecto: 
+● Diseño responsive adaptado a cada tipo de pantalla. 
+ Reglas de negocio: 
+ 
+● Todas las funcionalidades disponibles en todas las plataformas. 
+ Criterio de aceptación: Abrir plataforma en PC y móvil → mismas 
+funciones visibles y operativas. 
+ Prioridad: Alta 
+ 
+ 
+RNF-003 
+Título: Rendimiento – Tiempo de carga 
+ Descripción: Las páginas principales deben cargar en menos de 3 segundos con 
+conexión estable. 
+ Precondición: Plataforma desplegada en servidor de pruebas o producción. 
+ Flujo/efecto: 
+----------------Page (30) Break----------------
+● Optimización de recursos y consultas a la base de datos. 
+ Reglas de negocio: 
+ 
+● No se permitirá contenido pesado que ralentice la aplicación. 
+ Criterio de aceptación: Usuario navega y todas las páginas cargan en ≤3s. 
+ Prioridad: Alta 
+ 
+RNF-004 
+Título: Rendimiento – Minijuegos 
+ Descripción: Los minijuegos deben responder en tiempo real con latencia máxima 
+de 100 ms. 
+ Precondición: Usuario con cuenta Prueba o Premium. 
+ Flujo/efecto: 
+● Inputs del usuario procesados en tiempo real. 
+ Reglas de negocio: 
+ 
+● Minijuegos bloqueados para cuentas Gratis. 
+ Criterio de aceptación: Usuario juega minijuego → respuesta inmediata 
+→ puntaje registrado. 
+ Prioridad: Alta 
+ 
+RNF-005 
+Título: Seguridad – Contraseñas 
+ Descripción: Las contraseñas deben almacenarse cifradas mediante algoritmos 
+seguros (ej. bcrypt). 
+ Precondición: Registro o cambio de contraseña. 
+ Flujo/efecto: 
+● Contraseña nunca guardada en texto plano. 
+ Reglas de negocio: 
+ 
+● Usuarios deben restablecer contraseña mediante correo verificado si la 
+olvidan. 
+ Criterio de aceptación: Contraseña registrada → no se puede ver en la 
+----------------Page (31) Break----------------
+base de datos → se puede validar al iniciar sesión. 
+ Prioridad: Alta 
+ 
+ 
+RNF-006 
+Título: Seguridad – Comunicación y pagos 
+ Descripción: Toda comunicación debe ser HTTPS y los pagos a través de 
+pasarelas seguras. 
+ Precondición: Usuario realiza pago o interacción de datos sensibles. 
+ Flujo/efecto: 
+● Información cifrada durante transmisión. 
+ Reglas de negocio: 
+ 
+● Solo métodos de pago certificados serán aceptados. 
+ Criterio de aceptación: Pago realizado → datos cifrados → transacción 
+exitosa. 
+ Prioridad: Alta 
+ 
+ 
+RNF-007 
+Título: Seguridad – Roles y acceso 
+ Descripción: Los roles determinan permisos y acceso a funcionalidades. 
+ Precondición: Usuario autenticado. 
+ Flujo/efecto: 
+● Estudiante: acceso limitado a contenido educativo. 
+ 
+● Profesor: acceso a subir contenido y responder estudiantes. 
+ 
+● Administrador: acceso completo y moderación. 
+ Reglas de negocio: 
+ 
+----------------Page (32) Break----------------
+● Profesores no verificados no pueden publicar contenido pago. 
+ Criterio de aceptación: Usuario inicia sesión → funciones visibles según 
+rol. 
+ Prioridad: Alta 
+ 
+ 
+RNF-008 
+Título: Mantenibilidad 
+ Descripción: Código modular y documentado, base de datos normalizada con 
+respaldos automáticos. 
+ Precondición: Entorno de desarrollo operativo. 
+ Flujo/efecto: 
+● Nuevas funcionalidades pueden integrarse sin romper el sistema. 
+ Reglas de negocio: 
+ 
+● Respaldo diario automático de base de datos. 
+ Criterio de aceptación: Se agrega nueva función → sistema estable → 
+datos intactos. 
+ Prioridad: Media 
+ 
+ 
+RNF-009 
+Título: Escalabilidad 
+ Descripción: La plataforma debe permitir crecer en número de usuarios y 
+contenidos sin degradar el rendimiento. 
+ Precondición: Sistema funcionando en producción. 
+ Flujo/efecto: 
+● Soporte para más canciones, minijuegos, instrumentos y usuarios 
+simultáneos. 
+ Reglas de negocio: 
+ 
+----------------Page (33) Break----------------
+● Incrementos de usuarios o contenido no requieren cambios estructurales 
+importantes. 
+ Criterio de aceptación: Se aumenta carga → sistema mantiene 
+rendimiento y estabilidad. 
+ Prioridad: Media 
+ 
+ 
+RNF-010 
+Título: Disponibilidad y confiabilidad 
+ Descripción: La plataforma debe garantizar disponibilidad mínima del 99% 
+mensual y recuperación ante fallas en menos de 30 minutos. 
+ Precondición: Sistema desplegado en producción. 
+ Flujo/efecto: 
+● Monitoreo automático de servidores. 
+ Reglas de negocio: 
+ 
+● Ningún progreso de usuario o contenido puede perderse ante fallas. 
+ Criterio de aceptación: Fallo del sistema → recuperación en <30 min → 
+historial intacto. 
+ Prioridad: Alta 
+ 
+10.4 Requerimientos técnicos 
+RT-001 
+Título: Plataforma frontend 
+ Descripción: La interfaz del usuario debe ser desarrollada con tecnologías web 
+modernas (HTML, CSS, JavaScript) y ser responsive para móviles y web. 
+ Precondición: Ninguna. 
+ Flujo/efecto: 
+● Se implementan menús, barra lateral, paneles y secciones interactivas. 
+ 
+----------------Page (34) Break----------------
+● Adaptación automática al tamaño de pantalla. 
+ Reglas de negocio: 
+ 
+● Interfaz consistente en todas las plataformas. 
+ Criterio de aceptación: Usuario accede desde cualquier dispositivo → 
+interfaz correcta y funcional. 
+ Prioridad: Alta 
+ 
+ 
+RT-002 
+Título: Plataforma backend 
+ Descripción: El backend debe estar desarrollado en Node.js con Express y servir 
+la API REST para la app y web. 
+ Precondición: Infraestructura de servidor disponible. 
+ Flujo/efecto: 
+● Gestión de usuarios, canciones, minijuegos, progreso, suscripciones y 
+mensajes mediante endpoints seguros. 
+ Reglas de negocio: 
+ 
+● Todas las acciones críticas (pagos, registros, progreso) pasan por el backend 
+para validación. 
+ Criterio de aceptación: Endpoints disponibles → funcionalidad completa 
+→ respuestas correctas. 
+ Prioridad: Alta 
+ 
+ 
+RT-003 
+Título: Base de datos 
+ Descripción: La aplicación debe utilizar MySQL como base de datos para 
+almacenar  usuarios,  canciones,  progreso,  profesores,  reseñas,  pagos  y 
+configuraciones. 
+----------------Page (35) Break----------------
+ Precondición: Servidor de base de datos activo. 
+ Flujo/efecto: 
+● Base de datos normalizada con relaciones claras. 
+ 
+● Backups automáticos diarios. 
+ Reglas de negocio: 
+ 
+● Integridad referencial y consistencia de datos garantizada. 
+ Criterio de aceptación: Inserción, actualización y consulta de datos → 
+correctas y rápidas. 
+ Prioridad: Alta 
+ 
+ 
+RT-004 
+Título: Autenticación y seguridad 
+ Descripción: Implementar sistema de autenticación seguro para usuarios, 
+profesores y administradores. 
+ Precondición: Usuario registrado. 
+ Flujo/efecto: 
+● Validación de correo y contraseña encriptada. 
+ 
+● Roles con permisos específicos. 
+ 
+● Comunicación cifrada mediante HTTPS. 
+ Reglas de negocio: 
+ 
+● Usuarios bloqueados tras 3 intentos fallidos → 15 minutos de espera. 
+ 
+● Profesores no verificados no pueden publicar contenido. 
+ Criterio de aceptación: Inicio de sesión seguro → roles aplicados → datos 
+protegidos. 
+ Prioridad: Alta 
+ 
+----------------Page (36) Break----------------
+ 
+RT-005 
+Título: Sistema de pagos 
+ Descripción: Integración con pasarelas seguras (Stripe, PayPal) para suscripciones 
+y compras de material premium. 
+ Precondición: Usuario autenticado. 
+ Flujo/efecto: 
+● Procesamiento de pago → confirmación → habilitación de plan o contenido 
+comprado. 
+ Reglas de negocio: 
+ 
+● Pagos deben ser confirmados antes de habilitar acceso. 
+ 
+● Datos financieros nunca se almacenan localmente. 
+ Criterio de aceptación: Pago exitoso → usuario obtiene acceso → 
+transacción segura. 
+ Prioridad: Alta 
+ 
+ 
+RT-006 
+Título: Minijuegos interactivos 
+ Descripción: Los minijuegos deben ejecutarse en tiempo real y registrar progreso 
+del usuario. 
+ Precondición: Usuario con plan Prueba o Premium. 
+ Flujo/efecto: 
+● Inputs del usuario procesados en <100ms. 
+ 
+● Puntaje y estadísticas guardadas automáticamente. 
+ Reglas de negocio: 
+ 
+● Usuarios Gratis no tienen acceso. 
+ Criterio de aceptación: Usuario juega → puntaje registrado → 
+----------------Page (37) Break----------------
+retroalimentación inmediata. 
+ Prioridad: Alta 
+ 
+ 
+RT-007 
+Título: Escalabilidad y arquitectura 
+ Descripción: Arquitectura preparada para aumentar usuarios, cancion es y 
+minijuegos sin afectar rendimiento. 
+ Precondición: Sistema en producción. 
+ Flujo/efecto: 
+● Backend modular y base de datos optimizada. 
+ 
+● Posibilidad de agregar más servidores o balanceadores. 
+ Reglas de negocio: 
+ 
+● Nuevas funcionalidades no deben romper funcionalidades existentes. 
+ Criterio de aceptación: Incremento de usuarios → sistema estable y 
+rápido. 
+ Prioridad: Media 
+ 
+ 
+RT-008 
+Título: Monitoreo y mantenimiento 
+ Descripción: Sistema de registro de errores, logs y alertas para asegurar 
+disponibilidad y estabilidad. 
+ Precondición: Servidor y aplicación en producción. 
+ Flujo/efecto: 
+● Logs automáticos de errores y eventos críticos. 
+ 
+● Alertas al equipo de desarrollo ante fallos. 
+ Reglas de negocio: 
+ 
+----------------Page (38) Break----------------
+● Caídas o errores críticos → resolución en menos de 30 minutos. 
+ Criterio de aceptación: Sistema genera logs → errores detectables → se 
+resuelven rápido. 
+ Prioridad: Media 
+ 
+ 
+RT-009 
+Título: Integración de API 
+ Descripción: API REST para comunicación frontend-backend, consum ida por 
+web y app móvil. 
+ Precondición: Backend y frontend desplegados. 
+ Flujo/efecto: 
+● Endpoints para usuarios, canciones, minijuegos, pagos y progreso. 
+ 
+● Respuestas JSON estandarizadas. 
+ Reglas de negocio: 
+ 
+● Solo endpoints autenticados permiten acciones críticas. 
+ Criterio de aceptación: Llamada API → respuesta correcta → integración 
+estable. 
+ Prioridad: Alta 
+ 
+16. Requerimientos Usuario y Negocio 
+    
+ 
+ 
+16.1 Requerimientos de Usuario 
+----------------Page (39) Break----------------
+Los requerimientos de usuario describen las necesidades, expectativas y 
+objetivos que los distintos tipos de usuarios esperan satisfacer al utilizar la 
+plataforma Skeletune. 
+RU-001 – Facilidad de uso 
+ El usuario espera una aplicación intuitiva, fácil de entender y de navegar, 
+sin necesidad de conocimientos técnicos o musicales avanzados para 
+comenzar a practicar. 
+RU-002 – Optimización del tiempo 
+ El usuario necesita poder practicar en periodos cortos de tiempo, con 
+rutinas claras y organizadas que se adapten a su disponibilidad diaria. 
+RU-003 – Aprendizaje personalizado 
+ El usuario desea que el sistema se adapte a su nivel, ritmo de aprendizaje y 
+objetivos musicales, evitando contenidos demasiado básicos o 
+excesivamente avanzados. 
+RU-004 – Seguimiento de progreso 
+ El usuario requiere visualizar su avance de forma clara mediante 
+estadísticas, logros, historial y metas cumplidas, para mantenerse motivado. 
+RU-005 – Motivación constante 
+ El usuario espera una experiencia dinámica y atractiva, apoyada en 
+gamificación, minijuegos y recompensas, que reduzca la frustración y 
+fomente la constancia. 
+RU-006 – Acceso multiplataforma 
+ El usuario necesita poder acceder a su cuenta y a su progreso desde 
+distintos dispositivos (móvil o web) sin pérdida de información. 
+RU-007 – Seguridad y confianza 
+ El usuario espera que sus datos personales, progreso y pagos estén 
+protegidos mediante mecanismos de seguridad confiables. 
+ 
+ 
+16.2 Requerimientos de Negocio 
+----------------Page (40) Break----------------
+Los requerimientos de negocio definen las necesidades estratégicas y 
+operativas de Skeletune como producto digital sostenible y escalable. 
+RN-001 – Modelo de monetización 
+ La plataforma debe implementar un modelo de suscripción (Gratis, Prueba 
+y Premium) que permita generar ingresos constantes sin afectar la 
+experiencia básica del usuario. 
+RN-002 – Retención de usuarios 
+ El sistema debe fomentar la permanencia de los usuarios mediante 
+personalización, notificaciones, seguimiento de progreso y contenido 
+atractivo. 
+RN-003 – Escalabilidad del producto 
+ Skeletune debe permitir la incorporación futura de nuevos instrumentos, 
+minijuegos, contenidos y usuarios sin rediseños estructurales importantes. 
+RN-004 – Control de calidad del contenido 
+ Todo el contenido subido por profesores debe ser validado por 
+administradores para garantizar calidad educativa y coherencia con los 
+objetivos de la plataforma. 
+RN-005 – Gestión de roles y permisos 
+ El negocio requiere una correcta separación de roles (Estudiante, Profesor, 
+Administrador) para asegurar control, seguridad y orden operativo. 
+RN-006 – Sostenibilidad técnica y operativa 
+ La plataforma debe minimizar fallos, costos de mantenimiento excesivos y 
+dependencia de soluciones poco escalables. 
+RN-007 – Posicionamiento educativo y comercial 
+ Skeletune debe diferenciarse de la competencia combinando aprendizaje 
+estructurado, análisis de progreso y gamificación, manteniendo equilibrio 
+entre educación y entretenimiento. 
+ 
+ 
+17. Reglas de Negocio 
+----------------Page (41) Break----------------
+ 
+1. Suscripción,  planes  y acceso  a funciones   
+● RN-001   – Suscripción  y prueba  gratuita   
+○ RN-001.1   – Prueba  gratuita  única:  Cada  usuario  solo  puede  
+activar una prueba  gratuita  de  15  días  por cuenta. 
+○ RN-001.2   – Restricción  tras expiración:  Al  finalizar el periodo  
+de  prueba,  el sistema  cambia  automáticamente   los permisos  al 
+plan  Gratis.  
+○ RN-001.3   – Diferenciación   de  planes: El plan  Gratis  no  permite  
+acceso  a minijuegos  ni a canciones  premium.    
+○ RN-001.4   – Suscripción  activa  inmediata:  El pago  exitoso 
+habilita  el plan  Premium  y desbloquea   funciones  en  tiempo  
+real. 
+○ RN-001.5   – Profesores  con Premium:   Solo  los profesores  con 
+suscripción  Premium  activa  pueden  impartir  clases  
+personalizadas.   
+ 
+2. Registr o y autenticación  de  usuarios   
+ 
+● RN-002   – Registro  de  cuenta   
+ 
+○ RN-002.1   – Correo  único:  Ningún  usuario  puede  registrar un  
+correo  ya  existente.   
+○ RN-002.2   – Validación  de  formato  de  correo: El correo  debe  
+cumplir  con estándar  RFC  5322.   
+○ RN-002.3   – Contraseña   segura: La  contraseña  debe  tener 
+mínimo  8 caracteres  e incluir al menos  un  número.   
+○ RN-002.4   – Confirmación   de  correo: La  cuenta  se activa  tras 
+validar el correo  en  un  máximo   de  7 días. 
+ 
+● RN-003   – Inicio  de  sesión  y seguridad   
+○ RN-003.1   – Validación  de  credenciales:  El sistema  autentica  
+usuario  y contraseña  antes de  otor gar acceso.  
+----------------Page (42) Break----------------
+○ RN-003.2   – Bloqueo  por intentos  fallidos: Tras 3 intentos  
+incorrectos  consecutivos,  la cuenta  se bloquea  15  minutos.  
+○ RN-003.3   – Aplicación  de  roles: Los permisos  disponibles  
+dependen   del rol asignado  (Estudiante,  Profesor , 
+Administrador).   
+ 
+3. Pr ofesor es y validación   
+ 
+● RN-004   – Validación  de  profesores   
+ 
+○ RN-004.1   – Verificación  obligatoria:  Ningún  profesor  puede  
+publicar  contenido  ni recibir pagos  sin validación  del 
+administrador .  
+○ RN-004.2   – Documentación   requerida:  Se  exigen  
+certificaciones,  diplomas  o experiencia  comprobable.    
+○ RN-004.3   – Bloqueo  automático:  Profesores  rechazados  
+quedan  con rol de  estudiante  hasta nueva  solicitud.   
+○ RN-004.4   – Estado  inicial pendiente:  Todo profesor  registrado  
+queda  pendiente  hasta validación.   
+○ RN-004.5   – Restricción  de  publicación:  Profesores  no  
+verificados  no  pueden  publicar  contenido  pago  ni aparecer  en  
+búsquedas.   
+ 
+4. Gestión  de  canciones  y minijuegos   
+ 
+● RN-005   – Contenido  y participación   
+ 
+○ RN-005.1   – Revisión  obligatoria:  Todo contenido  debe  ser 
+aprobado  por el administrador  antes de  hacerse  público.   
+○ RN-005.2   – Influencia  de  la comunidad:   Los votos de  usuarios  
+se registran pero  no  sustituyen  la validación  del administrador .  
+○ RN-005.3   – Historial de  aprobaciones:  Cada  
+aprobación/rechazo   se registra  con fecha,  usuario  y motivo.   
+----------------Page (43) Break----------------
+○ RN-005.4   – Voto único por usuario  y canción:  Un  usuario  solo  
+puede  votar una vez por canción,  con posibilidad  de  modificar .  
+ 
+ 
+ 
+ 
+● RN-006   – Minijuegos   rítmicos   
+ 
+○ RN-006.1   – Acceso  según  plan: Solo  usuarios  en  plan  Prueba  o 
+Premium  pueden  jugar.  
+○ RN-006.2   – Puntaje  acumulativo:   Cada  partida guarda  puntaje  
+y progreso  del usuario.   
+○ RN-006.3   – Retroalimentación   inmediata:  Sistema  muestra  
+resultados  y consejos  en  tiempo  real.  
+○ RN-006.4   – Latencia  ≤100ms:  Inputs  de  usuario  deben  
+procesarse  con latencia  menor  a 100 ms.  
+ 
+5. Comentarios,   reseñas  y moderación    
+ 
+● RN-007   – Moderación    
+ 
+○ RN-007.1   – Reporte  de  abuso  obligatorio:  Usuarios  pueden  
+reportar  comentarios  ofensivos,  notificando  al administrador .  
+○ RN-007.2   – Acción  inmediata:  Administrador   puede  editar , 
+eliminar  o bloquear  comentario   y usuario  infractor.  
+○ RN-007.3   – Sanción  progresiva:  Usuarios  que publiquen  
+contenido  inapropiado  más  de  3 veces deben  ser bloqueados   
+temporalmente.    
+○ RN-007.4   – Resolución   de  reportes: Todo reporte se atiende en  
+máximo   72  horas.   
+○ RN-007.5   – Registro  histórico:  Historial de  acciones  de  
+moderación   debe  mantenerse.   
+○ RN-007.6   – Notificación  al usuario:  Usuario  implicado  debe  
+ser notificado  sobre acción  tomada.   
+----------------Page (44) Break----------------
+ 
+6. Historial  y pr ogreso del usuario   
+ 
+● RN-008   – Seguimiento   
+ 
+○ RN-008.1   – Registro  en  tiempo  real: Avance  del usuario  se 
+guarda  inmediatamente.    
+○ RN-008.2   – Persistencia  multiplataforma:   Historial disponible  
+en  todos los dispositivos.   
+○ RN-008.3   – Consulta  por administrador:   Administradores   
+pueden  acceder  para  soporte  o análisis.  
+○ RN-008.4   – Visualización  completa:  Usuario  puede  consultar  
+logros, metas  y progreso  acumulado.    
+ 
+7. Tienda  y pagos   
+ 
+● RN-009   – Transacciones   
+ 
+○ RN-009.1   – Métodos  de  pago  seguros:  Todas  las transacciones  
+por pasarelas  certificadas.  
+○ RN-009.2   – Activación  inmediata:  Tras pago  confirmado,  se 
+habilita  producto  o plan  comprado.   
+○ RN-009.3   – Prohibición  de  reembolsos   automáticos:  Deben  
+revisarse por administrador .  
+○ RN-009.4   – No  almacenar  datos financieros:  Datos  sensibles  no  
+se guardan  en  servidores  locales.   
+○  
+ 
+ 
+ 
+ 
+ 
+8. Notificaciones   
+ 
+----------------Page (45) Break----------------
+● RN-010   – Gestión   
+ 
+○ RN-010.1   – Caducidad  obligatoria:  Notificaciones   expiran  
+automáticamente   después  de  30  días.  
+○ RN-010.2   – Notificaciones   críticas por correo: Solo  pagos  o 
+cambios  de  plan  se envían  también  al correo.  
+○ RN-010.3   – Persistencia  en  base  de  datos:  Se  almacenan  hasta 
+su expiración.   
+ 
+9. Configuración   de  perfil   
+ 
+● RN-01 1 – Perfil de  usuario   
+ 
+○ RN-01 1.1 – Correo  inmutable   
+○ RN-01 1.2 – Validación  de  foto  de  perfil: Formato  JPG/PNG,   ≤5 
+MB.   
+○ RN-01 1.3 – Validación  de  contraseña:  Al  menos  8 caracteres.   
+○ RN-01 1.4 – Certificaciones  de  profesores:  Solo  se muestran  
+tras aprobación  de  administrador .  
+ 
+10. Cumplimiento   legal y privacidad   
+ 
+● RN-012   – Seguridad  de  datos  
+ 
+○ RN-012.1   – Consentimiento   informado:  Usuario  acepta  
+términos  y política  antes de  registro.  
+○ RN-012.2   – Cifrado  de  datos sensibles:  Contraseñas,   correos  y 
+datos personales  deben  encriptarse.   
+○ RN-012.3   – Prohibición  de  compartir  sin autorización:  Datos  
+no  se comparten  sin consentimiento.   
+○ RN-012.4   – Derecho  de  eliminación:  Usuario  puede  solicitar 
+eliminación  conforme   a normativas  (ej. GDPR).   
+11. Requerimientos   técnicos  y no  funcionales   
+----------------Page (46) Break----------------
+ 
+● RN-013   – Frontend  y usabilidad   
+ 
+○ RN-013.1   – Interfaz  responsive:  Adaptable  a distintos 
+dispositivos.   
+○ RN-013.2   – Consistencia  de  diseño  y estilo visual.  
+○ RN-013.3   – Funciones  accesibles  en  ≤5 clics.  
+ 
+● RN-014   – Backend  y arquitectura   
+ 
+○ RN-014.1   – Centralización   de  validaciones.   
+○ RN-014.2   – API  REST  segura.  
+○ RN-014.3   – Arquitectura  modular  y escalable.   
+○ RN-014.4   – Nuevas  funcionalidades  no  deben  romper  
+existentes.  
+ 
+● RN-015   – Base  de  datos y mantenimiento    
+ 
+○ RN-015.1   – Uso  obligatorio  de  MySQL.    
+○ RN-015.2   – Integridad  y consistencia  referencial.   
+○ RN-015.3   – Respaldo  automático  diario.  
+○ RN-015.4   – Recuperación   en  <30  minutos.   
+○ RN-015.5   – Conservación   de  datos.   
+ 
+● RN-016   – Rendimiento    
+ 
+○ RN-016.1   – Tiempo  de  carga  máximo   ≤3s.  
+○ RN-016.2   – Prohibición  de  contenido  pesado.   
+○ RN-016.3   – Latencia  minijuegos  ≤100 ms.  
+ 
+● RN-017   – Seguridad   
+ 
+○ RN-017.1   – Almacenamiento    cifrado de  contraseñas.   
+----------------Page (47) Break----------------
+○ RN-017.2   – Recuperación   de  contraseña  por correo  verificado.   
+○ RN-017.3   – Comunicación   cifrada (HTTPS).    
+○ RN-017.4   – Acceso  diferenciado  por rol.  
+○ RN-017.5   – Profesores  no  verificados  no  pueden  publicar  
+contenido  pago.  
+ 
+● RN-018   – Escalabilidad  y confiabilidad   
+ 
+○ RN-018.1   – Soporte  crecimiento  sin cambios  estructurales.   
+○ RN-018.2   – Disponibilidad   mínima  99%  mensual.   
+○ RN-018.3   – Resolución   rápida  de  fallos (<30  min).  
+ 
+● RN-019   – Código  y mantenibilidad    
+ 
+○ RN-019.1   – Código  modular  y documentado.    
+ 
+18. Mapa de Navegación  
+ 
+ 
+----------------Page (48) Break----------------
+19.W ireframes/Mockups
+ 
+ 
+ 
+20. Análisis de Usabilidad 
+El análisis  de  usabilidad  del proyecto  Skeletune  se centra  en  garantizar  que la 
+plataforma  sea intuitiva,  accesible  y eficiente para  usuarios  con distintos niveles de  
+experiencia  musical  y tecnológica.  Dado  que el público  objetivo  incluye  tanto 
+principiantes  como  músicos  con conocimientos   avanzados,  la experiencia  de  uso 
+----------------Page (49) Break----------------
+debe  minimizar  la curva de  aprendizaje  y maximizar  la claridad  en  cada  
+interacción.  
+La  interfaz  está diseñada  bajo  principios  de  usabilidad  y diseño  centrado  en  el 
+usuario,  priorizando  una navegación   simple,  jerarquía visual  clara y consistencia  
+entre pantallas.  Las funciones  principales  —registro, inicio  de  sesión, selección  de  
+rutinas,  práctica, minijuegos  y consulta  de  progreso—  pueden  ejecutarse  en  pocos  
+pasos,  reduciendo  la fricción  y evitando  la sobrecar ga  cognitiva.  
+Skeletune  optimiza  la experiencia  del usuario  mediante:  
+● Estructura  clara de  menús,  permitiendo  identificar rápidamente  secciones  
+clave.  
+ 
+● Retroalimentación   inmediata,  tanto visual  como  funcional,  ante  acciones  del 
+usuario  (puntajes,  avances,  notificaciones).  
+ 
+● Diseño  responsivo,  asegurando   una experiencia  uniforme  en  dispositivos  
+móviles  y web.  
+ 
+● Lenguaje  claro y comprensible,  evitando  tecnicismos  innecesarios  para  
+usuarios  principiantes.  
+ 
+Asimismo,  la incorporación  de  gamificación   y seguimiento  visual  del progreso  
+mejora  la percepción  de  control y motivación   del usuario,  elementos  clave para  
+mantener  la constancia  en  la práctica  musical.  La  personalización  de  rutinas y 
+metas  contribuye  a que cada  usuario  perciba  la aplicación  como  adaptada  a sus 
+necesidades,  aumentando   la satisfacción  y la retención.  
+En  conclusión,  la usabilidad  de  Skeletune  está orientada  a ofrecer una experiencia  
+fluida, accesible  y motivadora,  reduciendo  barreras  de  entrada  y facilitando  que el 
+----------------Page (50) Break----------------
+aprendizaje  musical  se integre de  manera  natural en  la rutina  diaria  del usuario.  Un  
+enfoque  que,  con el debido  respeto,  muchas  aplicaciones  competidoras   aún no  
+dominan.  
+21. Modelo Relacional 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+----------------Page (51) Break----------------
+22.Diccionario de Datos 
+ 
+Nombr e de  la tabla:  Usuario  
+Descripción  de  la tabla:  Guarda  los usuarios  del sistema  (estudiantes,  
+profesores  y administradores)   y datos básicos  de  cuenta  y progreso.  
+Tabla: 
+  NOMBRE         TIPO                 LONGITUD            NUL
+L 
+    DEFAULT          DESCRIPCIÓN    
+                                                       
+id_usuario       INT                  -                 NO     AUTO_IN 
+T 
+CREMEN  Identificador  único 
+del usuario. 
+  
+nombre        VARCHAR              100               NO     -            Nombre completo del 
+usuario. 
+  
+correo        VARCHAR              100               NO     -            Correo  electrónico 
+(único). 
+  
+contraseña        VARCHAR              255               NO     -            Hash/contraseñ  a 
+del usuario. 
+  
+rol          ENUM('estudiante','profesor','admi
+nistrad or') 
+-                 NO     -           Rol del usuario 
+en la plataforma. 
+  
+fecha_regi stro    DATE                 -                 NO     -            Fecha       de 
+creación/registr o de 
+la cuenta. 
+  
+estado_su n cripcio  ENUM('gratis','prueba','premium','ve
+ncid 
+a') 
+  
+-                 SI      gratis          Estado   de   su 
+suscripción. 
+  
+progreso_ global   INT                  -                 SI      0            Progreso acumulado 
+global  (por  ejemplo, 
+porcentaje o puntos). 
+  
+  
+Llaves:  
+•         Clave  primaria  (PK): id_usuario  • Índices / Restricciones:  correo  
+UNIQUE     
+Relaciones  entr e tablas: 
+•          1 Usuario  — N Suscripcion  (Un usuario  puede  tener muchas  
+suscripciones  históricas).  
+•         1 Usuario  — 0/1 Profesor  (si el usuario  es profesor  existe  fila en  
+Profesor  con FK  a Usuario).  
+•         1 Usuario  — N Cancion  (como  autor/subidor).  
+•         1 Usuario  — N CancionArchivo    (como  autor de  archivo).  
+•         1 Usuario  — N HistorialUsuario.  
+----------------Page (52) Break----------------
+•         1 Usuario  — N Comentario.  
+•         1 Usuario  — N ProfesorAlumno    (como  id_alumno  en  esa tabla). 
+  
+Nombr e de  la tabla:  Suscripción  
+Descripción  de  la tabla:  Historial y estado  actual  de  suscripciones  por 
+usuario.  
+Tabla:  
+ 
+Llaves:  
+•
+         
+PK: id_suscripcion   
+•
+         
+FK: id_usuario  → Usuario(id_usuario)    
+Relaciones  entr e tablas: 
+•
+         
+N Suscripcion  — 1 Usuario.  (Un usuario  puede  tener múltiples  
+registros de  suscripción  a lo largo  del tiempo.)  
+  
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+  NOMBRE         TIPO                  LONGITUD       NULL         DEFAULT            DESCRIPCIÓN    
+id_suscrip cion    INT                 -           NO       AUTO_INCREMENT     Identificador de la 
+suscripción. 
+  
+id_usuario       INT                 -           NO       -                FK   al   usuario 
+propietario  de  la 
+suscripción. 
+  
+tipo          ENUM('prueba','premium')    -           NO       -                Tipo de suscripción. 
+  
+fecha_inic io     DATE                -           NO       -                Fecha de inicio de 
+la suscripción. 
+  
+fecha_fin       DATE                -           NO       -                Fecha de finalización. 
+  
+estado       ENUM('activa','vencida') 
+  
+-           SI        activa             Estado  actual  de  la 
+suscripción. 
+  
+----------------Page (53) Break----------------
+ 
+Nombr e de  la tabla:  Profesor  
+Descripción  de  la tabla:  Información  adicional  para  usuarios  que son 
+profesores  (perfil profesional  y estado  de  verificación).  
+Tabla: 
+  NOMBRE           TIPO                             LONGITUD      NULL     DEFAULT      DESCRIPCIÓN    
+id_profesor         INT                            -          NO     -         PK;  corresponde 
+al id_usuario del 
+profesor. 
+  
+certificaci ones      TEXT                           -          SI      -         Texto      con 
+certificaciones 
+(lista, 
+descripciones). 
+  
+experienci a        TEXT                           -          SI      -         Descripción    de 
+experiencia 
+profesional. 
+  
+estado_ve rificacion    ENUM('pendiente','verificado','rechazado')       -          SI      ‘pendiente’    Estado del proceso de 
+verificación    del 
+profesor. 
+  
+  
+Llaves:  
+•
+         
+PK: id_profesor  
+•
+         
+FK: id_profesor  → Usuario(id_usuario)   (Indica que un  profesor  es 
+también  un  usuario)   
+Relaciones  entr e tablas: 
+•
+         
+1 Profesor  — 0/N ProfesorAlumno    (como  id_profesor).  
+•
+         
+1 Profesor  — N TipConsejo.  
+•
+         
+1 Profesor  — N Cancion  (si el autor es profesor  almacenado   en  
+Cancion.id_autor   que referencia  Usuario;  la relación  profesor ->usuario  
+implica  autoría). 
+  
+ 
+ 
+ 
+ 
+ 
+ 
+----------------Page (54) Break----------------
+ 
+Nombr e de  la tabla:  ProfesorAlumno    
+Descripción  de  la tabla:  Relación  personalizada  entre profesor  y alumno  con 
+detalles  de  suscripción  privada  / costo adicional.  
+Tabla: 
+  NOMBRE        TIPO                   LONGITUD       NULL         DEFAULT            DESCRIPCIÓN    
+id_relaci 
+  
+n     INT                  -            NO       AUTO_INCREMENT   PK de la relación. 
+  
+id_profesor       INT                  -            NO       -                FK al profesor. 
+  
+id_alumno       INT                  -            NO       -                FK al usuario que es 
+alumno. 
+  
+fecha_inic io     DATE                 -            NO       -                Fecha de inicio del 
+servicio   entre 
+ambos. 
+  
+costo_extr a     DECIMAL              8,2          SI        -                Costo adicional por 
+la relación (moneda). 
+  
+estado       ENUM('activo','cancelado') 
+  
+-            SI        'activo' 
+  
+Estado de la relación. 
+  
+  
+Llaves:  
+•
+         
+PK: id_relacion  
+•
+         
+FK: id_profesor  → Profesor(id_profesor)   
+•
+         
+FK: id_alumno  → Usuario(id_usuario)     
+Relaciones  entr e tablas: 
+•
+         
+N ProfesorAlumno    — 1 Profesor . 
+•
+         
+N ProfesorAlumno    — 1 Usuario  (alumno).  
+  
+  
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+----------------Page (55) Break----------------
+ 
+Nombr e de  la tabla:  Canción  
+Descripción  de  la tabla:  Metadatos  de  canciones/subidas   disponibles  en  la 
+plataforma.  
+Tabla: 
+  NOMBRE         TIPO                          LONGITUD     NULL     DEFAULT             DESCRIPCIÓN    
+id_cancion       INT                        -          NO     AUTO_INCREMENT 
+  
+PK de la canción. 
+  
+id_autor       INT                        -          NO     -                 FK al usuario que 
+subió/creó    la 
+canción. 
+  
+titulo         VARCHAR                    150         NO     -                 Título   de   la 
+canción. 
+  
+artista         VARCHAR                    150        SÍ     -                 Nombre del 
+artista    original 
+(opcional). 
+  
+dificultad       ENUM('basico','intermedio','avanzado')     -          NO    -                 Nivel de dificultad. 
+  
+estado         ENUM('activa','eliminada','pendiente')      -          SÍ      'activa' 
+  
+Estado  de  la 
+canción  en  la 
+plataforma. 
+  
+votos_positivos 
+  
+INT                        -          SÍ      0 
+  
+Conteo de votos a 
+favor. 
+  
+votos_negativos    INT                        -          SÍ      0 
+  
+Conteo de votos en 
+contra. 
+  
+fecha_subida     DATE                       -          NO    -                Fecha en que se subió 
+la canción. 
+  
+Llaves: 
+•
+         
+PK: id_cancion 
+•
+         
+FK: id_autor → Usuario(id_usuario)  Relaciones entre tablas: 
+•
+         
+1 Cancion — N CancionArchivo. 
+•
+         
+1 Cancion — N HistorialUsuario. 
+•
+         
+1 Cancion — N Comentario. 
+•
+         
+1 Usuario (autor) — N Cancion. 
+  
+  
+  
+ 
+----------------Page (56) Break----------------
+ 
+Nombr e de  la tabla:  CancionArchivo    
+Descripción  de  la tabla:  Archivos  asociados  a una canción  (tabs, audios, 
+videos),  con URL  y metadatos.  
+Tabla: 
+  NOMBRE         TIPO                  LONGITUD        NULL       DEFAULT            DESCRIPCIÓN    
+id_archivo        INT             -            NO      AUTO_INCREMENT     PK del archivo. 
+  
+id_cancion        INT             -            NO      -                FK a la canción a la 
+que pertenece. 
+  
+id_autor         INT                 -            NO      -                FK al usuario que subió el 
+archivo. 
+  
+tipo_archivo      ENUM('tab','audio','video')    -            NO      -                Tipo de archivo. 
+  
+url_archivo       VARCHAR 
+  
+255           NO      -                URL o ruta del archivo. 
+  
+descripcion       TEXT               -            SI       -                Descripción  o  notas 
+sobre el archivo. 
+  
+fecha_subida      DATE               -            NO      -                Fecha de subida del archivo. 
+  
+  
+Llaves:  
+•
+         
+PK: id_archivo  
+•
+         
+FK: id_cancion  → Cancion(id_cancion)   
+•
+         
+FK: id_autor  → Usuario(id_usuario)    Relaciones  entr e tablas: 
+•
+         
+N CancionArchivo    — 1 Cancion.  
+•
+         
+N CancionArchivo    — 1 Usuario  (autor  del archivo).  
+  
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+----------------Page (57) Break----------------
+Nombr e de  la tabla:  HistorialUsuario   
+Descripción  de  la tabla:  Registra  sesiones/prácticas   de  un  usuario  sobre 
+canciones  y su progreso  en  cada  práctica. 
+Tabla: 
+  NOMBRE            TIPO           LONGITUD        NULL          DEFAULT            DESCRIPCIÓN    
+id_historial          INT         -            NO        AUTO_INCREMENT     PK  del  registro  de 
+práctica. 
+  
+id_usuario          INT         -            NO        -                FK al usuario que practica. 
+  
+id_cancion          INT         -            NO        -                FK  a  la  canción 
+practicada. 
+  
+fecha_practica        DAT E        -            NO        -               Fecha de la práctica. 
+  
+progreso           INT         -            SI         0                Porcentaje/puntos 
+logrados en esa sesión. 
+  
+minijuego_resultado 
+  
+INT         -            SI         -                Resultado/nivel  si  hubo 
+minijuego asociado. 
+  
+  
+Llaves:  
+•
+         
+PK: id_historial  
+•
+         
+FK: id_usuario  → Usuario(id_usuario)   • FK: id_cancion  → 
+Cancion(id_cancion)     
+Relaciones  entr e tablas: 
+•
+         
+N HistorialUsuario   — 1 Usuario.  
+•
+         
+N HistorialUsuario   — 1 Cancion.  
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+----------------Page (58) Break----------------
+Nombr e de  la tabla:  Comentario   
+Descripción  de  la tabla:  Comentarios  y reseñas  de  usuarios  sobre canciones;  
+incluye  moderación.  
+Tabla: 
+  NOMBRE         TIPO            LONGITUD        NULL          DEFAULT               DESCRIPCIÓN    
+id_coment ario     INT           -            NO        AUTO_INCREMENT      PK del comentario. 
+  
+id_usuario       INT           -            NO        -                   FK  al  autor  del 
+comentario. 
+  
+id_cancion        INT           -            NO        -                   FK  a  la  canción 
+comentada. 
+  
+texto         TEXT         -            NO        -                   Texto del comentario. 
+  
+fecha         TIMESTAMP     -            SI         CURRENT_TIMESTAMP     Marca  temporal  del 
+comentario. 
+  
+moderado       BOOLEAN      -            SI         FALSE               Indica si fue moderado. 
+  
+ 
+Llaves:  
+•
+         
+PK: id_comentario  
+•
+         
+FK: id_usuario  → Usuario(id_usuario)   • FK: id_cancion  → 
+Cancion(id_cancion)   
+Relaciones  entr e tablas: 
+•
+         
+N Comentario   — 1 Usuario.  
+•
+         
+N Comentario   — 1 Cancion.  
+  
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+----------------Page (59) Break----------------
+ 
+Nombr e de  la tabla:  TipConsejo  
+Descripción  de  la tabla:  Consejos/tips  publicados  por profesores  con 
+valoración  por estrellas. 
+Tabla: 
+  NOMBRE         TIPO            LONGITUD        NULL           DEFAULT            DESCRIPCIÓN    
+id_tip          INT 
+  
+-             NO         AUTO_INCREMENT     PK del tip/consejo. 
+  
+id_profesor        INT 
+  
+-             NO         -                FK al profesor que publica 
+el tip. 
+  
+titulo          VARCHAR 
+  
+150           NO         -                Título del consejo. 
+  
+descripcio n      TEXT          -             NO         -                Contenido del tip. 
+  
+estrellas        INT 
+  
+-             SI          -                Puntuación (CHECK 
+1..5). 
+  
+fecha         DATE          -             NO         -                Fecha de publicación. 
+  
+Llaves:  
+•
+         
+PK: id_tip  
+•
+         
+FK: id_profesor  → Profesor(id_profesor)     
+Restricciones:  
+•
+         
+CHECK   (estrellas  BETWEEN    1 AND  5) (si el motor  lo soporta)  
+Relaciones:  
+•
+         
+N TipConsejo  — 1 Profesor . 
+  
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+----------------Page (60) Break----------------
+Relaciones  entr e tablas  (resumen  y cardinalidades   principales)  
+•
+         
+Usuario  (1) ←── Suscripcion  (N) 
+(Un usuario  puede  tener muchas  suscripciones  históricas.)  
+•
+         
+Usuario  (1) ←── Cancion  (N) 
+(Un  usuario   —profesor/administrador—    puede   subir  muchas  
+canciones:  Cancion.id_autor   → Usuario.id_usuario.)   
+•
+         
+Cancion  (1) ←── CancionArchivo    (N) 
+(Cada  canción  puede  tener múltiples  archivos:  tabs, audios, videos.)  
+•
+         
+Usuario  (1) ←── HistorialUsuario   (N) →── Cancion  (1) 
+(Registra  prácticas de  usuario  por canción.)  
+•
+         
+Usuario  (1) ←── Comentario   (N) →── Cancion  (1) 
+(Comentarios   hechos  por usuarios  sobre canciones.)  
+•
+         
+Usuario  (1) ←── Profesor  (1) 
+(Si un  usuario  es profesor  hay una fila en  Profesor  con el mismo  id: 
+Profesor .id_profesor  FK  → Usuario.id_usuario.   Esto  implementa   un  
+patrón  1:1 lógico  entre Usuario  y Profesor .) 
+•
+         
+Profesor  (1) ←── ProfesorAlumno    (N) →── Usuario  (1) (alumno)  
+(Relación  personalizada  profesor–alumno  con costo/estado.)  
+•
+         
+Profesor  (1) ←── TipConsejo  (N) 
+(Consejos  publicados  por profesores.)  
+Observaciones   / notas útiles 
+•
+         
+Usuario.correo   tiene restricción UNIQUE   (no se repiten correos). 
+•
+         
+Profesor .id_profesor  es PK  y FK  a Usuario,  lo que implica  que para  
+crear un  profesor , debe  existir previamente  un  Usuario  con ese 
+id_usuario.  
+•
+         
+Campos   fecha_*  y timestamp  usan  DA TE/TIMEST  AMP  según  
+corresponda;   si necesitas  zona  horaria o precisión,  considera  usar  
+DA TETIME/TIMEST    AMP  con zona. 
+•
+         
+estrellas tiene CHECK   (1..5) — verificar que el motor  
+MySQL/MariaDB     lo admita  en  la versión  objetivo  (si no, validar a 
+nivel de  aplicación  o con trigger). 
+•
+         
+Las ENUM   son prácticas pero  pueden  dificultar  cambios  posteriores;  si 
+planean  evolucionar  valores,  considerar  tablas  lookup  (normalización   
+futura).  
+ 
+----------------Page (61) Break----------------
+23.Modelo de Seguridad 
+ 
+1. Intr oducción   
+El  sistema  utiliza una base  de  datos relacional  basada  en  
+SQL/MySQL,    gestionada  a través  de  un  backend  conectado  con la 
+aplicación  móvil.  En  la base  de  datos se almacenan  datos 
+relacionados  con usuarios,  canciones,  productos,  videos, mensajes  e 
+imágenes,  incluyendo  información  personal  como  contraseñas,  
+historiales y números  de  contacto.   
+ 
+2. Principios  de  Seguridad   
+ 
+El modelo  de  seguridad  se fundamenta   en  tres principios  esenciales:   
+● Confidencialidad:   Los datos solo  son accesibles  por usuarios  
+autorizados  según  su rol.  
+● Integridad:  Se  asegura  que los datos no  sean  alterados  sin 
+autorización  o de  forma  indebida.   
+● Disponibilidad:  Se  garantiza  que los datos estén accesibles  
+para  los usuarios  legítimos  cuando  lo requieran.   
+ 
+3. Gestión  de  Usuarios  y Roles   
+ 
+El sistema  define  tres roles principales  con diferentes  niveles de  
+acceso  y permisos:   
+• Administrador:   Control  total del sistema,  incluyendo  la gestión de  
+usuarios,  contenido  y mantenimiento   de  la base  de  datos.   
+• Profesor:  Acceso  a funciones  relacionadas  con la gestión de  
+contenido  educativo,  interacción  con usuarios  y evaluación  de  
+actividades.   
+----------------Page (62) Break----------------
+• Usuario:  Acceso  limitado  a las funcionalidades  de  consumo  de  
+contenido  educativo  y entretenimiento.    
+Las políticas de  contraseñas  exigen  que estas sean  seguras,  
+combinando   letras, números  y caracteres  especiales.  Además,  se 
+implementan   mecanismos   de  recuperación   de  cuenta  mediante  correo  
+electrónico.  
+ 
+4. Contr oles de  Acceso   
+ 
+El sistema  utiliza autenticación  mediante  correo  y contraseña,  
+validando  credenciales  desde  el backend  antes de  permitir  el acceso.  
+Cada  solicitud se verifica  mediante  tokens  o sesiones  seguras  para  
+prevenir  accesos  no  autorizados.   
+Se  aplican políticas de  autorización  basadas  en  roles para  restringir  el 
+acceso  a funciones  críticas. Las vistas  y consultas  sensibles  de  la base  
+de  datos son configuradas   mediante  privilegios  específicos  para  cada  
+rol.  
+ 
+5. Pr otección  de  Datos  Sensibles   
+ 
+Se  emplean  técnicas  de  cifrado para  proteger  contraseñas  y otra 
+información   personal   almacenada.   Las  contraseñas   se  cifran  
+utilizando  algoritmos  de  hashing  como  bcrypt. Además,  todas las 
+comunicaciones   entre la app y el servidor  se realizan  mediante  
+conexiones   HTTPS  seguras.   
+ 
+6. Respaldos  y Recuperación    
+ 
+Se  implementan   políticas de  respaldo  automáticas  de  la base  de  datos 
+en  intervalos  definidos.  Los respaldos  se almacenan  en  ubicaciones  
+----------------Page (63) Break----------------
+seguras   y se prueban  periódicamente   los procedimientos   de  
+restauración  para  garantizar  la recuperación   ante  fallos o pérdida  de  
+datos.   
+ 
+7. Monitor eo y Auditoría  
+ 
+El sistema  cuenta  con un  registro  de  accesos  y acciones  críticas 
+realizadas  por los usuarios.  Los eventos  importantes,  como  intentos  
+fallidos  de  inicio  de  sesión  o modificaciones   a datos sensibles,  son 
+auditados  y almacenados   para  su revisión. 
+ 
+ 
+ 
+ 
+ 
+8. Políticas ante  Incidentes   
+ 
+Ante  una violación  de  seguridad  o pérdida  de  datos,  se activa  un  
+protocolo  de  respuesta  que incluye:  notificación  inmediata  al 
+administrador  del sistema,  aislamiento  del incidente  y restauración  
+desde  los respaldos  más  recientes.  Se  documenta  el evento  y se 
+implementan   medidas  correctivas.   
+ 
+9. Cumplimiento   Normativo  
+ 
+El sistema  cumple  con las leyes y normas  aplicables  sobre protección  
+de  datos personales,  incluyendo  la Ley Federal  de  Protección  de  
+Datos  Personales  en  Posesión  de  los Particulares  (México).  Además,  
+se siguen  las buenas  prácticas recomendadas   por organismos  
+internacionales  en  materia  de  ciberseguridad   y gestión de  datos.   
+----------------Page (64) Break----------------
+ 
+10. Conclusiones   y Recomendaciones    
+ 
+El modelo  de  seguridad  propuesto  garantiza  un  manejo  adecuado  de  
+la información  dentro  del sistema,  asegurando   la protección  de  los 
+datos personales  y operativos.  Se  recomienda   mantener  actualizadas  
+las políticas de  seguridad,  realizar  auditorías  periódicas  y aplicar las 
+actualizaciones  de  software  necesarias  para  reducir riesgos de  
+vulnerabilidades.  
+ 
+ 
+25. Plan de pruebas/ Casos de prueba 
+ 
+Módulo:  INICIO  DE  SESIÓN   
+Pruebas del Sistema 
+Prueba de Usabilidad 
+ 
+MACABRE 
+INDUSTRIES 
+ 
+Documento: 
+Plan de Pruebas 
+ 
+Rev: 1 
+Aplicación Módulo: 
+Inicio de Sesión  
+Página: 
+1 de 9 
+Nombre: 
+Prueba de Usabilidad del Sistema 
+Responsables: 
+Gutiérrez Zamora Luis Uziel 
+ 
+Estado 
+Finalizado/Aprobado 
+ 
+Detalle de la Prueba 
+Fecha de la realización: 
+2/12/2025        
+Duración de la Prueba: 30 minutos 
+Requerimientos  de  la 
+prueba 
+Dispositivo móvil Android, conexión W i-Fi, cuenta de prueba activa. 
+Objetivo        Evaluar la facilidad de uso, claridad de la interfaz y la experiencia del 
+usuario al iniciar sesión 
+Tipo de Prueba      Usabilidad / Experiencia de Usuario (UX). 
+Hardware Requerido   Smartphone Android 
+Software Requerido   Sistema Operativo Android (Versión 10+). 
+Datos de Prueba     Usuario: admin_test / Contraseña: Pass1234* 
+----------------Page (65) Break----------------
+Procedimiento    de 
+Prueba 
+1. Abrir la App.  
+2. Localizar campos de texto.  
+3. Ingresar datos. 
+4. Presionar botón de acceso.  
+Resultado Esperado   El usuario completa el acceso en menos de 3 pasos y sin asistencia 
+externa. 
+Resultado Obtenido   Prueba Exitosa    SI( X )            NO() 
+ 
+ 
+Criterios  e 
+indicadores 
+Descripción     Excelente  Bueno  Elemental  Insuficiente 
+Inteligibilidad  ¿Es  fácil  entender 
+para qué sirve cada 
+botón y campo de 
+texto? 
+       X                 
+Facilidad  de 
+aprendizaje 
+¿Un  usuario  nuevo 
+puede iniciar sesión 
+sin tutoriales previos? 
+X                        
+Operabilidad   ¿Los botones tienen el 
+tamaño adecuado para 
+el dedo y responden 
+rápido? 
+       X                 
+Atractividad   ¿La  interfaz  visual 
+sigue los estándares 
+de Material Design de 
+Android? 
+X                        
+Cumplimiento 
+de      la 
+usabilidad 
+¿El sistema cumple 
+con las expectativas 
+de  navegación  del 
+usuario? 
+X                        
+ 
+ 
+ 
+Prueba de Seguridad 
+              Revisión : 1 
+Aplicación del 
+Módulo: 
+Módulo 1: Contraseñas 
+Nombre:         Prueba de Inicio de Sesión 
+Responsable:       Luis Uziel Gutiérrez Zamora 
+Detalles de la prueba 
+----------------Page (66) Break----------------
+Fecha de realización   02/12/25 
+Duración de la prueba  20 minutos 
+Tipo de prueba      Prueba de sistema (Seguridad) 
+Requerimientos de la 
+prueba 
+El usuario cree una contraseña suficientemente aceptable para garantizar la 
+protección de sus datos. 
+Procedimiento de la 
+prueba 
+Se tomó un desencriptador de contraseñas para evaluar el desempeño de 
+seguridad para el módulo 1 
+Resultado esperado    Los elementos del módulo 1 en el sistema cumplen con los parámetros de 
+seguridad. 
+Resultado obtenido    Prueba exitosa     SI ( X )        NO (  ) 
+CRITERIOS E 
+INDICADORES 
+DESCRIPCIÓN             EX  BU  EL  IN 
+Cifrado de contraseñas  La contraseña del usuario es reforzada con 
+algún tipo de cifrado. 
+X         
+Integridad   de   la 
+información 
+La información del usuario no se ve 
+mermada por algún factor externo sin 
+permisos. 
+X         
+Datos cifrados durante 
+la conexión  
+Ninguna                                X 
+Comentarios: Bueno. 
+ 
+Prueba de portabilidad 
+ 
+MACABRE 
+INDUSTRIES 
+ 
+Documento: 
+Plan de Pruebas 
+ 
+Rev: 1 
+Aplicación Módulo: 
+Inicio de Sesión 
+ 
+Página: 
+3 de 9 
+Nombre: 
+Prueba de Portabilidad 
+ 
+Responsables: 
+López Medina Leonardo Daniel 
+Gutiérrez Zamora Luis Uziel 
+ 
+ 
+Estado: 
+Finalizado/Aprobado 
+ 
+Detalle de la Prueba 
+Fecha de la realización:  
+12/12/25       
+Duración de la Prueba: 45 minutos 
+----------------Page (67) Break----------------
+Requerimientos  de  la 
+prueba 
+Acceso a Internet y un dispositivo móvil (Android) 
+Objetivo        Verificar que el módulo de "Inicio de Sesión" sea funcional y 
+mantenga su integridad visual en diferentes sistemas operativos y 
+navegadores. 
+Tipo de Prueba      Prueba de Portabilidad / Multiplataforma. 
+Hardware Requerido    Smartphone Android. 
+Software Requerido   W indows 11 22H5 | Android 13 
+Datos de Prueba     Usuario: test_user@ macabre.com |  
+Contraseña: SecurePassword123!. 
+Procedimiento    de 
+Prueba 
+Abrir la aplicación en el Smartphone en Android. 
+Ingresar credenciales y validar acceso. 
+Resultado Esperado   El usuario debe poder iniciar sesión sin errores de carga, y la interfaz 
+debe ajustarse correctamente a cada tamaño de pantalla (responsivo). 
+Resultado Obtenido   Prueba Exitosa    SI( X )            NO( ) 
+ 
+ 
+EFICIENCIA: Portabilidad 
+SubAtributos  Criterios e indicadores  Excelente  Bueno  Elemental  Insuficiente 
+Adaptabilidad  El  sistema  se  ajusta 
+automáticamente    a 
+diferentes  resoluciones 
+de pantalla sin perder 
+elementos. 
+        X          
+Instabilidad   El  tiempo  de  carga 
+inicial del módulo de 
+sesión es menor a 2 
+segundos en cualquier 
+plataforma. 
+        X          
+Coexistencia  El  módulo  funciona 
+correctamente     sin 
+interferir  con  otras 
+aplicaciones abiertas en 
+el sistema. 
+        X          
+Reemplazabili
+dad 
+Capacidad del módulo 
+para funcionar igual tras 
+una  actualización  de 
+versión del navegador. 
+        X          
+Capacidad de 
+Instalación 
+El módulo de inicio de 
+sesión       carga 
+correctamente     sin 
+necesidad  de  plugins 
+adicionales  en  ningún 
+navegador. 
+        X          
+Comentarios: Se realizaron pruebas de portabilidad en diversos dispositivos Android  abarcando las 
+----------------Page (68) Break----------------
+versiones de Android 10 a la 14. El módulo de Inicio de Sesión funciona correctamente, 
+manteniendo la integridad de los elementos visuales y la rapidez en la respuesta del teclado virtual. 
+Se confirma que la aplicación es totalmente compatible con el ecosistema Android especificado en 
+los requerimientos técnicos. 
+ 
+ 
+ 
+ 
+Módulo:  CHA T 
+Pruebas de Sistema del Chat 
+Prueba de Usabilidad 
+ 
+MACABRE 
+INDUSTRIES 
+ 
+Documento: 
+Plan de Pruebas 
+Rev:1 
+Aplicación Módulo: 
+Chat 
+Página: 
+5 de 9 
+Nombre: 
+Prueba de Usabilidad de Sistema del Chat 
+Responsables: 
+López Medina Leonardo Daniel 
+Gutiérrez Zamora Luis Uziel 
+Estado 
+Finalizado/Aprobado 
+ 
+Detalle de la Prueba 
+Fecha de la realización: 
+2/12/2025        
+Duración de la Prueba: 30 minutos 
+Requerimientos  de  la 
+prueba 
+Dispositivo móvil Android, conexión W i-Fi, cuenta de prueba activa. 
+Objetivo        Evaluar la fluidez en el envío y recepción de mensajes en tiempo real 
+y la claridad de la interfaz del chat. 
+Tipo de Prueba      Usabilidad / Experiencia de Usuario (UX). 
+Hardware Requerido   Smartphone Android 
+Software Requerido   Sistema Operativo Android (Versión 10+). 
+Datos de Prueba     Emisor: admin_test. 
+Receptor: contacto_demo_01. 
+Contenido: "Hola, esta es una prueba de usabilidad del chat". 
+Procedimiento    de 
+Prueba         1. Seleccionar un contacto de la lista. 
+2. Escribir un mensaje en el campo de texto. 
+3. Presionar el ícono de "Enviar". 
+4. Confirmar que el mensaje aparezca en la burbuja de chat. 
+Resultado Esperado   El mensaje se envía de forma inmediata, es legible para el receptor y 
+se muestra una confirmación de entrega. 
+----------------Page (69) Break----------------
+Resultado Obtenido   Prueba Exitosa    SI( X )            NO() 
+ 
+ 
+ 
+Criterios  e 
+indicadores 
+Descripción     Excelente  Bueno  Elemental  Insuficiente 
+Facilidad  de 
+Navegación 
+Mide qué tan rápido 
+el usuario localiza el 
+chat y los contactos. 
+          X            
+Claridad  de 
+Interfaz 
+Evalúa si los botones 
+de envío y campos de 
+texto son visibles y 
+comprensibles. 
+          X            
+Tiempo  de 
+Respuesta 
+Velocidad con la que 
+el  mensaje  aparece 
+enviado en la pantalla. 
+          X            
+Eficiencia del 
+Envío 
+El  usuario  logra 
+enviar mensajes sin 
+errores en el primer 
+intento. 
+          X            
+Retroaliment
+ación 
+El  sistema  indica 
+claramente cuando un 
+mensaje  ha  sido 
+enviado o recibido. 
+          X            
+ 
+Prueba de Seguridad 
+ 
+              Revisión : 1 
+Aplicación     del 
+Módulo: 
+Módulo 1: Chat 
+Nombre:         Prueba de Seguridad en el Chat 
+Responsable:       Luis Uziel Gutiérrez Zamora 
+Detalles de la prueba 
+Fecha de realización   02/12/25 
+Duración de la prueba  30 minutos 
+Tipo de prueba      Prueba de Seguridad 
+Requerimientos de la  El usuario envía mensajes asegurando que la información esté protegida 
+----------------Page (70) Break----------------
+prueba          contra intercepciones externas. 
+Procedimiento  de  la 
+prueba 
+Se utilizó un interceptor de tráfico (o desencriptador) para evaluar el 
+desempeño de seguridad en el intercambio de mensajes del módulo. 
+Resultado esperado    Los elementos de comunicación del módulo cumplen con los parámetros 
+de seguridad y cifrado establecidos. 
+Resultado obtenido    Prueba exitosa     SI ( X )        NO (  ) 
+CRITERIOS    E 
+INDICADORES 
+DESCRIPCIÓN             EX  BU  EL  IN 
+Cifrado de contraseñas  Los mensajes del usuario son reforzados con 
+algún tipo de cifrado. 
+X          
+Integridad   de   la 
+información 
+Los  mensajes  del usuario no se ven 
+mermados por algún factor externo sin 
+permisos. 
+X          
+Datos cifrados durante 
+la conexión  
+Ninguna                                X 
+Comentarios: Bueno. 
+ 
+Prueba de portabilidad 
+ 
+MACABRE 
+INDUSTRIES 
+ 
+Documento: 
+Plan de pruebas 
+Rev:1 
+Aplicación Módulo: 
+Chat 
+ 
+Página: 
+8 de 9 
+Nombre: 
+Prueba de Portabilidad en el Chat 
+ 
+Responsables: 
+López Medina Leonardo Daniel 
+Gutiérrez Zamora Luis Uziel 
+ 
+ 
+Estado: 
+Finalizado/Aprobado 
+ 
+Detalle de la Prueba 
+Fecha de la realización:  
+12/12/25       
+Duración de la Prueba: 45 minutos 
+Requerimientos  de  la 
+prueba 
+Acceso a Internet y un dispositivo móvil (Android) 
+Objetivo        Verificar que el módulo de "Chat" sea funcional y mantenga su 
+integridad visual en diferentes sistemas operativos y navegadores. 
+Tipo de Prueba      Prueba de Portabilidad / Multiplataforma. 
+Hardware Requerido    Smartphone Android. 
+Software Requerido   W indows 11 22H5 | Android 13 
+----------------Page (71) Break----------------
+Datos de Prueba     Emisor: admin_test. 
+Receptor: contacto_demo_01. 
+Contenido: "Hola, esta es una prueba de usabilidad del chat". 
+Procedimiento    de 
+Prueba 
+Abrir la aplicación en el Smartphone en Android y enviar mensajes 
+entre Usuarios. 
+Resultado Esperado    El usuario debe poder mandar mensajes sin errores de carga, y la 
+interfaz debe ajustarse correctamente a cada tamaño de pantalla 
+(responsivo). 
+Resultado Obtenido   Prueba Exitosa    SI( X )            NO( ) 
+ 
+ 
+EFICIENCIA: Portabilidad 
+SubAtributos  Criterios e indicadores  Excelente  Bueno  Elemental  Insuficiente 
+Adaptabilidad  El  sistema  se  ajusta 
+automáticamente    a 
+diferentes  resoluciones 
+de pantalla sin perder 
+elementos. 
+        X          
+Instabilidad   El  tiempo  de  carga 
+inicial del módulo de 
+sesión es menor a 2 
+segundos en cualquier 
+plataforma. 
+        X          
+Coexistencia  El  módulo  funciona 
+correctamente     sin 
+interferir  con  otras 
+aplicaciones abiertas en 
+el sistema. 
+        X          
+Reemplazabili
+dad 
+Capacidad del módulo 
+para funcionar igual tras 
+una  actualización  de 
+versión del navegador. 
+        X          
+Capacidad de 
+Instalación 
+El módulo de inicio de 
+sesión       carga 
+correctamente     sin 
+necesidad  de  plugins 
+adicionales  en  ningún 
+navegador. 
+        X          
+Comentarios: Se realizaron pruebas de portabilidad en diversos dispositivos Android  abarcando 
+las versiones de Android 10 a la 14. El módulo de Inicio de Sesión funciona correctamente, 
+manteniendo la integridad de los elementos visuales y la rapidez en la respuesta del teclado virtual. 
+Se confirma que la aplicación es totalmente compatible con el ecosistema Android especificado en 
+los requerimientos técnicos. 
+ 
+ 
+----------------Page (72) Break----------------
+26. Metodología  
+ Para  el desarrollo  del proyecto  Skeletune  se adoptó  una metodología  ágil 
+basada  en  Scrum,  la cual  permitió  una organización  incremental  del trabajo,  
+una clara asignación  de  responsabilidades  y una adaptación  continua  a las 
+necesidades  del proyecto.  
+La  metodología  Scrum  se implementó   mediante  sprints semanales,  cada  uno 
+con un  objetivo  definido,  actividades  principales  específicas  y responsables  
+claramente  identificados.  Este  enfoque  facilitó dividir el proyecto  en  fases 
+manejables,  permitiendo  avanzar  de  manera  progresiva  desde  la planeación  
+estratégica  hasta el desarrollo  técnico y el aseguramiento   de  calidad.  
+Durante  los primeros  sprints,  la metodología  se enfocó  en  la planeación  
+estratégica  y conceptual,  estableciendo  la visión  del proyecto,  el alcance,  los 
+objetivos  y el roadmap  general.  Posteriormente,  los sprints se orientaron  a 
+fases técnicas  bien  delimitadas,  como  la definición  de  la arquitectura  de  
+software,  el diseño  de  la identidad  visual, el desarrollo  del frontend  móvil  y 
+la construcción  progresiva  del backend  mediante  servicios REST . 
+Cada  sprint  siguió  el principio  de: 
+● Objetivo  claro y alcanzable.  
+ 
+● Colaboración   constante  del equipo.  
+ 
+● Entrega  incremental  de  resultados  (documentación,   diseño  o 
+funcionalidades).  
+ 
+● Validación  continua,  especialmente  en  las fases de  desarrollo  de  API  
+y pruebas.  
+ 
+La  metodología  ágil permitió  además  una alta flexibilidad, facilitando  
+ajustes en  la planificación,  redistribución  de  tareas  y mejora  progresiva  del 
+sistema  conforme   avanzaba  el proyecto.  Asimismo,  promovió   la 
+comunicación   efectiva  entre los integrantes  del equipo  (Aldo,  Juan, Luis  y 
+Leo), asegurando   alineación  tanto técnica como  estratégica.  
+ 
+ 
+ 
+----------------Page (73) Break----------------
+27. Avances por Sprints  
+Sprint  1: Cimentación  Estratégica  (Semana  1) 
+● Actividad  Principal:  Planeación  estratégica  de  la empresa.  
+● Responsables:  Todos. 
+Resumen  Ejecutivo:  El proyecto  arrancó  en  la Semana   1 con el Sprint  1, una fase  
+fundamental  que involucró  a la totalidad del equipo.  El objetivo  no  fue técnico,  
+sino  de  visión: alinear perfectamente  los objetivos  del proyecto  con la estrategia  
+global  de  la empresa.  En  esta etapa,  el equipo  completo  (Aldo,  Juan, Luis  y Leo)  
+trabajó en  conjunto  para  definir el "por  qué"  de  este proyecto,  asegurando   que el 
+esfuerzo  de  desarrollo  contribuyerá  directamente   a las metas  macro  de  la 
+organización.  Se  establecieron  los pilares sobre los cuales  se construiría  toda  la 
+iniciativa. 
+ 
+Sprint  2: Definición  del Pr oyecto  (Semana  2) 
+● Actividad  Principal:  Planeación  estratégica  del proyecto.  
+● Responsables:  Todos. 
+Resumen  Ejecutivo:  Continuando   con la fase  de  planificación,  el Sprint  2 (Semana  
+2) mantuvo  al equipo  completo  unido.  Esta  vez,  el enfoque  bajó  de  la estrategia  de  
+empresa  a la estrategia  de  proyecto.  Aquí  se definieron  el alcance,  los objetivos  
+específicos,  los entregables  clave (KPIs)  y, muy  probablemente,   el roadmap  
+general  que se seguiría. Fue una sesión  intensiva  para  trazar  el mapa,  identificar 
+riesgos iniciales y establecer  el cronograma   que la imagen  misma  describe.  
+ 
+Sprint  3: Ar quitectura  del Sistema  (Semana  3) 
+● Actividad  Principal:  Documentación   Back-End.  
+● Responsables:  Luis  y Leo.  
+Resumen  Ejecutivo:  En  la Semana   3, el proyecto  entró en  su primera  fase  técnica 
+con el Sprint  3. La  responsabilidad  se concentró  en  Luis  y Leo,  quienes  se hicieron  
+cargo  de  una tarea crítica: la documentación   del Back-End.  Esta  no  es una tarea 
+menor;  aquí  se definieron  los cimientos  técnicos  del sistema.  Esto  incluye  la 
+arquitectura  del servidor , el diseño  de  la base  de  datos,  la definición  de  las APIs  
+----------------Page (74) Break----------------
+(Interfaces  de  Programación   de  Aplicaciones)  y cómo  los diferentes  componentes   
+del software  se comunicarán   entre sí. Es, en  esencia,  el "plano  arquitectónico"  de  la 
+sala de  máquinas   del proyecto.  
+ 
+Sprint  4: Identidad  Visual (Semana  4) 
+● Actividad  Principal:  Finalizar el look  & feel general  del sistema.  
+● Responsables:  Luis  y Leo.  
+Resumen  Ejecutivo:  Durante  el Sprint  4 (Semana  4), el péndulo  del desarrollo  giró  
+desde  la lógica  interna (Back-End)   hacia la experiencia  externa  (Front-End).  Luis  y 
+Leo continuaron  liderando,  esta vez enfocándose  en  finalizar el look  & feel general  
+del sistema.  Esta  fase  fue crucial para  definir la identidad  visual  del producto:  la 
+paleta  de  colores,  la tipografía, el diseño  de  los componentes   de  la interfaz  (UI)  y 
+la experiencia  de  usuario  (UX)  general.  El objetivo  era asegurar  que el sistema  no  
+solo  funcionara  bien, sino  que se sintiera  coherente,  intuitivo y profesional.  
+ 
+Sprint  5: Arranque   del Desarr ollo Móvil  Nativo  (Semana  5) 
+● Actividad  Principal:  Programación   de  la interfaz  de  usuario  (Frontend)  en  
+Android  Studio. 
+● Responsables:  Todos  (Aldo,  Juan, Luis  y Leo). 
+Resumen  Ejecutivo:  El Sprint  5 marcó  el inicio  formal  del desarrollo  del cliente 
+móvil.  El equipo  completo  centró  sus esfuerzos  en  Android  Studio  con el objetivo  
+colectivo  de  traducir  el look  & feel (definido  en  el Sprint  4) a componentes   
+nativos.  Esta  fase  se concentró  en  la creación  de  layouts (XML),   la definición  de  
+Activities  y Fragments,   y el establecimiento  de  la arquitectura  de  UI  base  
+(probablemente   MVVM    o similar), sentando  una base  sólida  para  la experiencia  de  
+usuario  de  la aplicación.  
+ 
+Sprint  6: Articulación  de  la Experiencia  de  Usuario  (Semana  6) 
+● Actividad  Principal:  Implementación   de  la navegación   en  todo  el Frontend.  
+● Responsables:  Todos  (Aldo,  Juan, Luis  y Leo). 
+----------------Page (75) Break----------------
+Resumen  Ejecutivo:  Una  vez creados  los componentes   visuales, el Sprint  6 se 
+dedicó  a conectarlos.  El equipo  completo  trabajó de  forma  colaborativa  para  
+implementar  la arquitectura  de  navegación   de  la aplicación.  Esta  tarea fue crucial 
+para  definir los flujos  de  usuario  (User Flows),  utilizando  herramientas   como  
+Android  Jetpack  Navigation.  El objetivo  fue asegurar  una experiencia  de  usuario  
+(UX)  coherente  y fluida. Al  finalizar este sprint, la aplicación  pasó  de  ser un  
+conjunto  de  pantallas aisladas  a un  prototipo  navegable.  
+ 
+Sprint  7: Construcción   del Puente  de  Datos  (Semana  7) 
+● Actividad  Principal:  Inicio  de  la creación  de  endpoints  (API)  para  las 
+primeras  3 tablas  de  la base  de  datos.  
+● Responsables:  Todos  (Aldo,  Juan, Luis  y Leo). 
+Resumen  Ejecutivo:  Durante  el Sprint  7, el enfoque  del equipo  se trasladó  al 
+Back-End   para  comenzar   la construcción  de  la API  RESTful.   Esta  API  funcionará  
+como  el puente  de  comunicación   entre el cliente Android  y la base  de  datos.  El 
+equipo  completo  se involucró  en  el diseño  e implementación   de  los endpoints  
+cruciales para  las primeras  tres tablas  (o entidades)  del sistema.  Esto  implicó  
+definir los métodos  (GET , POST , PUT , DELETE)   y establecer  los modelos  de  
+datos (DT Os) para  que las interacciones  de  datos fundamentales   estuvieran  listas. 
+ 
+Sprint  8: Expansión  de  la Capa  de  Servicios  (Semana  8) 
+● Actividad  Principal:  Desarrollo  de  endpoints  (API)  para  3 tablas  adicionales.  
+● Responsables:  Todos  (Aldo,  Juan, Luis  y Leo). 
+Resumen  Ejecutivo:  Siguiendo  el impulso  del sprint  anterior , el Sprint  8 fue una 
+fase  de  expansión  del Back-End.  El equipo  completo  continuó  el desarrollo  de  la 
+API,  esta vez abordando  la lógica  de  negocio  y el acceso  a datos para  otras tres 
+tablas  (entidades)  adicionales.  Este  esfuerzo  amplió  significativamente   la 
+capacidad  funcional  del servicio, cubriendo  una porción  mayor  del modelo  de  
+datos total y preparando   el sistema  para  pruebas  más  integrales. 
+ 
+Sprint  9: Aseguramiento   de  Calidad  del Back-End   (Semana  9) 
+----------------Page (76) Break----------------
+● Actividad  Principal:  Testeo y validación  de  todos los endpoints  creados  
+(Sprints  7 y 8). 
+● Responsables:  Todos  (Aldo,  Juan, Luis  y Leo). 
+Resumen  Ejecutivo:  El Sprint  9 fue una pausa  táctica en  el desarrollo,  enfocada  
+enteramente  en  la calidad y estabilidad  del servicio. El equipo  completo  se dedicó  
+a realizar  pruebas  funcionales  y de  integración  sobre todos los endpoints  creados  
+(cubriendo  las 6 tablas).  Utilizando  herramientas   estándar  como  Postman,  el 
+equipo  ejecutó colecciones  de  pruebas  para  validar aspectos  clave:  se verificaron  
+los códigos  de  respuesta  (200, 401,  404,  500), se probó  la correcta  manipulación   de  
+datos (CRUD)   y se validó  que los schemas  de  respuesta  (los JSON)  tuvieran  la 
+estructura  correcta. Este  paso  fue vital para  asegurar  un  Back-End   robusto  y fiable, 
+listo para  su integración  con el cliente Android.  
+ 
+ 
+28. Conclusiones 
+Conclusión   Personal  – Aldo  
+A lo largo  del desarrollo  del proyecto  Skeletune,  pude  comprender   la importancia  
+de  una planeación  estratégica  sólida  antes de  iniciar cualquier  fase  técnica.  
+Participar  en  los distintos sprints me  permitió  reforzar  mis habilidades  de  trabajo 
+en  equipo,  organización  y comunicación,   así como  entender  cómo  cada  decisión  
+inicial impacta  directamente   en  el desarrollo  y la calidad del producto  final. Este  
+proyecto  fortaleció  mi  visión  sobre el desarrollo  de  software  como  un  proceso  
+integral, no  solo  técnico,  sino  también  estratégico  y colaborativo.  
+Conclusión   Personal  – Juan  
+El proyecto  Skeletune  representó  una experiencia  clave para  consolidar  mis 
+conocimientos   en  desarrollo  de  software  y metodologías   ágiles. A través  de  los 
+sprints,  comprendí  el valor del desarrollo  incremental  y de  la validación  constante  
+del sistema.  Además,  trabajar  en  conjunto  con el equipo  me  permitió  mejorar  mi  
+capacidad  para  adaptarme  a cambios,  resolver  problemas  de  manera  estructurada  y 
+aportar soluciones  orientadas  a los objetivos  del proyecto.  Esta  experiencia  
+reafirmó  la importancia  de  la disciplina  y la coordinación   en  proyectos  
+tecnológicos.  
+ 
+----------------Page (77) Break----------------
+Conclusión   Personal  – Luis  
+Durante  el desarrollo  de  Skeletune,  adquirí una visión  más  clara sobre la 
+arquitectura  de  software  y la relación  entre el frontend,  el backend  y la experiencia  
+del usuario.  Participar  activamente  en  la documentación,   el diseño  del sistema  y el 
+desarrollo  técnico me  permitió  aplicar conocimientos   teóricos  en  un  contexto  
+práctico  y realista. Este  proyecto  fortaleció  mis habilidades  técnicas  y analíticas, 
+así como  mi  responsabilidad  dentro  de  un  equipo  de  trabajo,  reafirmando  mi  
+interés en  el desarrollo  de  soluciones  tecnológicas  bien  estructuradas.  
+ 
+Conclusión   Personal  – Leo 
+El trabajo realizado  en  Skeletune  me  permitió  comprender   la relevancia  del diseño, 
+la planificación  y la calidad en  cada  etapa del desarrollo  de  software.  A lo largo  de  
+los sprints,  pude  identificar cómo  la correcta  definición  de  procesos,  roles y 
+objetivos  contribuye  a un  proyecto  más  ordenado  y eficiente.  Asimismo,  la 
+colaboración   constante  con el equipo  fortaleció  mis habilidades  de  comunicación   y 
+resolución  de  problemas.  Este  proyecto  representó  una experiencia  formativa  
+significativa  que contribuyó  a mi  crecimiento  académico  y profesional.  
+ 
+    
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+----------------Page (78) Break----------------
