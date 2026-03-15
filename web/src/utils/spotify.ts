@@ -27,10 +27,10 @@ export async function getSpotifyAccessToken() {
 export async function fetchSpotifySongs() {
   const token = await getSpotifyAccessToken();
   
-  // Using both tracks and genres for better hit rate
+  // 404 usually means invalid seeds or malformed URL. 
+  // Let's use only 2 very popular track seeds to be 100% safe.
   const seedTracks = '49U7p2u1iF6KjX0T76L0E9,6088m9Ynu996oxpY9WqYid';
-  const seedGenresArr = 'workout,gaming,edm';
-  const url = `https://api.spotify.com/v1/recommendations?limit=50&seed_tracks=${seedTracks}&seed_genres=${seedGenresArr}&min_energy=0.4`;
+  const url = `https://api.spotify.com/v1/recommendations?limit=40&seed_tracks=${seedTracks}&min_energy=0.5`;
 
   console.log('Fetching Spotify recommendations from:', url);
 
