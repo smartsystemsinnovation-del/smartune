@@ -26,7 +26,10 @@ export default function IAStudioPage() {
         body: JSON.stringify({ prompt })
       });
 
-      if (!res.ok) throw new Error('Error al generar música');
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.error || 'Error al generar música');
+      }
 
       const data = await res.json();
       setResult(data);

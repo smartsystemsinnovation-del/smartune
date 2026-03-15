@@ -34,37 +34,60 @@ export async function POST(request: Request) {
       })
     });
 
-    if (!geminiResponse.ok) {
-      throw new Error(`Gemini API Error: ${geminiResponse.status}`);
-    }
+    let aiMetadata: any;
 
-    const geminiData = await geminiResponse.json();
-    let aiMetadata;
-    
-    try {
-      const content = geminiData.candidates[0].content.parts[0].text;
-      aiMetadata = JSON.parse(content);
-    } catch (e) {
-      aiMetadata = {
-        title: `IA Track: ${prompt.substring(0, 15)}...`,
-        artist: "SmarTune AI",
-        mood: "Atmospheric",
-        bpm: 120
-      };
+    if (!geminiResponse.ok) {
+      const errorBody = await geminiResponse.text();
+      console.error(`Gemini API Error Detail (${geminiResponse.status}):`, errorBody);
+      
+      // IF 403, we use a FALLBACK logic instead of failing, to keep the UI working
+      if (geminiResponse.status === 403 || geminiResponse.status === 401) {
+        console.warn("Using Fallback Metadata due to 403/401 Gemini error");
+        aiMetadata = {
+          title: `${prompt.substring(0, 15)} (AI Mix)`,
+          artist: "SmarTune IA",
+          mood: "Vibrant & Experimental",
+          bpm: 124,
+          isFallback: true
+        };
+      } else {
+        return NextResponse.json({ 
+          error: `Gemini API Error: ${geminiResponse.status}`,
+          details: errorBody 
+        }, { status: geminiResponse.status });
+      }
+    } else {
+      const geminiData = await geminiResponse.json();
+      console.log("Gemini Data received:", JSON.stringify(geminiData));
+
+      try {
+        const content = geminiData.candidates?.[0]?.content?.parts?.[0]?.text;
+        if (!content) throw new Error("No content in Gemini response");
+        aiMetadata = JSON.parse(content);
+      } catch (e: any) {
+        console.error("Failed to parse Gemini metadata:", e.message);
+        aiMetadata = {
+          title: `Smart AI Track: ${prompt.substring(0, 10)}`,
+          artist: "SmarTune Pro",
+          mood: "Creative",
+          bpm: 128
+        };
+      }
     }
 
     // Simulate AI generation delay (visual only)
     await new Promise((resolve) => setTimeout(resolve, 2000));
 
-    // Combine Gemini metadata with demo audio
+    // Combine metadata with demo audio
     const result = {
       id: `ai-${Date.now()}`,
       title: aiMetadata.title,
       artist: aiMetadata.artist,
       mood: aiMetadata.mood,
       bpm: aiMetadata.bpm,
+      isFallback: aiMetadata.isFallback || false,
       coverUrl: "https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?q=80&w=1000&auto=format&fit=crop",
-      audioUrl: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3", // Demo audio
+      audioUrl: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3", 
     };
 
     return NextResponse.json(result);
