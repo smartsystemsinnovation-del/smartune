@@ -53,23 +53,33 @@ export default function MusicSwipePage() {
     checkUser();
   }, []);
 
-  const fetchSongs = async () => {
+  const [selectedGenre, setSelectedGenre] = useState<string>('');
+
+  const fetchSongs = async (genre?: string) => {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch('/api/songs');
+      const url = genre ? `/api/songs?genre=${genre}` : '/api/songs';
+      const res = await fetch(url);
       const data = await res.json();
       
       if (data.error) {
         setError(data.error);
       } else if (Array.isArray(data)) {
         setSongs(data);
+        setCurrentIndex(0); // Reset index on new fetch
       }
     } catch (err: any) {
       setError("Error de conexión con el servidor");
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleGenreChange = (genre: string) => {
+    const newGenre = selectedGenre === genre ? '' : genre;
+    setSelectedGenre(newGenre);
+    fetchSongs(newGenre);
   };
 
   const updateCounts = async () => {
@@ -192,7 +202,7 @@ export default function MusicSwipePage() {
       
       <main className="flex-1 flex flex-col items-center justify-center p-4 md:p-8 relative">
         
-        <div className="w-full max-w-4xl flex justify-between items-center mb-8">
+        <div className="w-full max-w-4xl flex justify-between items-center mb-4">
           <div>
             <h1 className="text-3xl md:text-4xl font-black text-white tracking-tight">
               Music<span className="text-[#f6339a]">Swipe</span>
@@ -204,6 +214,23 @@ export default function MusicSwipePage() {
           </Link>
         </div>
 
+        {/* Genre Filters */}
+        <div className="flex gap-3 mb-8">
+          {['Pop', 'Phonk', 'Trap'].map((genre) => (
+            <button
+              key={genre}
+              onClick={() => handleGenreChange(genre)}
+              className={`px-6 py-2 rounded-full text-xs font-bold transition-all border ${
+                selectedGenre === genre 
+                  ? 'bg-[#f6339a] border-[#f6339a] text-white shadow-[0_0_15px_rgba(246,51,154,0.4)]' 
+                  : 'bg-[#1f1f1f] border-white/10 text-gray-400 hover:border-white/30'
+              }`}
+            >
+              {genre}
+            </button>
+          ))}
+        </div>
+
         {/* YouTube Hidden Player */}
         <div id="youtube-player" className="hidden"></div>
 
@@ -213,7 +240,7 @@ export default function MusicSwipePage() {
             <div className="text-center p-8 bg-red-500/10 rounded-3xl border border-red-500/20">
               <p className="text-red-500 font-bold mb-4">⚠️ {error}</p>
               <button 
-                onClick={fetchSongs} 
+                onClick={() => fetchSongs()} 
                 className="px-6 py-2 bg-red-500 text-white rounded-lg font-bold"
               >
                 Reintentar
@@ -274,7 +301,7 @@ export default function MusicSwipePage() {
             <div className="text-center p-12 bg-[#1f1f1f] rounded-3xl border border-dashed border-white/10">
               <p className="text-gray-500 font-medium mb-6">¡Descubrimientos agotados!</p>
               <button 
-                onClick={fetchSongs} 
+                onClick={() => fetchSongs()} 
                 className="px-8 py-3 bg-[#f6339a] text-white font-bold rounded-xl hover:bg-[#ee10b0] transition-colors"
               >
                 Volver a cargar

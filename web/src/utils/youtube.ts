@@ -1,4 +1,4 @@
-export async function fetchYouTubeSongs() {
+export async function fetchYouTubeSongs(genre?: string) {
   const apiKey = process.env.YOUTUBE_API_KEY;
 
   if (!apiKey) {
@@ -6,10 +6,15 @@ export async function fetchYouTubeSongs() {
   }
 
   // Search queries for the desired genres
-  const queries = ['electronic music mix', 'phonk music mix', 'pop hits 2024'];
-  const randomQuery = queries[Math.floor(Math.random() * queries.length)];
+  let query = '';
+  if (genre) {
+    query = `${genre} music mix`;
+  } else {
+    const queries = ['electronic music mix', 'phonk music mix', 'pop hits 2024'];
+    query = queries[Math.floor(Math.random() * queries.length)];
+  }
   
-  const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=15&q=${encodeURIComponent(randomQuery)}&type=video&videoCategoryId=10&key=${apiKey}`;
+  const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=15&q=${encodeURIComponent(query)}&type=video&videoCategoryId=10&key=${apiKey}`;
 
   console.log('DEBUG: Fetching YouTube songs from:', url.replace(apiKey, 'HIDDEN'));
 
