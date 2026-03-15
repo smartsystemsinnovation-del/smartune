@@ -62,89 +62,81 @@ export default function OnboardingPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center p-4 md:p-8 relative overflow-hidden font-inter">
-      {/* Animated Background Orbs */}
-      <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-[#f6339a]/10 rounded-full blur-[120px] animate-pulse"></div>
-      <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-[#9810fa]/10 rounded-full blur-[120px] animate-pulse" style={{ animationDelay: '2s' }}></div>
-
-      <div className="w-full max-w-2xl bg-white/5 backdrop-blur-[32px] rounded-[3rem] border border-white/10 p-8 md:p-14 relative z-10 shadow-[0_25px_50px_-12px_rgba(0,0,0,0.5)]">
+    <div className="min-h-screen bg-[#3a007d] flex flex-col items-center justify-center p-6 relative overflow-hidden font-inter text-white">
+      {/* Background Gradient Mesh */}
+      <div className="absolute inset-0 bg-gradient-to-br from-[#4c1d95] via-[#3a007d] to-[#1e1b4b]"></div>
+      <div className="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] bg-[#9810fa]/20 rounded-full blur-[150px]"></div>
+      
+      <div className="w-full max-w-md relative z-10 flex flex-col items-center">
         
-        <div className="text-center mb-12">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-[#f6339a] to-[#9810fa] rounded-2xl mb-6 shadow-[0_0_30px_rgba(246,51,154,0.3)] transform -rotate-3 transition-transform hover:rotate-0">
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="white">
-              <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z" />
+        {/* Profile Circle Icon (Similar to Reference) */}
+        <div className="w-32 h-32 rounded-full border border-white/30 flex items-center justify-center mb-12 bg-white/5 backdrop-blur-sm overflow-hidden group">
+          {formData.avatar_url ? (
+            <img src={formData.avatar_url} alt="Preview" className="w-full h-full object-cover" />
+          ) : (
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
             </svg>
-          </div>
-          <h1 className="text-4xl md:text-5xl font-black text-white mb-4 tracking-tighter">
-            Configura tu <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#f6339a] to-[#9810fa]">Vibe</span>
-          </h1>
-          <p className="text-gray-400 font-medium text-lg">Personaliza tu experiencia musical en <span className="text-white font-bold">SmarTune</span></p>
+          )}
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-10">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {/* User Name */}
-            <div className="relative group">
-              <label className="block text-xs font-black text-gray-400 uppercase tracking-[0.2em] mb-3 ml-1 group-focus-within:text-[#f6339a] transition-colors">Tu Nombre</label>
-              <input
-                type="text"
-                required
-                className="w-full px-6 py-5 bg-black/40 border border-white/5 rounded-[1.5rem] focus:ring-2 focus:ring-[#f6339a]/30 focus:border-[#f6339a] outline-none transition-all text-white font-bold placeholder:text-gray-600"
-                placeholder="Ej. Alex Smith"
-                value={formData.nombre}
-                onChange={e => setFormData({ ...formData, nombre: e.target.value })}
-              />
-            </div>
+        <h1 className="text-2xl font-light tracking-[0.3em] uppercase mb-16 text-center opacity-90">SmarTune</h1>
 
-            {/* Instrument */}
-            <div className="relative group">
-              <label className="block text-xs font-black text-gray-400 uppercase tracking-[0.2em] mb-3 ml-1 group-focus-within:text-[#9810fa] transition-colors">Instrumento</label>
-              <div className="relative">
-                <select
-                  className="w-full px-6 py-5 bg-black/40 border border-white/5 rounded-[1.5rem] focus:ring-2 focus:ring-[#9810fa]/30 focus:border-[#9810fa] outline-none transition-all text-white font-bold appearance-none cursor-pointer"
-                  value={formData.instrumento}
-                  onChange={e => setFormData({ ...formData, instrumento: e.target.value })}
-                >
-                  {INSTRUMENTS.map(i => <option key={i} value={i} className="bg-[#1a1a1a]">{i}</option>)}
-                </select>
-                <div className="absolute right-6 top-1/2 -translate-y-1/2 pointer-events-none text-gray-500">
-                  <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
-                  </svg>
-                </div>
-              </div>
+        <form onSubmit={handleSubmit} className="w-full space-y-12">
+          {/* User Name */}
+          <div className="relative group">
+            <div className="absolute left-0 top-1/2 -translate-y-1/2 text-white/50 group-focus-within:text-white transition-colors">
+              <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                <path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+              </svg>
             </div>
+            <input
+              type="text"
+              required
+              className="w-full pl-9 pr-4 py-3 bg-transparent border-b border-white/30 focus:border-white outline-none transition-all text-white font-light placeholder:text-white/40"
+              placeholder="Username"
+              value={formData.nombre}
+              onChange={e => setFormData({ ...formData, nombre: e.target.value })}
+            />
           </div>
 
           {/* Avatar URL */}
           <div className="relative group">
-            <label className="block text-xs font-black text-gray-400 uppercase tracking-[0.2em] mb-3 ml-1 group-focus-within:text-[#f6339a] transition-colors">Foto de Perfil (URL)</label>
-            <div className="flex gap-4 items-center">
-              <div className="flex-1">
-                <input
-                  type="url"
-                  className="w-full px-6 py-5 bg-black/40 border border-white/5 rounded-[1.5rem] focus:ring-2 focus:ring-[#f6339a]/30 focus:border-[#f6339a] outline-none transition-all text-white font-bold placeholder:text-gray-600"
-                  placeholder="https://images.unsplash.com/photo-..."
-                  value={formData.avatar_url}
-                  onChange={e => setFormData({ ...formData, avatar_url: e.target.value })}
-                />
-              </div>
-              <div className="w-16 h-16 rounded-2xl bg-white/5 border border-white/10 flex-shrink-0 flex items-center justify-center overflow-hidden">
-                {formData.avatar_url ? (
-                  <img src={formData.avatar_url} alt="Preview" className="w-full h-full object-cover" />
-                ) : (
-                  <svg width="24" height="24" fill="none" stroke="#333" strokeWidth="2" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                  </svg>
-                )}
-              </div>
+            <div className="absolute left-0 top-1/2 -translate-y-1/2 text-white/50 group-focus-within:text-white transition-colors">
+              <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                <path d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
             </div>
+            <input
+              type="url"
+              className="w-full pl-9 pr-4 py-3 bg-transparent border-b border-white/30 focus:border-white outline-none transition-all text-white font-light placeholder:text-white/40"
+              placeholder="Avatar URL"
+              value={formData.avatar_url}
+              onChange={e => setFormData({ ...formData, avatar_url: e.target.value })}
+            />
           </div>
 
-          {/* Tastes */}
-          <div>
-            <label className="block text-xs font-black text-gray-400 uppercase tracking-[0.2em] mb-5 ml-1">Tus Géneros Favoritos</label>
-            <div className="flex flex-wrap gap-3">
+          {/* Instrument Select (Styled Minimalist) */}
+          <div className="relative group">
+            <div className="absolute left-0 top-1/2 -translate-y-1/2 text-white/50 group-focus-within:text-white transition-colors">
+              <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                <path d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" />
+              </svg>
+            </div>
+            <select
+              className="w-full pl-9 pr-4 py-3 bg-transparent border-b border-white/30 focus:border-white outline-none transition-all text-white font-light appearance-none cursor-pointer"
+              value={formData.instrumento}
+              onChange={e => setFormData({ ...formData, instrumento: e.target.value })}
+            >
+              <option disabled value="">Select Instrument</option>
+              {INSTRUMENTS.map(i => <option key={i} value={i} className="bg-[#3a007d] text-white">{i}</option>)}
+            </select>
+          </div>
+
+          {/* Tastes (Mini Tags) */}
+          <div className="space-y-4">
+            <p className="text-[10px] font-bold tracking-widest text-white/40 uppercase">GÉNEROS FAVORITOS</p>
+            <div className="flex flex-wrap gap-2">
               {TASTES.map(taste => {
                 const isSelected = formData.gustos_musicales.includes(taste);
                 return (
@@ -152,10 +144,10 @@ export default function OnboardingPage() {
                     key={taste}
                     type="button"
                     onClick={() => handleTasteToggle(taste)}
-                    className={`px-6 py-3 rounded-2xl text-sm font-bold transition-all border ${
+                    className={`px-4 py-1.5 rounded-full text-[11px] font-bold transition-all border ${
                       isSelected
-                        ? 'bg-[#f6339a] border-[#f6339a] text-white shadow-[0_0_20px_rgba(246,51,154,0.4)] scale-105'
-                        : 'bg-white/5 border-white/5 text-gray-400 hover:border-white/20 hover:text-white'
+                        ? 'bg-white text-[#3a007d] border-white'
+                        : 'bg-transparent border-white/20 text-white/60 hover:border-white/50'
                     }`}
                   >
                     {taste}
@@ -165,23 +157,21 @@ export default function OnboardingPage() {
             </div>
           </div>
 
-          {/* Submit */}
-          <div className="pt-6">
+          {/* Buttons Group (Strictly following Reference Image) */}
+          <div className="space-y-4 pt-12">
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-6 bg-gradient-to-r from-[#f6339a] to-[#9810fa] text-white rounded-[2rem] font-black text-xl shadow-[0_15px_30px_rgba(246,51,154,0.3)] hover:shadow-[0_20px_40px_rgba(246,51,154,0.4)] hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-50 flex items-center justify-center gap-3 group"
+              className="w-full py-4 bg-[#8b5cf6] hover:bg-[#a78bfa] text-white font-bold text-sm tracking-widest uppercase rounded-lg shadow-2xl transition-all disabled:opacity-50"
             >
-              {loading ? (
-                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-white"></div>
-              ) : (
-                <>
-                  EXPLORAR SMARTUNE
-                  <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24" className="group-hover:translate-x-1 transition-transform">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                  </svg>
-                </>
-              )}
+              {loading ? 'LOADING...' : 'CONTINUE'}
+            </button>
+            <button
+              type="button"
+              onClick={() => router.back()}
+              className="w-full py-4 bg-white/5 hover:bg-white/10 text-white font-bold text-sm tracking-widest uppercase rounded-lg border border-white/10 transition-all"
+            >
+              CANCEL
             </button>
           </div>
         </form>
