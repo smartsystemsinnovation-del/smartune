@@ -1,12 +1,12 @@
 'use client';
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
 import AuthModal from "@/components/AuthModal";
 import styles from "./page.module.css";
 
-export default function Home() {
+function HomeContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [showModal, setShowModal] = useState(false);
@@ -19,31 +19,27 @@ export default function Home() {
   useEffect(() => {
     let currentUser: any = null;
 
-    // Check initial auth state
     const checkUserAndParams = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       setUser(session?.user || null);
       currentUser = session?.user;
 
-      // Solo abrir el modal si NO hay un usuario autenticado activo
-      // Esto previene que Google OAuth re-abra el modal a la fuerza si la URL contiene variables viejas
       if (!currentUser && searchParams.get('login') === 'true') {
         const timer = setTimeout(() => {
           setModalMode('login');
           setShowModal(true);
-        }, 500); // Pequeño retraso para asegurar que la sesión se lea primero
+        }, 500);
         
         return () => clearTimeout(timer);
       }
     };
     checkUserAndParams();
     
-    // Subscribe to changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (_event, session) => {
         setUser(session?.user || null);
         if (session?.user) {
-          setShowModal(false); // Auto cerrar modal si la sesión es válida (ej. tras Auth2)
+          setShowModal(false);
         }
       }
     );
@@ -81,7 +77,6 @@ export default function Home() {
         </div>
         
         <div className={styles.heroContent}>
-          {/* Header Navigation */}
           <header className={styles.headerNav}>
             <div className={styles.searchBar}>
               <svg className={styles.searchIcon} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -107,7 +102,6 @@ export default function Home() {
             </div>
           </header>
 
-          {/* Hero Titles & Actions */}
           <div className={styles.heroCenter}>
             <h1 className={styles.heroTitle}>
               Aprende a tu <br/><span>Ritmo</span>
@@ -219,17 +213,14 @@ export default function Home() {
         <div className={styles.footerTop}>
            <div className={styles.footerLeft}>
              <h3>Nosotros</h3>
-             <p>SmarTune is a website that has been created for over <span className={styles.hlPink}>5 year's</span> now and it is one of the most famous music player website's in the world. in this website you can listen, practice and learn songs tracking with Ebbinghaus algorithm. If you want no limitation you can try our <span className={styles.hlBlue}>premium pass's.</span></p>
+             <p>SmarTune is a website that has been created for over <span className={styles.hlPink}>5 year&apos;s</span> now and it is one of the most famous music player website&apos;s in the world. in this website you can listen, practice and learn songs tracking with Ebbinghaus algorithm. If you want no limitation you can try our <span className={styles.hlBlue}>premium pass&apos;s.</span></p>
            </div>
            
            <div className={styles.footerRight}>
              <div className={styles.footerLogo}>SmarTune</div>
              <div className={styles.socialIcons}>
-                {/* FB */}
                 <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.477 2 12C2 16.991 5.657 21.128 10.438 21.881V14.89H7.898V12H10.438V9.797C10.438 7.274 11.943 5.882 14.214 5.882C15.311 5.882 16.457 6.078 16.457 6.078V8.543H15.192C13.95 8.543 13.562 9.315 13.562 10.11V12H16.344L15.899 14.89H13.562V21.881C18.343 21.128 22 16.991 22 12C22 6.477 17.523 2 12 2Z"/></svg>
-                {/* IG */}
                 <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163C15.204 2.163 15.584 2.175 16.85 2.233C18.014 2.286 18.647 2.482 19.068 2.646C19.627 2.863 20.026 3.125 20.445 3.544C20.865 3.963 21.127 4.362 21.343 4.921C21.508 5.342 21.704 5.976 21.757 7.14C21.815 8.406 21.827 8.786 21.827 11.99V12.01C21.827 15.214 21.815 15.594 21.757 16.86C21.704 18.024 21.508 18.658 21.343 19.079C21.127 19.638 20.865 20.037 20.445 20.456C20.026 20.875 19.627 21.137 19.068 21.354C18.647 21.518 18.014 21.714 16.85 21.767C15.584 21.825 15.204 21.837 12 21.837H11.98C8.776 21.837 8.396 21.825 7.13 21.767C5.966 21.714 5.333 21.518 4.912 21.354C4.353 21.137 3.954 20.875 3.535 20.456C3.115 20.037 2.853 19.638 2.637 19.079C2.472 18.658 2.276 18.024 2.223 16.86C2.165 15.594 2.153 15.214 2.153 12.01V11.99C2.153 8.786 2.165 8.406 2.223 7.14C2.276 5.976 2.472 5.342 2.637 4.921C2.853 4.362 3.115 3.963 3.535 3.544C3.954 3.125 4.353 2.863 4.912 2.646C5.333 2.482 5.966 2.286 7.13 2.233C8.396 2.175 8.776 2.163 11.98 2.163H12ZM12 0C8.741 0 8.333 0.014 7.053 0.072C5.775 0.13 4.902 0.334 4.14 0.63C3.354 0.936 2.688 1.336 2.022 2.002C1.356 2.668 0.956 3.334 0.65 4.12C0.354 4.882 0.15 5.755 0.092 7.033C0.034 8.313 0.02 8.721 0.02 11.98C0.02 15.239 0.034 15.647 0.092 16.927C0.15 18.205 0.354 19.078 0.65 19.84C0.956 20.626 1.356 21.292 2.022 21.958C2.688 22.624 3.354 23.024 4.14 23.33C4.902 23.626 5.775 23.83 7.053 23.888C8.333 23.946 8.741 23.96 12 23.96C15.259 23.96 15.667 23.946 16.947 23.888C18.225 23.83 19.098 23.626 19.86 23.33C20.646 23.024 21.312 22.624 21.978 21.958C22.644 21.292 23.044 20.626 23.35 19.84C23.646 19.078 23.85 18.205 23.908 16.927C23.966 15.647 23.98 15.239 23.98 11.98C23.98 8.721 23.966 8.313 23.908 7.033C23.85 5.755 23.646 4.882 23.35 4.12C23.044 3.334 22.644 2.668 21.978 2.002C21.312 1.336 20.646 0.936 19.86 0.63C19.098 0.334 18.225 0.13 16.947 0.072C15.667 0.014 15.259 0 12 0ZM12 5.838C8.597 5.838 5.838 8.597 5.838 12C5.838 15.403 8.597 18.162 12 18.162C15.403 18.162 18.162 15.403 18.162 12C18.162 8.597 15.403 5.838 12 5.838ZM12 15.998C9.792 15.998 8.002 14.208 8.002 12C8.002 9.792 9.792 8.002 12 8.002C14.208 8.002 15.998 9.792 15.998 12C15.998 14.208 14.208 15.998 12 15.998ZM18.406 4.155C17.61 4.155 16.965 4.8 16.965 5.596C16.965 6.392 17.61 7.037 18.406 7.037C19.202 7.037 19.847 6.392 19.847 5.596C19.847 4.8 19.202 4.155 18.406 4.155Z"/></svg>
-                {/* Twitter */}
                 <svg viewBox="0 0 24 24" fill="currentColor"><path d="M23.953 4.5701C23.054 4.9651 22.076 5.2261 21.039 5.3521C22.106 4.7131 22.923 3.6991 23.308 2.4931C22.348 3.0631 21.282 3.4751 20.147 3.6981C19.231 2.7151 17.925 2.0911 16.48 2.0911C13.684 2.0911 11.417 4.3581 11.417 7.1551C11.417 7.5521 11.462 7.9401 11.549 8.3151C7.33096 8.1041 3.59396 6.0771 1.09696 2.9731C0.660965 3.7221 0.409965 4.5961 0.409965 5.5181C0.409965 7.2751 1.30396 8.8241 2.66096 9.7321C1.84196 9.7061 1.06696 9.4811 0.366965 9.0971C0.365965 9.1181 0.365965 9.1391 0.365965 9.1611C0.365965 11.614 2.11296 13.67 4.43096 14.135C4.00496 14.251 3.55696 14.312 3.09096 14.312C2.76396 14.312 2.44396 14.28 2.13396 14.221C2.77896 16.231 4.64696 17.694 6.86596 17.734C5.13196 19.092 2.94696 19.897 0.583965 19.897C0.174965 19.897 -0.231035 19.873 -0.633035 19.825C1.61396 21.265 4.31296 22.1 7.21496 22.1C16.632 22.1 21.782 14.295 21.782 7.5301C21.782 7.3081 21.777 7.0871 21.767 6.8671C22.767 6.1451 23.639 5.2341 24.322 4.1951L23.953 4.5701Z"/></svg>
              </div>
            </div>
@@ -237,5 +228,13 @@ export default function Home() {
       </footer>
 
     </main>
+  );
+}
+
+export default function Home() {
+  return (
+    <Suspense fallback={<div style={{ minHeight: '100vh', background: '#181818' }} />}>
+      <HomeContent />
+    </Suspense>
   );
 }
