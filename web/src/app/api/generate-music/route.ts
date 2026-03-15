@@ -4,32 +4,37 @@ const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 
 export async function POST(request: Request) {
   try {
-    const { prompt } = await request.json();
+    const { prompt, mode = 'generate' } = await request.json();
 
     if (!prompt) {
       return NextResponse.json({ error: 'Prompt is required' }, { status: 400 });
     }
 
-    // Call Gemini API to process the prompt and create creative metadata
+    // Call Gemini API 
     const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`;
     
+    let systemPrompt = "";
+    if (mode === 'chat') {
+      systemPrompt = `Actúa como un productor musical experto y asistente creativo. Responde a preguntas sobre teoría musical, consejos de producción, historia de la música o ayuda técnica de forma breve y profesional en español. Mantén un tono inspirador y "cool".`;
+    } else {
+      systemPrompt = `Actúa como un experto productor musical de IA capaz de crear cualquier género (Pop, Rock, K-pop, Jazz, Trap, etc.). El usuario quiere generar: "${prompt}". 
+      Genera un objeto JSON con:
+      - title: Título creativo.
+      - artist: Nombre de artista de IA.
+      - mood: Sentimiento de la canción.
+      - bpm: Número estimado de BPM.
+      Solo devuelve el JSON, nada más.`;
+    }
+
     const geminiResponse = await fetch(geminiUrl, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         contents: [{
-          parts: [{
-            text: `Actúa como un experto productor musical de IA. El usuario ha dado este prompt: "${prompt}". 
-            Genera un objeto JSON con los siguientes campos:
-            - title: Un título creativo para la canción.
-            - artist: Un nombre de artista/proyecto de IA pegajoso.
-            - mood: Una descripción breve del sentimiento de la canción.
-            - bpm: Un número estimado de BPM.
-            Solo devuelve el JSON, nada de texto extra.`
-          }]
+          parts: [{ text: `${systemPrompt}\n\nConsulta del usuario: ${prompt}` }]
         }],
         generationConfig: {
-            response_mime_type: "application/json",
+            response_mime_type: mode === 'generate' ? "application/json" : "text/plain",
         }
       })
     });
@@ -40,9 +45,10 @@ export async function POST(request: Request) {
       const errorBody = await geminiResponse.text();
       console.error(`Gemini API Error Detail (${geminiResponse.status}):`, errorBody);
       
-      // IF 403, we use a FALLBACK logic instead of failing, to keep the UI working
       if (geminiResponse.status === 403 || geminiResponse.status === 401) {
-        console.warn("Using Fallback Metadata due to 403/401 Gemini error");
+        if (mode === 'chat') {
+          return NextResponse.json({ text: "Lo siento, el servicio de asistente inteligente no está disponible en este momento. Habilita la API Key para chatear." });
+        }
         aiMetadata = {
           title: `${prompt.substring(0, 15)} (AI Mix)`,
           artist: "SmarTune IA",
@@ -51,21 +57,19 @@ export async function POST(request: Request) {
           isFallback: true
         };
       } else {
-        return NextResponse.json({ 
-          error: `Gemini API Error: ${geminiResponse.status}`,
-          details: errorBody 
-        }, { status: geminiResponse.status });
+        return NextResponse.json({ error: `Gemini API Error: ${geminiResponse.status}` }, { status: geminiResponse.status });
       }
     } else {
       const geminiData = await geminiResponse.json();
-      console.log("Gemini Data received:", JSON.stringify(geminiData));
+      
+      if (mode === 'chat') {
+        return NextResponse.json({ text: geminiData.candidates?.[0]?.content?.parts?.[0]?.text || "No obtuve respuesta del asistente." });
+      }
 
       try {
         const content = geminiData.candidates?.[0]?.content?.parts?.[0]?.text;
-        if (!content) throw new Error("No content in Gemini response");
         aiMetadata = JSON.parse(content);
       } catch (e: any) {
-        console.error("Failed to parse Gemini metadata:", e.message);
         aiMetadata = {
           title: `Smart AI Track: ${prompt.substring(0, 10)}`,
           artist: "SmarTune Pro",
@@ -75,10 +79,8 @@ export async function POST(request: Request) {
       }
     }
 
-    // Simulate AI generation delay (visual only)
-    await new Promise((resolve) => setTimeout(resolve, 2000));
+    await new Promise((resolve) => setTimeout(resolve, 1500));
 
-    // Combine metadata with demo audio
     const result = {
       id: `ai-${Date.now()}`,
       title: aiMetadata.title,
@@ -92,7 +94,6 @@ export async function POST(request: Request) {
 
     return NextResponse.json(result);
   } catch (error: any) {
-    console.error('IA Generation Error:', error);
-    return NextResponse.json({ error: 'Failed to generate music with Gemini' }, { status: 500 });
+    return NextResponse.json({ error: 'Failed to process request with Gemini' }, { status: 500 });
   }
 }
