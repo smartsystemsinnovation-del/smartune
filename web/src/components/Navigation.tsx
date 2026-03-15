@@ -13,13 +13,26 @@ export default function Navigation() {
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [modalMode, setModalMode] = useState<'login' | 'register'>('login');
+  const [profile, setProfile] = useState<any>(null);
+  const [showDropdown, setShowDropdown] = useState(false);
 
   const supabase = createClient();
 
   useEffect(() => {
     const fetchUser = async () => {
       const { data: { session } } = await supabase.auth.getSession();
-      setUser(session?.user || null);
+      if (session?.user) {
+        setUser(session.user);
+        // Fetch extended profile data
+        const res = await fetch('/api/user/profile');
+        if (res.ok) {
+          const data = await res.json();
+          setProfile(data);
+        }
+      } else {
+        setUser(null);
+        setProfile(null);
+      }
       setLoading(false);
     };
 
@@ -29,6 +42,7 @@ export default function Navigation() {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (_event: unknown, session: { user: any } | null) => {
         setUser(session?.user || null);
+        if (!session) setProfile(null);
       }
     );
 
@@ -42,12 +56,14 @@ export default function Navigation() {
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
+    setShowDropdown(false);
     router.push('/');
     router.refresh();
   };
   
-  // Format the username to show after @
+  // Format the username to show
   const getUsername = () => {
+    if (profile?.nombre) return profile.nombre;
     if (!user) return 'Usuario';
     return user.user_metadata?.full_name?.split(' ')[0] || user.email?.split('@')[0] || 'Usuario';
   };
@@ -71,28 +87,57 @@ export default function Navigation() {
           </div>
           
           <div className={styles.navLinksAuth}>
-            <span style={{ cursor: 'pointer' }}>Contacto</span>
+            <Link href="/" className="hover:text-[#f6339a] transition-colors">Inicio</Link>
+            <Link href="/favoritos" className="hover:text-[#f6339a] transition-colors">MusicSwipe</Link>
           </div>
 
           {!loading && (
             user ? (
-              <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+              <div className={styles.profileContainer}>
                 <div 
-                  className={styles.userBadge} 
-                  onClick={() => router.push('/perfil')}
-                  title="Ir al Perfil"
+                  className={styles.avatarCircle}
+                  onClick={() => setShowDropdown(!showDropdown)}
                 >
-                  @{getUsername()}
+                  {profile?.avatar_url ? (
+                    <img src={profile.avatar_url} alt="Profile" className={styles.avatarImg} />
+                  ) : (
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
+                      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                      <circle cx="12" cy="7" r="4" />
+                    </svg>
+                  )}
                 </div>
-                <button 
-                  onClick={handleLogout} 
-                  className={styles.btnLogoutModern}
-                  title="Cerrar sesión"
-                >
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M16 17L21 12M21 12L16 7M21 12H9M9 3H7C5.89543 3 5 3.89543 5 5V19C5 20.1046 5.89543 21 7 21H9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                  </svg>
-                </button>
+
+                {showDropdown && (
+                  <div className={styles.dropdownMenu}>
+                    <div className="px-4 py-2 border-bottom border-white/5 mb-1">
+                      <p className="text-xs font-black text-gray-500 uppercase tracking-widest">Conectado como</p>
+                      <p className="text-white font-bold truncate">@{getUsername()}</p>
+                    </div>
+                    <div className={styles.dropdownDivider} />
+                    <Link href="/profile" className={styles.dropdownItem} onClick={() => setShowDropdown(false)}>
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <circle cx="12" cy="12" r="10" />
+                        <path d="M12 8v8M8 12h8" />
+                      </svg>
+                      Mi Perfil
+                    </Link>
+                    <Link href="/profile" className={styles.dropdownItem} onClick={() => setShowDropdown(false)}>
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z" />
+                        <circle cx="12" cy="12" r="3" />
+                      </svg>
+                      Ajustes
+                    </Link>
+                    <div className={styles.dropdownDivider} />
+                    <button onClick={handleLogout} className={`${styles.dropdownItem} ${styles.logoutItem}`}>
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9" />
+                      </svg>
+                      Cerrar Sesión
+                    </button>
+                  </div>
+                )}
               </div>
             ) : (
               <div style={{ display: 'flex', gap: '12px' }}>
@@ -105,4 +150,5 @@ export default function Navigation() {
       </nav>
     </>
   );
+
 }
