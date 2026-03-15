@@ -104,20 +104,53 @@ export default function MusicSwipePage() {
       setCounts(data.counts);
     } catch (e) {}
 
-    if (playerRef.current) {
-      playerRef.current.stopVideo();
+    if (playerRef.current && typeof playerRef.current.stopVideo === 'function') {
+      try {
+        playerRef.current.stopVideo();
+      } catch (e) {
+        console.warn("YouTube Player error on stop:", e);
+      }
     }
     setIsPlaying(false);
-    setCurrentIndex(prev => prev + 1);
+    
+    // Increment index and check if we need more songs
+    const nextIndex = currentIndex + 1;
+    setCurrentIndex(nextIndex);
+
+    // Infinite swipe: fetch more when 3 songs left
+    if (nextIndex >= songs.length - 3) {
+      fetchMoreSongs();
+    }
+  };
+
+  const fetchMoreSongs = async () => {
+    try {
+      const url = selectedGenre ? `/api/songs?genre=${selectedGenre}` : '/api/songs';
+      const res = await fetch(url);
+      const data = await res.json();
+      if (Array.isArray(data)) {
+        // Append new unique songs
+        setSongs(prev => {
+          const newSongs = data.filter(s => !prev.find(p => p.id === s.id));
+          return [...prev, ...newSongs];
+        });
+      }
+    } catch (e) {}
   };
 
   // YouTube Player Logic
   useEffect(() => {
     const song = songs[currentIndex];
+    let timeoutId: any = null;
+
     if (song && (window as any).YT && (window as any).YT.Player) {
-      if (playerRef.current) {
-        playerRef.current.loadVideoById(song.id);
-        playerRef.current.playVideo();
+      if (playerRef.current && typeof playerRef.current.loadVideoById === 'function') {
+        try {
+          playerRef.current.loadVideoById(song.id);
+          playerRef.current.playVideo();
+        } catch (e) {
+          console.error("YouTube Player load error:", e);
+        }
       } else {
         playerRef.current = new (window as any).YT.Player('youtube-player', {
           height: '0',
@@ -126,7 +159,7 @@ export default function MusicSwipePage() {
           playerVars: {
             autoplay: 1,
             controls: 0,
-            showinfo: 0,
+            rel: 0,
             modestbranding: 1
           },
           events: {
@@ -136,11 +169,15 @@ export default function MusicSwipePage() {
             onStateChange: (event: any) => {
               if (event.data === (window as any).YT.PlayerState.PLAYING) {
                 setIsPlaying(true);
-                setTimeout(() => {
-                  if (playerRef.current && playerRef.current.getPlayerState() === (window as any).YT.PlayerState.PLAYING) {
-                    playerRef.current.pauseVideo();
-                    setIsPlaying(false);
-                  }
+                // Clear any existing timeout
+                if (timeoutId) clearTimeout(timeoutId);
+                timeoutId = setTimeout(() => {
+                  try {
+                    if (playerRef.current && typeof playerRef.current.getPlayerState === 'function' && playerRef.current.getPlayerState() === (window as any).YT.PlayerState.PLAYING) {
+                      playerRef.current.pauseVideo();
+                      setIsPlaying(false);
+                    }
+                  } catch (e) {}
                 }, 8000);
               } else if (event.data === (window as any).YT.PlayerState.PAUSED || event.data === (window as any).YT.PlayerState.ENDED) {
                 setIsPlaying(false);
@@ -150,7 +187,11 @@ export default function MusicSwipePage() {
         });
       }
     }
-  }, [currentIndex, songs]);
+
+    return () => {
+      if (timeoutId) clearTimeout(timeoutId);
+    };
+  }, [currentIndex, songs.length]); 
 
   const togglePlay = () => {
     if (!playerRef.current) return;

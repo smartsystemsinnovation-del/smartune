@@ -5,16 +5,19 @@ export async function fetchYouTubeSongs(genre?: string) {
     throw new Error('YOUTUBE_API_KEY is not set');
   }
 
-  // Search queries for the desired genres
+  // Enhanced search queries for better variety
+  const randomKeywords = ['vibes', '2024', 'remix', 'playlist', 'bass', 'hits', 'dynamic', 'session'];
+  const extraKeyword = randomKeywords[Math.floor(Math.random() * randomKeywords.length)];
+
   let query = '';
   if (genre) {
-    query = `${genre} music mix`;
+    query = `${genre} ${extraKeyword} music`;
   } else {
-    const queries = ['electronic music mix', 'phonk music mix', 'pop hits 2024'];
-    query = queries[Math.floor(Math.random() * queries.length)];
+    const queries = ['electronic music', 'phonk music', 'pop hits mix', 'future bass'];
+    query = `${queries[Math.floor(Math.random() * queries.length)]} ${extraKeyword}`;
   }
   
-  const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=15&q=${encodeURIComponent(query)}&type=video&videoCategoryId=10&key=${apiKey}`;
+  const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=25&q=${encodeURIComponent(query)}&type=video&videoCategoryId=10&key=${apiKey}`;
 
   console.log('DEBUG: Fetching YouTube songs from:', url.replace(apiKey, 'HIDDEN'));
 
