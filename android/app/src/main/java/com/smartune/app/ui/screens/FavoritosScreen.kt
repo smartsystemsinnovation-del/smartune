@@ -37,6 +37,7 @@ data class SongData(
     val genre: String
 )
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FavoritosScreen(navController: NavHostController) {
     val songs = remember {
@@ -85,8 +86,7 @@ fun FavoritosScreen(navController: NavHostController) {
                     ),
                     border = FilterChipDefaults.filterChipBorder(
                         borderColor = SmartuneColors.Border,
-                        selectedBorderColor = SmartuneColors.Primary,
-                        enabled = true, selected = selectedGenre == genre
+                        selectedBorderColor = SmartuneColors.Primary
                     )
                 )
             }

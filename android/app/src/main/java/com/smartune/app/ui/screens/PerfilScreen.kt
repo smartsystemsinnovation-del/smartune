@@ -75,9 +75,9 @@ fun PerfilScreen(navController: NavHostController) {
         ) {
             Column(modifier = Modifier.padding(20.dp)) {
                 ProfileStatRow("Prácticas Completadas", "124")
-                HorizontalDivider(color = SmartuneColors.Border, modifier = Modifier.padding(vertical = 12.dp))
+                Divider(color = SmartuneColors.Border, modifier = Modifier.padding(vertical = 12.dp))
                 ProfileStatRow("Precisión Media", "94%")
-                HorizontalDivider(color = SmartuneColors.Border, modifier = Modifier.padding(vertical = 12.dp))
+                Divider(color = SmartuneColors.Border, modifier = Modifier.padding(vertical = 12.dp))
                 ProfileStatRow("Tiempo Total", "48h 20m")
             }
         }

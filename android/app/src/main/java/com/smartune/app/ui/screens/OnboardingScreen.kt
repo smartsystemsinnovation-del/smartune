@@ -2,6 +2,8 @@ package com.smartune.app.ui.screens
 
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -23,7 +25,7 @@ import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.postgrest.postgrest
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun OnboardingScreen(navController: NavHostController, supabaseClient: SupabaseClient) {
     var username by remember { mutableStateOf("") }
@@ -121,9 +123,7 @@ fun OnboardingScreen(navController: NavHostController, supabaseClient: SupabaseC
                     ),
                     border = FilterChipDefaults.filterChipBorder(
                         borderColor = SmartuneColors.Border,
-                        selectedBorderColor = SmartuneColors.Primary,
-                        enabled = true,
-                        selected = instrument == instr
+                        selectedBorderColor = SmartuneColors.Primary
                     )
                 )
             }
@@ -152,9 +152,7 @@ fun OnboardingScreen(navController: NavHostController, supabaseClient: SupabaseC
                     ),
                     border = FilterChipDefaults.filterChipBorder(
                         borderColor = SmartuneColors.Border,
-                        selectedBorderColor = SmartuneColors.Accent,
-                        enabled = true,
-                        selected = isSelected
+                        selectedBorderColor = SmartuneColors.Accent
                     )
                 )
             }
