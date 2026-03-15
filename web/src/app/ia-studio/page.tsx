@@ -8,7 +8,7 @@ export default function IAStudioPage() {
   const [prompt, setPrompt] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
   const [result, setResult] = useState<any>(null);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<{message: string, details?: string} | null>(null);
   const [mode, setMode] = useState<'generate' | 'chat'>('generate');
   const [chatHistory, setChatHistory] = useState<{role: 'user' | 'ai', text: string}[]>([]);
   const router = useRouter();
@@ -31,10 +31,10 @@ export default function IAStudioPage() {
           body: JSON.stringify({ prompt: userMsg, mode: 'chat' })
         });
         const data = await res.json();
-        if (data.error) throw new Error(data.error);
+        if (data.error) throw data;
         setChatHistory(prev => [...prev, { role: 'ai', text: data.text }]);
       } catch (err: any) {
-        setError(err.message);
+        setError({ message: err.error || err.message, details: err.details });
       } finally {
         setIsGenerating(false);
       }
@@ -50,15 +50,10 @@ export default function IAStudioPage() {
           body: JSON.stringify({ prompt, mode: 'generate' })
         });
 
-        if (!res.ok) {
-          const errorData = await res.json();
-          throw new Error(errorData.error || 'Error al generar música');
-        }
-
         const data = await res.json();
         setResult(data);
       } catch (err: any) {
-        setError(err.message);
+        setError({ message: err.error || err.message, details: err.details });
       } finally {
         setIsGenerating(false);
       }
@@ -249,8 +244,16 @@ export default function IAStudioPage() {
           )}
           
           {error && (
-            <div className="mt-6 bg-red-500/10 border border-red-500/20 p-4 rounded-2xl text-center">
-               <p className="text-red-500 text-sm font-bold">⚠️ {error}</p>
+            <div className="mt-6 bg-red-500/10 border border-red-500/20 p-4 rounded-2xl text-center flex flex-col items-center">
+               <p className="text-red-500 text-sm font-bold">⚠️ {error.message}</p>
+               {error.details && (
+                 <div className="mt-4 p-4 bg-black/40 rounded-xl text-left w-full overflow-hidden">
+                    <p className="text-[10px] text-white/40 font-black uppercase mb-2">Detalles Técnicos (API):</p>
+                    <pre className="text-[10px] text-red-400 overflow-x-auto whitespace-pre-wrap max-h-40 font-mono">
+                      {error.details}
+                    </pre>
+                 </div>
+               )}
             </div>
           )}
         </div>

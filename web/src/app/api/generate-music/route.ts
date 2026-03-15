@@ -57,7 +57,11 @@ export async function POST(request: Request) {
           isFallback: true
         };
       } else {
-        return NextResponse.json({ error: `Gemini API Error: ${geminiResponse.status}` }, { status: geminiResponse.status });
+        // Here we return the full error body for debugging (400 cases)
+        return NextResponse.json({ 
+          error: `Gemini API Error: ${geminiResponse.status}`,
+          details: errorBody 
+        }, { status: geminiResponse.status });
       }
     } else {
       const geminiData = await geminiResponse.json();
