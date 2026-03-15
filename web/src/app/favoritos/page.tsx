@@ -86,8 +86,12 @@ export default function MusicSwipePage() {
     try {
       const res = await fetch('/api/swipe', { method: 'PATCH' });
       const data = await res.json();
-      setCounts(data);
-    } catch (e) {}
+      if (data && !data.error) {
+        setCounts(data);
+      }
+    } catch (e) {
+      console.error("Error updating counts:", e);
+    }
   };
 
   const handleSwipe = async (action: 'like' | 'discard') => {
@@ -101,8 +105,12 @@ export default function MusicSwipePage() {
         body: JSON.stringify({ song: currentSong, action })
       });
       const data = await res.json();
-      setCounts(data.counts);
-    } catch (e) {}
+      if (data && data.counts) {
+        setCounts(data.counts);
+      }
+    } catch (e) {
+      console.error("Error updating counts on swipe:", e);
+    }
 
     if (playerRef.current && typeof playerRef.current.stopVideo === 'function') {
       try {
@@ -355,17 +363,17 @@ export default function MusicSwipePage() {
         <div className="mt-12 flex items-center gap-8 bg-[#1f1f1f] px-10 py-5 rounded-full border border-white/5 shadow-xl">
           <div className="flex flex-col items-center">
             <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1">Likes</span>
-            <span className="text-xl font-black text-[#f6339a]">{counts.likes}</span>
+            <span className="text-xl font-black text-[#f6339a]">{counts?.likes ?? 0}</span>
           </div>
           <div className="w-px h-8 bg-white/10"></div>
           <div className="flex flex-col items-center">
             <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1">Vistas</span>
-            <span className="text-xl font-black text-white">{counts.views}</span>
+            <span className="text-xl font-black text-white">{counts?.views ?? 0}</span>
           </div>
           <div className="w-px h-8 bg-white/10"></div>
           <div className="flex flex-col items-center">
             <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1">Pasadas</span>
-            <span className="text-xl font-black text-gray-400">{counts.discards}</span>
+            <span className="text-xl font-black text-gray-400">{counts?.discards ?? 0}</span>
           </div>
         </div>
 
