@@ -20,6 +20,7 @@ export default function MusicSwipePage() {
   const [user, setUser] = useState<any>(null);
   const [counts, setCounts] = useState({ likes: 0, views: 0, discards: 0 });
   const [error, setError] = useState<string | null>(null);
+  const [isPlaying, setIsPlaying] = useState(false);
   
   const playerRef = useRef<any>(null);
   const supabase = createClient();
@@ -93,10 +94,10 @@ export default function MusicSwipePage() {
       setCounts(data.counts);
     } catch (e) {}
 
-    // Stop current track before moving
     if (playerRef.current) {
       playerRef.current.stopVideo();
     }
+    setIsPlaying(false);
     setCurrentIndex(prev => prev + 1);
   };
 
@@ -123,13 +124,16 @@ export default function MusicSwipePage() {
               event.target.playVideo();
             },
             onStateChange: (event: any) => {
-              // If playing, set timeout to pause after 8s
               if (event.data === (window as any).YT.PlayerState.PLAYING) {
+                setIsPlaying(true);
                 setTimeout(() => {
                   if (playerRef.current && playerRef.current.getPlayerState() === (window as any).YT.PlayerState.PLAYING) {
                     playerRef.current.pauseVideo();
+                    setIsPlaying(false);
                   }
                 }, 8000);
+              } else if (event.data === (window as any).YT.PlayerState.PAUSED || event.data === (window as any).YT.PlayerState.ENDED) {
+                setIsPlaying(false);
               }
             }
           }
@@ -138,21 +142,43 @@ export default function MusicSwipePage() {
     }
   }, [currentIndex, songs]);
 
+  const togglePlay = () => {
+    if (!playerRef.current) return;
+    const state = playerRef.current.getPlayerState();
+    if (state === (window as any).YT.PlayerState.PLAYING) {
+      playerRef.current.pauseVideo();
+    } else {
+      playerRef.current.playVideo();
+    }
+  };
+
   if (loading) {
     return (
-      <div className="flex h-[80vh] items-center justify-center bg-gray-50">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+      <div className="flex h-[80vh] items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#f6339a]"></div>
       </div>
     );
   }
 
   if (!user) {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div style={{ padding: '40px 0' }}>
         <Navigation />
         <AuthGatekeeper 
+          iconNode={
+            <div style={{ width: 80, height: 80, borderRadius: '50%', border: '2px solid var(--neon-pink)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--neon-pink)" strokeWidth="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+            </div>
+          }
+          titlePath1="Inicia sesión para usar"
           titleHighlight="MusicSwipe"
-          subtitle="Descubre nueva música con el poder de YouTube."
+          subtitle="Descubre nueva música con el poder de YouTube Music. Guarda tus favoritas en tu perfil personalizado."
+          cardTitle="¿Qué puedes hacer?"
+          benefits={[
+            { text: "Descubre canciones por energía y ritmo" },
+            { text: "Guarda tus favoritas al instante" },
+            { text: "Crea tu propia playlist de entrenamiento" }
+          ]}
         />
       </div>
     );
@@ -161,19 +187,19 @@ export default function MusicSwipePage() {
   const currentSong = songs[currentIndex];
 
   return (
-    <div className="flex flex-col min-h-screen bg-gray-50">
+    <div className="flex flex-col min-h-screen">
       <Navigation />
       
-      <main className="flex-1 flex flex-col items-center justify-center p-4 md:p-8">
+      <main className="flex-1 flex flex-col items-center justify-center p-4 md:p-8 relative">
         
         <div className="w-full max-w-4xl flex justify-between items-center mb-8">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">
-              Music<span className="text-red-600">Swipe</span>
+            <h1 className="text-3xl md:text-4xl font-black text-white tracking-tight">
+              Music<span className="text-[#f6339a]">Swipe</span>
             </h1>
-            <p className="text-gray-500">Descubre tracks vía YouTube</p>
+            <p className="text-gray-400 font-medium">Tinder de Música • SmarTune</p>
           </div>
-          <Link href="/favoritos/playlist" className="px-6 py-2 bg-white border border-gray-200 rounded-full text-sm font-bold text-gray-700 hover:shadow-md transition-all">
+          <Link href="/favoritos/playlist" className="px-6 py-2 bg-[#1f1f1f] border border-white/10 rounded-full text-sm font-bold text-white hover:border-[#f6339a] transition-all shadow-lg">
             Mi Playlist 🎥
           </Link>
         </div>
@@ -182,67 +208,96 @@ export default function MusicSwipePage() {
         <div id="youtube-player" className="hidden"></div>
 
         {/* Swipe Card */}
-        <div className="w-full max-w-sm">
+        <div className="w-full max-w-sm relative">
           {error ? (
-            <div className="text-center p-8 bg-red-50 rounded-2xl border border-red-100 shadow-sm">
-              <p className="text-red-600 font-medium mb-4">⚠️ {error}</p>
-              <button onClick={fetchSongs} className="px-6 py-2 bg-red-600 text-white rounded-lg font-bold">Reintentar</button>
+            <div className="text-center p-8 bg-red-500/10 rounded-3xl border border-red-500/20">
+              <p className="text-red-500 font-bold mb-4">⚠️ {error}</p>
+              <button 
+                onClick={fetchSongs} 
+                className="px-6 py-2 bg-red-500 text-white rounded-lg font-bold"
+              >
+                Reintentar
+              </button>
             </div>
           ) : currentSong ? (
-            <div className="bg-white rounded-[2rem] shadow-xl overflow-hidden border border-gray-100 transition-all duration-300 transform">
+            <div className="bg-[#1f1f1f] rounded-[2.5rem] shadow-2xl overflow-hidden border border-white/5 transform transition-all duration-300">
               <div className="aspect-square w-full relative">
                 <img src={currentSong.coverUrl} alt={currentSong.title} className="w-full h-full object-cover" />
-                <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/80 to-transparent"></div>
+                <div className="absolute inset-0 bg-gradient-to-t from-[#1f1f1f] via-transparent to-transparent"></div>
                 
-                <div className="absolute bottom-6 left-6 right-6">
-                  <h2 className="text-white text-xl font-bold truncate mb-1">{currentSong.title}</h2>
-                  <p className="text-gray-300 text-sm font-medium">{currentSong.artist}</p>
+                {/* Play/Pause Button Overlay */}
+                <button 
+                  onClick={togglePlay}
+                  className="absolute inset-0 flex items-center justify-center bg-black/20 group hover:bg-black/40 transition-all opacity-100 md:opacity-0 md:group-hover:opacity-100"
+                >
+                  <div className={`w-20 h-20 rounded-full flex items-center justify-center backdrop-blur-md border border-white/30 shadow-2xl transition-transform ${isPlaying ? 'scale-110' : 'scale-100 hover:scale-110'}`}>
+                    {isPlaying ? (
+                      <svg width="32" height="32" viewBox="0 0 24 24" fill="white">
+                        <rect x="6" y="4" width="4" height="16" />
+                        <rect x="14" y="4" width="4" height="16" />
+                      </svg>
+                    ) : (
+                      <svg width="32" height="32" viewBox="0 0 24 24" fill="white" className="ml-1">
+                        <path d="M8 5v14l11-7z" />
+                      </svg>
+                    )}
+                  </div>
+                </button>
+
+                <div className="absolute bottom-8 left-8 right-8 pointer-events-none">
+                  <h2 className="text-white text-2xl font-bold truncate mb-1 text-shadow-lg">{currentSong.title}</h2>
+                  <p className="text-gray-300 font-bold tracking-wide">{currentSong.artist}</p>
                 </div>
               </div>
 
-              <div className="p-6 flex justify-between items-center gap-4">
+              <div className="p-8 flex justify-between items-center gap-6">
                 <button 
                   onClick={() => handleSwipe('discard')}
-                  className="w-16 h-16 rounded-full bg-gray-50 border border-gray-200 flex items-center justify-center hover:bg-red-50 hover:border-red-200 group transition-all"
+                  className="flex-1 h-16 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center hover:bg-red-50/10 hover:border-red-500/50 group transition-all"
                 >
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" className="text-gray-400 group-hover:text-red-500" strokeWidth="3" strokeLinecap="round">
+                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" className="text-gray-400 group-hover:text-red-500 transition-colors" strokeWidth="3" strokeLinecap="round">
                     <path d="M18 6L6 18M6 6l12 12" />
                   </svg>
                 </button>
                 
                 <button 
                   onClick={() => handleSwipe('like')}
-                  className="flex-1 h-16 rounded-2xl bg-red-600 flex items-center justify-center shadow-lg shadow-red-200 hover:scale-[1.02] active:scale-95 transition-all"
+                  className="flex-1 h-16 rounded-2xl bg-gradient-to-r from-[#f6339a] to-[#9810fa] flex items-center justify-center shadow-[0_10px_20px_rgba(246,51,154,0.3)] hover:scale-105 active:scale-95 transition-all"
                 >
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="white">
+                  <svg width="28" height="28" viewBox="0 0 24 24" fill="white">
                     <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
                   </svg>
                 </button>
               </div>
             </div>
           ) : (
-            <div className="text-center p-12 bg-white rounded-2xl border border-dashed border-gray-200">
-              <p className="text-gray-500 mb-6">No hay más recomendaciones</p>
-              <button onClick={fetchSongs} className="px-8 py-3 bg-red-600 text-white font-bold rounded-xl shadow-lg shadow-red-100">Cargar más</button>
+            <div className="text-center p-12 bg-[#1f1f1f] rounded-3xl border border-dashed border-white/10">
+              <p className="text-gray-500 font-medium mb-6">¡Descubrimientos agotados!</p>
+              <button 
+                onClick={fetchSongs} 
+                className="px-8 py-3 bg-[#f6339a] text-white font-bold rounded-xl hover:bg-[#ee10b0] transition-colors"
+              >
+                Volver a cargar
+              </button>
             </div>
           )}
         </div>
 
         {/* Stats Bar */}
-        <div className="mt-10 flex items-center gap-6 bg-white px-8 py-4 rounded-full border border-gray-100 shadow-lg">
-          <div className="flex flex-col items-center min-w-[60px]">
-            <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Likes</span>
-            <span className="text-lg font-bold text-red-500">{counts.likes}</span>
+        <div className="mt-12 flex items-center gap-8 bg-[#1f1f1f] px-10 py-5 rounded-full border border-white/5 shadow-xl">
+          <div className="flex flex-col items-center">
+            <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1">Likes</span>
+            <span className="text-xl font-black text-[#f6339a]">{counts.likes}</span>
           </div>
-          <div className="w-px h-6 bg-gray-100"></div>
-          <div className="flex flex-col items-center min-w-[60px]">
-            <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Vistas</span>
-            <span className="text-lg font-bold text-gray-800">{counts.views}</span>
+          <div className="w-px h-8 bg-white/10"></div>
+          <div className="flex flex-col items-center">
+            <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1">Vistas</span>
+            <span className="text-xl font-black text-white">{counts.views}</span>
           </div>
-          <div className="w-px h-6 bg-gray-100"></div>
-          <div className="flex flex-col items-center min-w-[60px]">
-            <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Pasadas</span>
-            <span className="text-lg font-bold text-gray-400">{counts.discards}</span>
+          <div className="w-px h-8 bg-white/10"></div>
+          <div className="flex flex-col items-center">
+            <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1">Pasadas</span>
+            <span className="text-xl font-black text-gray-400">{counts.discards}</span>
           </div>
         </div>
 
