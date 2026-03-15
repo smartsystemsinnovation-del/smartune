@@ -94,15 +94,15 @@ export default function Sidebar() {
         </div>
 
         <div className={styles.menuSection}>
-          <p className={styles.sectionTitle}>Playlist and favorite</p>
+          <p className={styles.sectionTitle}>Favoritos y Playlist</p>
           <nav className={styles.navGroup}>
-            <Link href="/favoritos" className={`${styles.navItem} ${isPrefixActive('/favoritos') ? styles.active : ''}`} onClick={() => setIsOpen(false)}>
+            <Link href="/favoritos" className={`${styles.navItem} ${pathname === '/favoritos' ? styles.active : ''}`} onClick={() => setIsOpen(false)}>
               <span className={styles.icon}>❤️</span>
-              Favoritos
+              MusicSwipe
             </Link>
-            <Link href="/playlist" className={`${styles.navItem} ${pathname === '/playlist' ? styles.active : ''}`} onClick={() => setIsOpen(false)}>
+            <Link href="/favoritos/playlist" className={`${styles.navItem} ${pathname === '/favoritos/playlist' ? styles.active : ''}`} onClick={() => setIsOpen(false)}>
               <span className={styles.icon}>🎵</span>
-              Mi playlist
+              Mi Playlist
             </Link>
             <Link href="/playlist/crear" className={`${styles.navItemAdd} ${pathname === '/playlist/crear' ? styles.active : ''}`} onClick={() => setIsOpen(false)}>
               <span className={styles.icon}>➕</span>

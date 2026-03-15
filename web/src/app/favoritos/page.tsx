@@ -1,56 +1,217 @@
-import { createClient } from '@/utils/supabase/server';
+"use client";
+
+import React, { useState, useEffect, useRef } from 'react';
 import Navigation from '@/components/Navigation';
 import AuthGatekeeper from '@/components/AuthGatekeeper';
-import styles from '../dashboard/page.module.css';
+import { createClient } from '@/utils/supabase/client';
+import Link from 'next/link';
 
-export default async function FavoritosPage() {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  const isAuthenticated = !!user;
+interface Song {
+  id: string;
+  title: string;
+  artist: string;
+  coverUrl: string;
+  previewUrl: string;
+}
+
+export default function MusicSwipePage() {
+  const [songs, setSongs] = useState<Song[]>([]);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState<any>(null);
+  const [counts, setCounts] = useState({ likes: 0, views: 0, discards: 0 });
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const supabase = createClient();
+
+  useEffect(() => {
+    const checkUser = async () => {
+      const { data } = await supabase.auth.getUser();
+      setUser(data.user);
+      if (data.user) {
+        fetchSongs();
+        updateCounts();
+      } else {
+        setLoading(false);
+      }
+    };
+    checkUser();
+  }, []);
+
+  const fetchSongs = async () => {
+    setLoading(true);
+    try {
+      const res = await fetch('/api/songs');
+      const data = await res.json();
+      if (Array.isArray(data)) {
+        setSongs(data);
+      }
+    } catch (error) {
+      console.error("Error loading songs", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const updateCounts = async () => {
+    try {
+      const res = await fetch('/api/swipe', { method: 'PATCH' });
+      const data = await res.json();
+      setCounts(data);
+    } catch (e) {}
+  };
+
+  const handleSwipe = async (action: 'like' | 'discard') => {
+    const currentSong = songs[currentIndex];
+    if (!currentSong) return;
+
+    try {
+      const res = await fetch('/api/swipe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ song: currentSong, action })
+      });
+      const data = await res.json();
+      setCounts(data.counts);
+    } catch (e) {}
+
+    setCurrentIndex(prev => prev + 1);
+  };
+
+  useEffect(() => {
+    if (songs[currentIndex]) {
+      if (audioRef.current) {
+        audioRef.current.src = songs[currentIndex].previewUrl;
+        audioRef.current.play().catch(e => console.log("Autoplay blocked", e));
+        
+        const timer = setTimeout(() => {
+          audioRef.current?.pause();
+        }, 8000);
+        
+        return () => clearTimeout(timer);
+      }
+    }
+  }, [currentIndex, songs]);
+
+  if (loading) {
+    return (
+      <div className="flex h-[80vh] items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#f6339a]"></div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return (
+      <div style={{ padding: '40px 0' }}>
+        <Navigation />
+        <AuthGatekeeper 
+          iconNode={
+            <div style={{ width: 80, height: 80, borderRadius: '50%', border: '2px solid var(--neon-pink)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--neon-pink)" strokeWidth="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+            </div>
+          }
+          titlePath1="Inicia sesión para usar"
+          titleHighlight="MusicSwipe"
+          subtitle="Descubre nueva música deslizando hacia la derecha. Guarda tus favoritas en tu perfil personalizado."
+          cardTitle="¿Qué puedes hacer?"
+          benefits={[
+            { text: "Descubre canciones por energía y ritmo" },
+            { text: "Guarda tus favoritas al instante" },
+            { text: "Crea tu propia playlist de entrenamiento" }
+          ]}
+        />
+      </div>
+    );
+  }
+
+  const currentSong = songs[currentIndex];
 
   return (
-    <main className={styles.main}>
+    <div className="flex flex-col min-h-screen">
       <Navigation />
-      <div className={styles.dashboardContainer}>
-        <div className={styles.headerSection} style={{ marginBottom: '24px' }}>
-          <h1 className={styles.greetingTitle}>
-            <span style={{color: 'var(--neon-pink)', marginRight: '12px'}}>♥</span>
-            Tus <span>Favoritos</span>
-          </h1>
-          <p className={styles.greetingSubtitle}>Guarda tus canciones y cursos favoritos</p>
+      
+      <main className="flex-1 flex flex-col items-center justify-center p-4 md:p-8 relative">
+        
+        <div className="w-full max-w-4xl flex justify-between items-center mb-8">
+          <div>
+            <h1 className="text-3xl md:text-4xl font-black text-white tracking-tight">
+              Music<span className="text-[#f6339a]">Swipe</span>
+            </h1>
+            <p className="text-gray-400 font-medium">Tinder de Música • SmarTune</p>
+          </div>
+          <Link href="/favoritos/playlist" className="px-6 py-2 bg-[#1f1f1f] border border-white/10 rounded-full text-sm font-bold text-white hover:border-[#f6339a] transition-all shadow-lg">
+            Mi Playlist 🎵
+          </Link>
         </div>
 
-        {!isAuthenticated ? (
-          <AuthGatekeeper 
-            iconNode={
-              <div style={{ width: 80, height: 80, borderRadius: '50%', border: '2px solid var(--neon-pink)', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
-                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--neon-pink)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                  <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-                </svg>
-                <div style={{ position: 'absolute', top: -4, right: -4, background: 'var(--neon-pink)', borderRadius: '50%', width: 24, height: 24, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="white" stroke="white" strokeWidth="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+        {/* Swipe Card */}
+        <div className="w-full max-w-sm relative">
+          {currentSong ? (
+            <div className="bg-[#1f1f1f] rounded-[2.5rem] shadow-2xl overflow-hidden border border-white/5 transform transition-all duration-300">
+              <div className="aspect-square w-full relative">
+                <img src={currentSong.coverUrl} alt={currentSong.title} className="w-full h-full object-cover" />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#1f1f1f] via-transparent to-transparent"></div>
+                
+                <div className="absolute bottom-8 left-8 right-8">
+                  <h2 className="text-white text-2xl font-bold truncate mb-1">{currentSong.title}</h2>
+                  <p className="text-gray-400 font-medium">{currentSong.artist}</p>
                 </div>
               </div>
-            }
-            titlePath1="Crea una cuenta para acceder a"
-            titleHighlight="Favoritos"
-            subtitle="Inicia sesión o regístrate para guardar tus canciones y cursos favoritos. Accede a ellos desde cualquier dispositivo en cualquier momento."
-            cardIcon={<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--neon-pink)" strokeWidth="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>}
-            cardTitle="Beneficios de tener una cuenta:"
-            benefits={[
-              { text: "Guarda tus canciones y cursos favoritos ilimitadamente" },
-              { text: "Sincroniza tu progreso en todos tus dispositivos" },
-              { text: "Crea playlists personalizadas" },
-              { text: "Participa en la comunidad y comparte tu progreso" }
-            ]}
-          />
-        ) : (
-          <div className={styles.emptyState}>
-            <p>Aún no tienes elementos en favoritos. ¡Explora el catálogo!</p>
+
+              <div className="p-8 flex justify-between items-center gap-6">
+                <button 
+                  onClick={() => handleSwipe('discard')}
+                  className="flex-1 h-16 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center hover:bg-red-500/10 hover:border-red-500/50 group transition-all"
+                >
+                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" className="text-gray-400 group-hover:text-red-500 transition-colors" strokeWidth="3" strokeLinecap="round">
+                    <path d="M18 6L6 18M6 6l12 12" />
+                  </svg>
+                </button>
+                
+                <button 
+                  onClick={() => handleSwipe('like')}
+                  className="flex-1 h-16 rounded-2xl bg-gradient-to-r from-[#f6339a] to-[#9810fa] flex items-center justify-center shadow-[0_10px_20px_rgba(246,51,154,0.3)] hover:scale-105 active:scale-95 transition-all"
+                >
+                  <svg width="28" height="28" viewBox="0 0 24 24" fill="white">
+                    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div className="text-center p-12 bg-[#1f1f1f] rounded-3xl border border-dashed border-white/10">
+              <p className="text-gray-500 font-medium mb-6">¡Descubrimientos agotados!</p>
+              <button 
+                onClick={fetchSongs} 
+                className="px-8 py-3 bg-[#f6339a] text-white font-bold rounded-xl hover:bg-[#ee10b0] transition-colors"
+              >
+                Volver a cargar
+              </button>
+            </div>
+          )}
+          
+          <audio ref={audioRef} hidden />
+        </div>
+
+        {/* Stats Bar */}
+        <div className="mt-12 flex items-center gap-8 bg-[#1f1f1f] px-10 py-5 rounded-full border border-white/5 shadow-xl">
+          <div className="flex flex-col items-center">
+            <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1">Likes</span>
+            <span className="text-xl font-black text-[#f6339a]">{counts.likes}</span>
           </div>
-        )}
-      </div>
-    </main>
+          <div className="w-px h-8 bg-white/10"></div>
+          <div className="flex flex-col items-center">
+            <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1">Vistas</span>
+            <span className="text-xl font-black text-white">{counts.views}</span>
+          </div>
+          <div className="w-px h-8 bg-white/10"></div>
+          <div className="flex flex-col items-center">
+            <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1">Pasadas</span>
+            <span className="text-xl font-black text-gray-400">{counts.discards}</span>
+          </div>
+        </div>
+
+      </main>
+    </div>
   );
 }
