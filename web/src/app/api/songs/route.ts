@@ -4,9 +4,12 @@ import { fetchSpotifySongs } from '@/utils/spotify';
 export async function GET() {
   try {
     const songs = await fetchSpotifySongs();
+    if (!songs || songs.length === 0) {
+      console.warn('Spotify fetch returned 0 songs with previews');
+    }
     return NextResponse.json(songs);
   } catch (error: any) {
-    console.error('Error fetching songs:', error);
-    return NextResponse.json({ error: 'Failed to fetch songs' }, { status: 500 });
+    console.error('CRITICAL API ERROR /api/songs:', error.message);
+    return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }

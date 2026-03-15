@@ -27,10 +27,12 @@ export async function getSpotifyAccessToken() {
 export async function fetchSpotifySongs() {
   const token = await getSpotifyAccessToken();
   
-  // We use track seeds which are more reliable than genre seeds in some regions/accounts
-  // Let's use some popular high-energy track IDs as seeds (Hardstyle/Electronic)
-  const seedTracks = '49U7p2u1iF6KjX0T76L0E9,6088m9Ynu996oxpY9WqYid'; // Tevvez Tracks
-  const url = `https://api.spotify.com/v1/recommendations?limit=50&seed_tracks=${seedTracks}&min_energy=0.6`;
+  // Using both tracks and genres for better hit rate
+  const seedTracks = '49U7p2u1iF6KjX0T76L0E9,6088m9Ynu996oxpY9WqYid';
+  const seedGenresArr = 'workout,gaming,edm';
+  const url = `https://api.spotify.com/v1/recommendations?limit=50&seed_tracks=${seedTracks}&seed_genres=${seedGenresArr}&min_energy=0.4`;
+
+  console.log('Fetching Spotify recommendations from:', url);
 
   const response = await fetch(url, {
     headers: {
@@ -40,23 +42,25 @@ export async function fetchSpotifySongs() {
   });
 
   if (!response.ok) {
-    const errorData = await response.json();
-    console.error('Spotify API Error:', errorData);
-    throw new Error('Failed to fetch songs from Spotify');
+    const errorBody = await response.text();
+    console.error('Spotify API Error Response:', errorBody);
+    throw new Error(`Spotify API error: ${response.status}`);
   }
 
   const data = await response.json();
+  console.log(`Found ${data.tracks?.length || 0} tracks from Spotify API`);
   
   // Filter for tracks with preview_url and map to simpler format
-  const tracks = data.tracks
+  const tracks = (data.tracks || [])
     .filter((track: any) => track.preview_url !== null)
     .map((track: any) => ({
       id: track.id,
       title: track.name,
-      artist: track.artists[0].name,
-      coverUrl: track.album.images[0]?.url,
+      artist: track.artists[0]?.name || 'Unknown Artist',
+      coverUrl: track.album?.images[0]?.url || '',
       previewUrl: track.preview_url,
     }));
 
+  console.log(`Returning ${tracks.length} tracks with previews`);
   return tracks;
 }

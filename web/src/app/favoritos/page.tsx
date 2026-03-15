@@ -37,16 +37,23 @@ export default function MusicSwipePage() {
     checkUser();
   }, []);
 
+  const [error, setError] = useState<string | null>(null);
+
   const fetchSongs = async () => {
     setLoading(true);
+    setError(null);
     try {
       const res = await fetch('/api/songs');
       const data = await res.json();
-      if (Array.isArray(data)) {
+      
+      if (data.error) {
+        setError(data.error);
+      } else if (Array.isArray(data)) {
         setSongs(data);
       }
-    } catch (error) {
-      console.error("Error loading songs", error);
+    } catch (err: any) {
+      console.error("Error loading songs", err);
+      setError("Error de conexión con el servidor");
     } finally {
       setLoading(false);
     }
@@ -146,7 +153,17 @@ export default function MusicSwipePage() {
 
         {/* Swipe Card */}
         <div className="w-full max-w-sm relative">
-          {currentSong ? (
+          {error ? (
+            <div className="text-center p-8 bg-red-500/10 rounded-3xl border border-red-500/20">
+              <p className="text-red-500 font-bold mb-4">⚠️ {error}</p>
+              <button 
+                onClick={fetchSongs} 
+                className="px-6 py-2 bg-red-500 text-white rounded-lg font-bold"
+              >
+                Reintentar
+              </button>
+            </div>
+          ) : currentSong ? (
             <div className="bg-[#1f1f1f] rounded-[2.5rem] shadow-2xl overflow-hidden border border-white/5 transform transition-all duration-300">
               <div className="aspect-square w-full relative">
                 <img src={currentSong.coverUrl} alt={currentSong.title} className="w-full h-full object-cover" />
