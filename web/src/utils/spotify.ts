@@ -27,12 +27,12 @@ export async function getSpotifyAccessToken() {
 export async function fetchSpotifySongs() {
   const token = await getSpotifyAccessToken();
   
-  // 404 usually means invalid seeds or malformed URL. 
-  // Let's use only 2 very popular track seeds to be 100% safe.
-  const seedTracks = '49U7p2u1iF6KjX0T76L0E9,6088m9Ynu996oxpY9WqYid';
-  const url = `https://api.spotify.com/v1/recommendations?limit=40&seed_tracks=${seedTracks}&min_energy=0.5`;
+  // Switched to Search endpoint because Recommendations was failing with 404
+  // Searching for high energy genres/artists directly
+  const query = encodeURIComponent('hardstyle tevvez gym workout');
+  const url = `https://api.spotify.com/v1/search?q=${query}&type=track&limit=50`;
 
-  console.log('Fetching Spotify recommendations from:', url);
+  console.log('Fetching Spotify search from:', url);
 
   const response = await fetch(url, {
     headers: {
@@ -43,15 +43,14 @@ export async function fetchSpotifySongs() {
 
   if (!response.ok) {
     const errorBody = await response.text();
-    console.error('Spotify API Error Response:', errorBody);
+    console.error('Spotify API Error:', errorBody);
     throw new Error(`Spotify API error: ${response.status}`);
   }
 
   const data = await response.json();
-  console.log(`Found ${data.tracks?.length || 0} tracks from Spotify API`);
   
-  // Filter for tracks with preview_url and map to simpler format
-  const tracks = (data.tracks || [])
+  // Filter for tracks with preview_url
+  const tracks = (data.tracks?.items || [])
     .filter((track: any) => track.preview_url !== null)
     .map((track: any) => ({
       id: track.id,
@@ -61,6 +60,6 @@ export async function fetchSpotifySongs() {
       previewUrl: track.preview_url,
     }));
 
-  console.log(`Returning ${tracks.length} tracks with previews`);
+  console.log(`Found ${tracks.length} tracks with previews out of ${data.tracks?.items?.length || 0}`);
   return tracks;
 }
