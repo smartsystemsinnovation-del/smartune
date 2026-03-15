@@ -27,12 +27,11 @@ export async function getSpotifyAccessToken() {
 export async function fetchSpotifySongs() {
   const token = await getSpotifyAccessToken();
   
-  // Switched to Search endpoint because Recommendations was failing with 404
-  // Searching for high energy genres/artists directly
-  const query = encodeURIComponent('hardstyle tevvez gym workout');
-  const url = `https://api.spotify.com/v1/search?q=${query}&type=track&limit=50`;
+  // Removing limit parameter entirely to see if it fixes the 400
+  const query = encodeURIComponent('hardstyle tevvez workout');
+  const url = `https://api.spotify.com/v1/search?q=${query}&type=track`;
 
-  console.log('Fetching Spotify search from:', url);
+  console.log('DEBUG: Final Spotify Request URL:', url);
 
   const response = await fetch(url, {
     headers: {
