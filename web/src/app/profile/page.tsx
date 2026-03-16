@@ -36,7 +36,7 @@ export default function ProfilePage() {
           
           // Detectar si es usuario de Google
           const isGoogle = user.app_metadata.provider === 'google' || 
-                           user.identities?.some(id => id.provider === 'google');
+                           user.identities?.some((id: any) => id.provider === 'google');
           setIsGoogleUser(!!isGoogle);
 
           // Intentar cargar desde la base de datos primero (API)
