@@ -70,6 +70,32 @@
   position: relative;
   width: 96px;
   height: 96px;
+  cursor: pointer;
+}
+
+.avatarUploadOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.4);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.2s;
+  z-index: 5;
+  color: white;
+}
+
+.avatarContainer:hover .avatarUploadOverlay {
+  opacity: 1;
+}
+
+.hiddenInput {
+  display: none;
 }
 
 .avatarGlow {
@@ -147,6 +173,13 @@
 .input:focus {
   outline: none;
   border-color: #e83e8c;
+}
+
+.input:disabled {
+  opacity: 0.6;
+  background: rgba(255, 255, 255, 0.02);
+  cursor: not-allowed;
+  border-color: #374151 !important;
 }
 
 .input::placeholder {

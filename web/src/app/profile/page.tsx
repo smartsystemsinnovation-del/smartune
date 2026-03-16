@@ -22,6 +22,8 @@ export default function ProfilePage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
+  const [isGoogleUser, setIsGoogleUser] = useState(false);
+  const [uploading, setUploading] = useState(false);
 
   const supabase = createClient();
 
@@ -32,6 +34,11 @@ export default function ProfilePage() {
         if (user) {
           setEmail(user.email || '');
           
+          // Detectar si es usuario de Google
+          const isGoogle = user.app_metadata.provider === 'google' || 
+                           user.identities?.some(id => id.provider === 'google');
+          setIsGoogleUser(!!isGoogle);
+
           // Intentar cargar desde la base de datos primero (API)
           const res = await fetch('/api/user/profile');
           if (res.ok) {
@@ -65,6 +72,43 @@ export default function ProfilePage() {
     );
   };
 
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploading(true);
+    setMessage(null);
+
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Usuario no autenticado');
+
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${user.id}-${Math.random()}.${fileExt}`;
+      const filePath = `avatars/${fileName}`;
+
+      // 1. Subir a Supabase Storage
+      const { error: uploadError } = await supabase.storage
+        .from('avatars')
+        .upload(filePath, file);
+
+      if (uploadError) throw uploadError;
+
+      // 2. Obtener URL pública
+      const { data: { publicUrl } } = supabase.storage
+        .from('avatars')
+        .getPublicUrl(filePath);
+
+      setAvatarUrl(publicUrl);
+      setMessage({ type: 'success', text: '¡Imagen cargada! No olvides guardar los cambios.' });
+    } catch (error: any) {
+      console.error(error);
+      setMessage({ type: 'error', text: 'Error al subir la imagen. Asegúrate de que el bucket "avatars" exista.' });
+    } finally {
+      setUploading(false);
+    }
+  };
+
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     setSaving(true);
@@ -72,23 +116,29 @@ export default function ProfilePage() {
 
     try {
       // 1. Update Auth Metadata
+      const updateData: any = {
+        avatar_url: avatarUrl,
+        favorite_genres: selectedGenres,
+        instrument: instrument
+      };
+
+      // Solo permitir cambiar nombre si NO es usuario de Google
+      if (!isGoogleUser) {
+        updateData.full_name = username;
+      }
+
       const { error: authError } = await supabase.auth.updateUser({
-        data: {
-          full_name: username,
-          avatar_url: avatarUrl,
-          favorite_genres: selectedGenres,
-          instrument: instrument
-        }
+        data: updateData
       });
 
       if (authError) throw authError;
 
-      // 2. Also update via API if exists (to keep sync with profiles table if used)
+      // 2. Also update via API
       await fetch('/api/user/profile', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          nombre: username,
+          nombre: isGoogleUser ? undefined : username, // Evitar sobreescribir si es Google
           avatar_url: avatarUrl,
           instrumento: instrument,
           gustos_musicales: selectedGenres
@@ -126,73 +176,79 @@ export default function ProfilePage() {
         <div className={styles.overlayBlur2} />
 
         <div className={styles.card}>
-        <div className={styles.header}>
-          <div className={styles.avatarContainer}>
-            <div className={styles.avatarGlow} />
-            <div className={styles.avatar}>
-              {avatarUrl ? (
-                <img src={avatarUrl} alt="Avatar" className={styles.avatarImage} />
-              ) : (
-                <User size={40} color="#6b7280" />
-              )}
+          <div className={styles.header}>
+            <div className={styles.avatarContainer} onClick={() => document.getElementById('avatar-upload')?.click()}>
+              <div className={styles.avatarGlow} />
+              <div className={styles.avatar}>
+                {uploading ? (
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
+                ) : avatarUrl ? (
+                  <img src={avatarUrl} alt="Avatar" className={styles.avatarImage} />
+                ) : (
+                  <User size={40} color="#6b7280" />
+                )}
+              </div>
+              <div className={styles.avatarUploadOverlay}>
+                <span>{uploading ? '...' : 'SUBIR'}</span>
+              </div>
+              <input 
+                id="avatar-upload"
+                type="file" 
+                accept="image/*"
+                className={styles.hiddenInput}
+                onChange={handleImageUpload}
+                disabled={uploading}
+              />
             </div>
+            <h1 className={styles.title}>Ajustes</h1>
+            {isGoogleUser && (
+              <p className="text-[10px] text-gray-500 uppercase tracking-tighter">Cuenta de Google vinculada</p>
+            )}
           </div>
-          <h1 className={styles.title}>Ajustes</h1>
-        </div>
 
-        <form onSubmit={handleSave} className={styles.form}>
-          {message && (
-            <div className={message.type === 'success' ? styles.successMsg : styles.errorMsg}>
-              {message.text}
+          <form onSubmit={handleSave} className={styles.form}>
+            {message && (
+              <div className={message.type === 'success' ? styles.successMsg : styles.errorMsg}>
+                {message.text}
+              </div>
+            )}
+
+            <div className={styles.inputWrapper}>
+              <User className={styles.inputIcon} size={18} />
+              <input 
+                type="text" 
+                placeholder="Username" 
+                className={styles.input}
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                required
+                disabled={isGoogleUser}
+              />
             </div>
-          )}
 
-          <div className={styles.inputWrapper}>
-            <User className={styles.inputIcon} size={18} />
-            <input 
-              type="text" 
-              placeholder="Username" 
-              className={styles.input}
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              required
-            />
-          </div>
+            <div className={styles.inputWrapper}>
+              <Mail className={styles.inputIcon} size={18} />
+              <input 
+                type="email" 
+                placeholder="Correo Electrónico" 
+                className={styles.input}
+                value={email}
+                disabled
+              />
+            </div>
 
-          <div className={styles.inputWrapper}>
-            <Mail className={styles.inputIcon} size={18} />
-            <input 
-              type="email" 
-              placeholder="Correo Electrónico" 
-              className={styles.input}
-              value={email}
-              disabled
-            />
-          </div>
-
-          <div className={styles.inputWrapper}>
-            <LinkIcon className={styles.inputIcon} size={18} />
-            <input 
-              type="text" 
-              placeholder="Avatar URL" 
-              className={styles.input}
-              value={avatarUrl}
-              onChange={(e) => setAvatarUrl(e.target.value)}
-            />
-          </div>
-
-          <div className={styles.inputWrapper}>
-            <Music className={styles.inputIcon} size={18} />
-            <select 
-              className={styles.input}
-              value={instrument}
-              onChange={(e) => setInstrument(e.target.value)}
-            >
-              {INSTRUMENTS.map(i => (
-                <option key={i} value={i} style={{ background: '#1A1A1A' }}>{i}</option>
-              ))}
-            </select>
-          </div>
+            <div className={styles.inputWrapper}>
+              <Music className={styles.inputIcon} size={18} />
+              <select 
+                className={styles.input}
+                value={instrument}
+                onChange={(e) => setInstrument(e.target.value)}
+              >
+                {INSTRUMENTS.map(i => (
+                  <option key={i} value={i} style={{ background: '#1A1A1A' }}>{i}</option>
+                ))}
+              </select>
+            </div>
 
           <div>
             <p className={styles.sectionLabel}>Géneros Favoritos</p>
