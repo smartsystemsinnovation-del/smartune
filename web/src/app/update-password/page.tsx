@@ -10,18 +10,31 @@ export default function UpdatePasswordPage() {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
-  const [sessionChecked, setSessionChecked] = useState(false);
+  const [verifying, setVerifying] = useState(true);
 
   const supabase = createClient();
 
   useEffect(() => {
-    // Verificar si el usuario realmente aterrizó aquí con una sesión de recuperación válida
     const checkSession = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
-        // Podría ser redirigido aquí o tal vez el #hash token no se procesó bien
-        // pero le daremos el beneficio de la duda y permitiremos intentar setear
+      // 1. Verificar si hay un código PKCE en la URL
+      const query = new URLSearchParams(window.location.search);
+      const code = query.get('code');
+
+      if (code) {
+        // Intercambiar el código por una sesión
+        const { error } = await supabase.auth.exchangeCodeForSession(code);
+        if (error) {
+          console.error('Error exchanging code:', error.message);
+          setErrorMsg('El enlace de recuperación ha expirado o no es válido.');
+        }
+      } else {
+        // Si no hay código, verificar si ya tenemos una sesión activa (por hash o cookie)
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session) {
+          setErrorMsg('No se encontró una sesión activa. Por favor, solicita un nuevo enlace de recuperación.');
+        }
       }
+      setVerifying(false);
       setSessionChecked(true);
     };
     checkSession();
@@ -48,7 +61,15 @@ export default function UpdatePasswordPage() {
     }
   };
 
-  if (!sessionChecked) return null;
+  if (verifying) {
+    return (
+      <div className={styles.container}>
+        <div className={styles.card}>
+          <p className={styles.subtitle}>Verificando enlace...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={styles.container}>
@@ -57,7 +78,20 @@ export default function UpdatePasswordPage() {
         <p className={styles.subtitle}>Escribe tu nueva clave de acceso para Smartune.</p>
         
         <form onSubmit={handleUpdatePassword} className={styles.form}>
-          {errorMsg && <div className={styles.error}>{errorMsg}</div>}
+          {errorMsg && (
+            <div className={styles.error} style={{ 
+              background: 'rgba(255, 0, 0, 0.1)', 
+              border: '1px solid #ff4d4d', 
+              color: '#ff4d4d',
+              padding: '12px',
+              borderRadius: '8px',
+              marginBottom: '20px',
+              textAlign: 'center',
+              fontSize: '14px'
+            }}>
+              {errorMsg}
+            </div>
+          )}
           
           <div className={styles.inputGroup}>
             <label>Contraseña Nueva</label>
