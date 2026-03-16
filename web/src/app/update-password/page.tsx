@@ -35,7 +35,6 @@ export default function UpdatePasswordPage() {
         }
       }
       setVerifying(false);
-      setSessionChecked(true);
     };
     checkSession();
   }, [supabase]);
