@@ -22,6 +22,7 @@ import androidx.navigation.NavHostController
 import com.smartune.app.navigation.Screen
 import com.smartune.app.ui.theme.SmartuneColors
 import io.github.jan.supabase.SupabaseClient
+import io.github.jan.supabase.gotrue.auth
 import io.github.jan.supabase.postgrest.postgrest
 import kotlinx.coroutines.launch
 
@@ -165,9 +166,27 @@ fun OnboardingScreen(navController: NavHostController, supabaseClient: SupabaseC
             onClick = {
                 scope.launch {
                     isLoading = true
-                    // Save profile to Supabase (simplified)
-                    navController.navigate(Screen.Home.route) {
-                        popUpTo(Screen.Onboarding.route) { inclusive = true }
+                    try {
+                        val user = supabaseClient.auth.currentUserOrNull()
+                        if (user != null) {
+                            supabaseClient.postgrest["usuarios"].insert(
+                                listOf(
+                                    mapOf(
+                                        "id" to user.id,
+                                        "nombre_usuario" to username,
+                                        "instrumento" to instrument,
+                                        "gustos_musicales" to selectedGenres.joinToString(", ")
+                                    )
+                                )
+                            )
+                        }
+                        navController.navigate(Screen.Home.route) {
+                            popUpTo(Screen.Onboarding.route) { inclusive = true }
+                        }
+                    } catch (e: Exception) {
+                        // Handle error (e.g., show a toast)
+                    } finally {
+                        isLoading = false
                     }
                 }
             },

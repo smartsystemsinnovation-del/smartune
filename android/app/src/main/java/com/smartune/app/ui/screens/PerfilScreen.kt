@@ -17,11 +17,81 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.smartune.app.data.SupabaseModule
 import com.smartune.app.navigation.Screen
 import com.smartune.app.ui.theme.SmartuneColors
+import io.github.jan.supabase.gotrue.auth
+import io.github.jan.supabase.postgrest.postgrest
+import kotlinx.coroutines.launch
+import kotlinx.serialization.Serializable
+
+@Serializable
+private data class UserProfile(
+    val id: String? = null,
+    val nombre_usuario: String? = null,
+    val email: String? = null,
+    val instrumento: String? = null,
+    val gustos_musicales: String? = null
+)
 
 @Composable
 fun PerfilScreen(navController: NavHostController) {
+    val scope = rememberCoroutineScope()
+    val supabase = SupabaseModule.client
+
+    var userEmail by remember { mutableStateOf("Cargando...") }
+    var userName by remember { mutableStateOf("Usuario") }
+    var userInitials by remember { mutableStateOf("??") }
+    var favoritosCount by remember { mutableIntStateOf(0) }
+    var isLoading by remember { mutableStateOf(true) }
+
+    // Load user data from Supabase Auth + DB
+    LaunchedEffect(Unit) {
+        scope.launch {
+            try {
+                val user = supabase.auth.currentUserOrNull()
+                if (user != null) {
+                    userEmail = user.email ?: "Sin email"
+                    userName = user.email?.substringBefore("@") ?: "Usuario"
+                    userInitials = userName.take(2).uppercase()
+
+                    // Try to fetch profile from DB
+                    try {
+                        val profiles = supabase.postgrest["usuarios"]
+                            .select() {
+                                filter { eq("id", user.id) }
+                            }
+                            .decodeList<UserProfile>()
+                        profiles.firstOrNull()?.let { profile ->
+                            if (!profile.nombre_usuario.isNullOrBlank()) {
+                                userName = profile.nombre_usuario
+                                userInitials = profile.nombre_usuario.take(2).uppercase()
+                            }
+                        }
+                    } catch (_: Exception) { }
+
+                    // Count favoritos
+                    try {
+                        val favs = supabase.postgrest["favoritos"]
+                            .select() {
+                                filter { eq("usuario_id", user.id) }
+                            }
+                            .decodeList<Map<String, String>>()
+                        favoritosCount = favs.size
+                    } catch (_: Exception) { }
+                } else {
+                    userEmail = "No conectado"
+                    userName = "Invitado"
+                    userInitials = "??"
+                }
+            } catch (e: Exception) {
+                userEmail = "Error"
+            } finally {
+                isLoading = false
+            }
+        }
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -32,7 +102,7 @@ fun PerfilScreen(navController: NavHostController) {
     ) {
         Spacer(modifier = Modifier.height(16.dp))
         Text("Perfil", color = Color.White, fontSize = 34.sp, fontWeight = FontWeight.ExtraBold)
-        Text("Nivel Avanzado", color = SmartuneColors.Primary, fontSize = 14.sp)
+        Text(userEmail, color = SmartuneColors.Primary, fontSize = 13.sp)
 
         Spacer(modifier = Modifier.height(32.dp))
 
@@ -55,17 +125,20 @@ fun PerfilScreen(navController: NavHostController) {
                     ),
                 contentAlignment = Alignment.Center
             ) {
-                Text("LS", color = Color.White, fontSize = 36.sp, fontWeight = FontWeight.Bold)
+                if (isLoading) {
+                    CircularProgressIndicator(color = Color.White, modifier = Modifier.size(30.dp), strokeWidth = 2.dp)
+                } else {
+                    Text(userInitials, color = Color.White, fontSize = 36.sp, fontWeight = FontWeight.Bold)
+                }
             }
         }
 
         Spacer(modifier = Modifier.height(16.dp))
-        Text("lagsuz_creator", color = Color.White, fontSize = 24.sp, fontWeight = FontWeight.Bold)
-        Text("Racha de 15 días 🔥", color = SmartuneColors.Accent, fontSize = 16.sp)
+        Text(userName, color = Color.White, fontSize = 24.sp, fontWeight = FontWeight.Bold)
 
         Spacer(modifier = Modifier.height(32.dp))
 
-        // Stats
+        // Stats from Supabase
         Card(
             shape = RoundedCornerShape(20.dp),
             colors = CardDefaults.cardColors(containerColor = SmartuneColors.GlassCard),
@@ -74,11 +147,11 @@ fun PerfilScreen(navController: NavHostController) {
                 .border(0.5.dp, SmartuneColors.Border, RoundedCornerShape(20.dp))
         ) {
             Column(modifier = Modifier.padding(20.dp)) {
-                ProfileStatRow("Prácticas Completadas", "124")
+                ProfileStatRow("Canciones Favoritas", "$favoritosCount")
                 Divider(color = SmartuneColors.Border, modifier = Modifier.padding(vertical = 12.dp))
-                ProfileStatRow("Precisión Media", "94%")
+                ProfileStatRow("Email", userEmail)
                 Divider(color = SmartuneColors.Border, modifier = Modifier.padding(vertical = 12.dp))
-                ProfileStatRow("Tiempo Total", "48h 20m")
+                ProfileStatRow("Base de Datos", "Supabase ✓")
             }
         }
 
@@ -86,7 +159,6 @@ fun PerfilScreen(navController: NavHostController) {
 
         // Menu Items
         listOf(
-            Triple(Icons.Default.Settings, "Ajustes de Perfil", SmartuneColors.Primary),
             Triple(Icons.Default.Star, "Premium", SmartuneColors.Gold),
             Triple(Icons.Default.Games, "SmarTiles", SmartuneColors.Accent),
         ).forEach { (icon, label, color) ->
@@ -118,9 +190,16 @@ fun PerfilScreen(navController: NavHostController) {
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        // Logout
+        // Logout (real Supabase signout)
         OutlinedButton(
-            onClick = { navController.navigate(Screen.Auth.route) { popUpTo(0) } },
+            onClick = {
+                scope.launch {
+                    try {
+                        supabase.auth.signOut()
+                    } catch (_: Exception) { }
+                    navController.navigate(Screen.Auth.route) { popUpTo(0) }
+                }
+            },
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(16.dp),
             border = BorderStroke(1.dp, Color.Red.copy(alpha = 0.5f))

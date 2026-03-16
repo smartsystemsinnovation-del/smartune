@@ -9,13 +9,20 @@ import com.smartune.app.ui.screens.*
 import io.github.jan.supabase.SupabaseClient
 
 sealed class Screen(val route: String) {
+    // Auth flow (no bottom bar)
+    data object Auth : Screen("auth")
+    data object ForgotPassword : Screen("forgot-password")
+    data object Onboarding : Screen("onboarding")
+
+    // Main tabs (with bottom bar)
     data object Home : Screen("home")
     data object Explorar : Screen("explorar")
     data object Favoritos : Screen("favoritos")
     data object Playlist : Screen("playlist")
     data object Perfil : Screen("perfil")
-    data object Auth : Screen("auth")
-    data object Onboarding : Screen("onboarding")
+    data object Arcade : Screen("arcade")
+
+    // Secondary screens (no bottom bar)
     data object Premium : Screen("premium")
     data object IAStudio : Screen("ia-studio")
     data object SmarTiles : Screen("smar-tiles")
@@ -27,9 +34,18 @@ fun SmartuneNavGraph(
     practiceRepository: PracticeRepository,
     supabaseClient: SupabaseClient
 ) {
-    NavHost(navController = navController, startDestination = Screen.Home.route) {
+    NavHost(navController = navController, startDestination = Screen.Auth.route) {
+        composable(Screen.Auth.route) {
+            AuthScreen(navController, supabaseClient)
+        }
+        composable(Screen.ForgotPassword.route) {
+            ForgotPasswordScreen(navController, supabaseClient)
+        }
+        composable(Screen.Onboarding.route) {
+            OnboardingScreen(navController, supabaseClient)
+        }
         composable(Screen.Home.route) {
-            HomeScreen(practiceRepository)
+            HomeScreen(navController, practiceRepository)
         }
         composable(Screen.Explorar.route) {
             ExplorarScreen()
@@ -43,11 +59,8 @@ fun SmartuneNavGraph(
         composable(Screen.Perfil.route) {
             PerfilScreen(navController)
         }
-        composable(Screen.Auth.route) {
-            AuthScreen(navController, supabaseClient)
-        }
-        composable(Screen.Onboarding.route) {
-            OnboardingScreen(navController, supabaseClient)
+        composable(Screen.Arcade.route) {
+            ArcadeScreen(navController)
         }
         composable(Screen.Premium.route) {
             PremiumScreen(navController)
@@ -56,7 +69,8 @@ fun SmartuneNavGraph(
             IAStudioScreen()
         }
         composable(Screen.SmarTiles.route) {
-            SmarTilesScreen()
+            SmarTilesScreen(navController)
         }
     }
 }
+

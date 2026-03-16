@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.smartune.app.ui.theme.SmartuneColors
 import kotlinx.coroutines.delay
+import androidx.navigation.NavHostController
 
 data class Tile(
     val lane: Int,
@@ -33,7 +34,7 @@ data class Tile(
 )
 
 @Composable
-fun SmarTilesScreen() {
+fun SmarTilesScreen(navController: NavHostController) {
     var isPlaying by remember { mutableStateOf(false) }
     var score by remember { mutableIntStateOf(0) }
     var combo by remember { mutableIntStateOf(0) }
@@ -79,8 +80,26 @@ fun SmarTilesScreen() {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(SmartuneColors.Background)
+            .background(
+                Brush.verticalGradient(
+                    listOf(Color(0xFF0D001A), SmartuneColors.Background)
+                )
+            )
     ) {
+        // ── Top Bar with Back ──
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 8.dp, vertical = 8.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            IconButton(onClick = { navController.popBackStack() }) {
+                Icon(Icons.Default.ArrowBack, null, tint = Color.White)
+            }
+            Spacer(modifier = Modifier.width(8.dp))
+            Text("SmarTiles", color = Color.White, fontWeight = FontWeight.Bold, fontSize = 18.sp)
+        }
+
         if (!isPlaying && !gameOver) {
             // Start Screen
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {

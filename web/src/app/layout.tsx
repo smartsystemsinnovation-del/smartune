@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter, Vazirmatn } from "next/font/google";
 import "./globals.css";
+import { Analytics } from "@vercel/analytics/react"; // <-- 1. Agrega esta importación aquí arriba
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const vazirmatn = Vazirmatn({ subsets: ["arabic", "latin"], variable: "--font-vazirmatn" });
@@ -26,6 +27,7 @@ export default function RootLayout({
             {children}
           </div>
         </div>
+        <Analytics /> {/* <-- 2. Pon el componente justo antes de cerrar el body */}
       </body>
     </html>
   );

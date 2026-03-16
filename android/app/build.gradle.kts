@@ -65,6 +65,9 @@ dependencies {
     // --- Navigation ---
     implementation("androidx.navigation:navigation-compose:2.7.7")
 
+    // --- Browser (Custom Tabs for OAuth) ---
+    implementation("androidx.browser:browser:1.7.0")
+
     // --- Image Loading ---
     implementation("io.coil-kt:coil-compose:2.5.0")
 

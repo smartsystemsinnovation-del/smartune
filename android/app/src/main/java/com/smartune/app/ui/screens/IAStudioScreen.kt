@@ -23,6 +23,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.smartune.app.ui.theme.SmartuneColors
+import io.github.jan.supabase.gotrue.auth
+import io.github.jan.supabase.postgrest.postgrest
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.engine.android.*
@@ -349,7 +351,25 @@ fun IAStudioScreen() {
                             }
                             Spacer(modifier = Modifier.height(16.dp))
                             Button(
-                                onClick = { /* Add to playlist */ },
+                                onClick = {
+                                    scope.launch {
+                                        try {
+                                            val supabase = com.smartune.app.data.SupabaseModule.client
+                                            val userId = supabase.auth.currentUserOrNull()?.id ?: "anonymous"
+                                            supabase.postgrest["favoritos"].insert(
+                                                mapOf(
+                                                    "usuario_id" to userId,
+                                                    "cancion_id" to "ai_gen_${System.currentTimeMillis()}",
+                                                    "titulo" to track.title,
+                                                    "artista" to track.artist,
+                                                    "cover_url" to "https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?w=400",
+                                                    "genero" to track.mood
+                                                )
+                                            )
+                                            // Optional: Show success
+                                        } catch (e: Exception) { }
+                                    }
+                                },
                                 modifier = Modifier.fillMaxWidth(),
                                 colors = ButtonDefaults.buttonColors(containerColor = SmartuneColors.GlassCard),
                                 shape = RoundedCornerShape(12.dp),
