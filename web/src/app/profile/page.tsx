@@ -83,6 +83,20 @@ export default function ProfilePage() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Usuario no autenticado');
 
+      // 0. Verificar límite de 5 días
+      const lastUpload = user.user_metadata?.last_avatar_upload;
+      if (lastUpload) {
+        const lastDate = new Date(lastUpload);
+        const now = new Date();
+        const diffTime = Math.abs(now.getTime() - lastDate.getTime());
+        const diffDays = diffTime / (1000 * 60 * 60 * 24);
+        
+        if (diffDays < 5) {
+          const remaining = Math.ceil(5 - diffDays);
+          throw new Error(`Por seguridad y espacio, solo puedes subir una foto cada 5 días. Faltan ${remaining} día(s).`);
+        }
+      }
+
       const fileExt = file.name.split('.').pop();
       const fileName = `${user.id}-${Math.random()}.${fileExt}`;
       const filePath = `avatars/${fileName}`;
@@ -100,10 +114,16 @@ export default function ProfilePage() {
         .getPublicUrl(filePath);
 
       setAvatarUrl(publicUrl);
-      setMessage({ type: 'success', text: '¡Imagen cargada! No olvides guardar los cambios.' });
+      
+      // 3. Actualizar metadatos inmediatamente con el timestamp de subida
+      await supabase.auth.updateUser({
+        data: { last_avatar_upload: new Date().toISOString() }
+      });
+
+      setMessage({ type: 'success', text: '¡Imagen cargada! No olvides guardar los cambios para actualizar tu perfil.' });
     } catch (error: any) {
       console.error(error);
-      setMessage({ type: 'error', text: 'Error al subir la imagen. Asegúrate de que el bucket "avatars" exista.' });
+      setMessage({ type: 'error', text: error.message || 'Error al subir la imagen.' });
     } finally {
       setUploading(false);
     }
