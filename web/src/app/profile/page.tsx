@@ -31,10 +31,22 @@ export default function ProfilePage() {
         const { data: { user } } = await supabase.auth.getUser();
         if (user) {
           setEmail(user.email || '');
-          setUsername(user.user_metadata?.full_name || '');
-          setAvatarUrl(user.user_metadata?.avatar_url || '');
-          setSelectedGenres(user.user_metadata?.favorite_genres || []);
-          setInstrument(user.user_metadata?.instrument || 'Ninguno');
+          
+          // Intentar cargar desde la base de datos primero (API)
+          const res = await fetch('/api/user/profile');
+          if (res.ok) {
+            const dbData = await res.json();
+            setUsername(dbData.nombre || user.user_metadata?.full_name || '');
+            setAvatarUrl(dbData.avatar_url || user.user_metadata?.avatar_url || '');
+            setInstrument(dbData.instrumento || user.user_metadata?.instrument || 'Ninguno');
+            setSelectedGenres(dbData.gustos_musicales || user.user_metadata?.favorite_genres || []);
+          } else {
+            // Fallback a metadata si falla la API
+            setUsername(user.user_metadata?.full_name || '');
+            setAvatarUrl(user.user_metadata?.avatar_url || '');
+            setSelectedGenres(user.user_metadata?.favorite_genres || []);
+            setInstrument(user.user_metadata?.instrument || 'Ninguno');
+          }
         }
       } catch (err) {
         console.error(err);
@@ -93,17 +105,19 @@ export default function ProfilePage() {
 
   if (loading) {
     return (
-      <main className={styles.main}>
+      <main className={styles.main} style={{ justifyContent: 'flex-start' }}>
         <Navigation />
-        <div className={styles.card}>
-          <p className={styles.sectionLabel}>Cargando Perfil...</p>
+        <div className={styles.contentWrapper}>
+          <div className={styles.card}>
+            <p className={styles.sectionLabel}>Cargando Perfil...</p>
+          </div>
         </div>
       </main>
     );
   }
 
   return (
-    <main className={styles.main}>
+    <main className={styles.main} style={{ justifyContent: 'flex-start' }}>
       <Navigation />
       
       <div className={styles.contentWrapper}>
