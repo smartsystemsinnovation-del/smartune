@@ -106,11 +106,12 @@ export default function ProfilePage() {
     <main className={styles.main}>
       <Navigation />
       
-      {/* Background Glows (Figma Style) */}
-      <div className={styles.overlayBlur1} />
-      <div className={styles.overlayBlur2} />
+      <div className={styles.contentWrapper}>
+        {/* Background Glows (Figma Style) */}
+        <div className={styles.overlayBlur1} />
+        <div className={styles.overlayBlur2} />
 
-      <div className={styles.card}>
+        <div className={styles.card}>
         <div className={styles.header}>
           <div className={styles.avatarContainer}>
             <div className={styles.avatarGlow} />
@@ -208,6 +209,7 @@ export default function ProfilePage() {
           </div>
         </form>
       </div>
-    </main>
+    </div>
+  </main>
   );
 }
