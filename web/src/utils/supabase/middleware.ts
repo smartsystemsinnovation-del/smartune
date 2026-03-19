@@ -40,13 +40,17 @@ export async function updateSession(request: NextRequest) {
   // Rutas con contenido restringido pero vista pública bloqueada
   const hybridGatekeeperRoutes = ['/favoritos', '/playlist', '/novedades', '/profesores']
   
-  // Proteger rutas directamente rebotando a home (Si no es híbrida)
-  const isStrictProtected = protectedRoutes.some(route => pathname.startsWith(route))
+  // Proteger rutas directamente rebotando a home con redirección de vuelta (Si no es híbrida)
+  const isStrictProtected = protectedRoutes.some(route => pathname.startsWith(route)) || pathname.startsWith('/hazte-profesor')
 
   if (isStrictProtected && !user) {
     const url = request.nextUrl.clone()
+    url.pathname = '/login' // Redirigiremos al login oficial o raiz si no hay login dedicado
+    // En SmarTune, el Auth Modal suele estar en '/' o en una ruta separada.
+    // Usaremos '/' con ?login=true&redirectTo=... según el prompt
     url.pathname = '/'
     url.searchParams.set('login', 'true')
+    url.searchParams.set('redirectTo', pathname)
     return NextResponse.redirect(url)
   }
 

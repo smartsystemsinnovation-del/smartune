@@ -21,7 +21,17 @@ export default function CertificationForm() {
   const [uploading, setUploading] = useState(false);
   const [isDone, setIsDone] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [validationResult, setValidationResult] = useState<{status: string, score: number, reason?: string} | null>(null);
   const supabase = createClient();
+
+  const getBase64 = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve((reader.result as string).split(',')[1]);
+      reader.onerror = error => reject(error);
+    });
+  };
 
   const {
     register,
@@ -73,17 +83,47 @@ export default function CertificationForm() {
         .from('teacher-certifications')
         .getPublicUrl(filePath);
 
-      // 2. Submit application and update role (using the RPC function we created in SQL)
-      const { error: rpcError } = await supabase.rpc('submit_teacher_application', {
+      // 2. AI Validation (Paso B)
+      const base64Data = await getBase64(file);
+      const mimeType = file.type;
+
+      const aiResponse = await fetch('/api/validate-certificate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ documentBase64: base64Data, mimeType })
+      });
+
+      const aiData = await aiResponse.json();
+      
+      let p_status = 'pending';
+      let p_role = 'profesor_pendiente';
+      let confidenceScore = 0;
+
+      if (aiResponse.ok && aiData.confidenceScore !== undefined) {
+        confidenceScore = aiData.confidenceScore;
+        // Paso C: Decision inteligente
+        if (confidenceScore >= 85) {
+          p_status = 'approved';
+          p_role = 'profesor';
+        }
+      } else {
+        console.warn("AI Validation failed, falling back to manual review:", aiData.error);
+      }
+
+      // 3. Submit application and update role (using the new AI RPC function)
+      const { error: rpcError } = await supabase.rpc('submit_teacher_application_ai', {
         p_document_title: data.title,
         p_document_type: data.documentType,
         p_issuing_institution: data.institution,
         p_document_url: publicUrl,
+        p_status,
+        p_role
       });
 
       if (rpcError) throw rpcError;
 
       setIsDone(true);
+      setValidationResult({ status: p_status, score: confidenceScore, reason: aiData.reason });
       reset();
       setFile(null);
     } catch (err: any) {
@@ -100,11 +140,34 @@ export default function CertificationForm() {
         <div className={styles.cloudIcon} style={{ background: '#00c853' }}>
           <CheckCircle2 size={32} />
         </div>
-        <h2 className={styles.title}>¡Solicitud Enviada!</h2>
+        <h2 className={styles.title} style={{ color: validationResult?.status === 'approved' ? '#00ffcc' : undefined }}>
+          {validationResult?.status === 'approved' ? '¡Felicidades, tu certificado ha sido validado!' : 'Recibido. Estamos validando tu documento.'}
+        </h2>
         <p className={styles.subtitle}>
-          Tu perfil ahora está en estado <span style={{ color: '#ff007a', fontWeight: 'bold' }}>Profesor Pendiente</span>. 
-          Revisaremos tus documentos y te notificaremos pronto.
+          {validationResult?.status === 'approved' 
+            ? 'La Inteligencia Artificial ha verificado tu documento con éxito. Ya tienes acceso al panel de Profesor.' 
+            : <>Tu perfil ahora está en estado <span style={{ color: '#ff007a', fontWeight: 'bold' }}>Profesor Pendiente</span>. Revisaremos tus documentos y te notificaremos pronto.</>}
         </p>
+
+        {validationResult && (
+          <div style={{
+            marginTop: '1.5rem',
+            padding: '1rem',
+            borderRadius: '12px',
+            border: validationResult.status === 'approved' ? '2px solid #00ffcc' : '2px solid #ff007a',
+            backgroundColor: 'rgba(0,0,0,0.5)',
+            boxShadow: validationResult.status === 'approved' ? '0 0 15px rgba(0,255,204,0.3)' : '0 0 15px rgba(255,0,122,0.3)'
+          }}>
+            <p style={{ margin: 0, fontWeight: 'bold', color: validationResult.status === 'approved' ? '#00ffcc' : '#ff007a' }}>
+              Gemini AI Score: {validationResult.score}%
+            </p>
+            {validationResult.reason && (
+              <p style={{ margin: '0.5rem 0 0', fontSize: '0.9rem', color: '#ccc' }}>
+                {validationResult.reason}
+              </p>
+            )}
+          </div>
+        )}
         <button 
           className={styles.submitBtn} 
           onClick={() => window.location.href = '/'}
