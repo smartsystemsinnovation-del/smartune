@@ -164,7 +164,7 @@ export default function Sidebar() {
           </div>
         ) : (
           <div className={styles.bottomSection}>
-            <Link href="/apply" className={styles.premiumLink} onClick={() => setIsOpen(false)}>
+            <Link href="/hazte-profesor" className={styles.premiumLink} onClick={() => setIsOpen(false)}>
               {userRole === 'profesor_pendiente' ? 'SOLICITUD PENDIENTE' : 'HAZTE PROFESOR'}
             </Link>
           </div>

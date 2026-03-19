@@ -72,7 +72,7 @@ export async function updateSession(request: NextRequest) {
 
     if (roleName !== 'profesor_aprobado') {
       const url = request.nextUrl.clone()
-      url.pathname = '/apply'
+      url.pathname = '/hazte-profesor'
       return NextResponse.redirect(url)
     }
   }
