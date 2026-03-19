@@ -3,7 +3,7 @@ import { redirect } from 'next/navigation';
 import { Video, Calendar, ArrowLeft, Clock } from 'lucide-react';
 import Link from 'next/link';
 
-export default async function TeacherClassesPage({ params }: { params: { id: string } }) {
+export default async function TeacherClassesPage({ params }: { params: Promise<{ id: string }> }) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
@@ -21,7 +21,7 @@ export default async function TeacherClassesPage({ params }: { params: { id: str
     redirect('/teacher/dashboard');
   }
 
-  const teacherId = params.id;
+  const { id: teacherId } = await params;
 
   // 1. Obtener datos del profesor
   const { data: teacher, error: teacherError } = await supabase
