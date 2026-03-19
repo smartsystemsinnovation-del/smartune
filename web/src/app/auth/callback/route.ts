@@ -10,8 +10,16 @@ export async function GET(request: Request) {
 
   if (code) {
     const supabase = await createClient()
-    const { error } = await supabase.auth.exchangeCodeForSession(code)
-    if (!error) {
+    const { data: { session }, error } = await supabase.auth.exchangeCodeForSession(code)
+    if (!error && session) {
+      // Guardar el Refresh Token Maestro de Google en la base de datos de inmediato.
+      // Ya que Supabase SSR elimina cookies pesadas del provedor para evitar bugs de tamaño de cookie.
+      if (session.provider_refresh_token) {
+        await supabase
+          .from('usuarios')
+          .update({ google_refresh_token: session.provider_refresh_token })
+          .eq('id', session.user.id);
+      }
       const forwardedHost = request.headers.get('x-forwarded-host') // original origin before load balancer
       const isLocalEnv = process.env.NODE_ENV === 'development'
       if (isLocalEnv) {

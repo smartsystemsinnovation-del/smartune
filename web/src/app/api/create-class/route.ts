@@ -14,8 +14,15 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'No autorizado' }, { status: 401 });
     }
 
-    if (!session?.provider_refresh_token) {
-      console.warn("⚠️ No se encontró Token Maestro de Google. (Se activará Fallback Simulador)");
+    // Obtener el Refresh Token Maestro de la Base de Datos
+    const { data: teacherProfile } = await supabase
+      .from('usuarios')
+      .select('google_refresh_token')
+      .eq('id', teacherId)
+      .single();
+
+    if (!teacherProfile?.google_refresh_token) {
+      console.warn("⚠️ No se encontró Token Maestro de Google en la BD. (Se activará Fallback Simulador)");
     }
 
     let meetLink = '';
@@ -28,11 +35,11 @@ export async function POST(req: Request) {
         process.env.GOOGLE_REDIRECT_URI || 'http://localhost:3000/auth/callback'
       );
       
-      // Integramos el token oficial recolectado por Supabase
-      if (session?.provider_refresh_token) {
-        oauth2Client.setCredentials({ refresh_token: session.provider_refresh_token });
+      // Integramos el token oficial recolectado por Supabase desde la BD
+      if (teacherProfile?.google_refresh_token) {
+        oauth2Client.setCredentials({ refresh_token: teacherProfile.google_refresh_token });
       } else {
-        throw new Error("Missing Google Refresh Token in Supabase Session");
+        throw new Error("Missing Google Refresh Token in Database for this user.");
       }
       
       const calendar = google.calendar({ version: 'v3', auth: oauth2Client });
@@ -68,11 +75,10 @@ export async function POST(req: Request) {
       
     } catch (apiError: any) {
       console.warn("⚠️ ERROR GOOGLE API:", apiError.message);
-      // Fallback: Generamos un enlace simulado funcional visualmente (formato xxx-xxxx-xxx)
-      const mock1 = Math.random().toString(36).substring(2, 5);
-      const mock2 = Math.random().toString(36).substring(2, 6);
-      const mock3 = Math.random().toString(36).substring(2, 5);
-      meetLink = `https://meet.google.com/${mock1}-${mock2}-${mock3}`;
+      return NextResponse.json({ 
+        error: 'Error conectando con Google Calendar. Por favor, cierra sesión y vuelve a entrar con Google para renovar permisos.', 
+        details: apiError.message 
+      }, { status: 500 });
     }
 
     // 2. Transacción de Base de Datos
