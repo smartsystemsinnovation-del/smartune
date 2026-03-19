@@ -2,7 +2,8 @@
 
 import { useState } from 'react';
 import { connectWithTeacher } from './actions';
-import { CheckCircle, UserPlus } from 'lucide-react';
+import { CheckCircle, UserPlus, Eye } from 'lucide-react';
+import Link from 'next/link';
 
 interface TeacherCardProps {
   teacher: {
@@ -77,50 +78,51 @@ export default function TeacherCard({ teacher, alreadyConnected }: TeacherCardPr
         <p style={{ color: 'var(--neon-pink)', fontSize: '12px', margin: 0 }}>{error}</p>
       )}
 
-      <button
-        onClick={handleConnect}
-        disabled={loading || connected}
-        style={{
-          marginTop: 'auto',
-          padding: '12px',
-          borderRadius: '8px',
-          border: 'none',
-          background: connected ? 'rgba(0, 255, 170, 0.1)' : 'var(--neon-pink)',
-          color: connected ? 'var(--neon-cyan)' : 'white',
-          fontWeight: 600,
-          cursor: connected || loading ? 'not-allowed' : 'pointer',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          gap: '8px',
-          transition: 'all 0.2s ease',
-          boxShadow: connected ? 'none' : '0 0 15px rgba(255, 0, 122, 0.3)'
-        }}
-        onMouseEnter={(e) => {
-          if (!connected && !loading) {
-            e.currentTarget.style.boxShadow = '0 0 25px rgba(255, 0, 122, 0.6)';
-            e.currentTarget.style.transform = 'translateY(-2px)';
-          }
-        }}
-        onMouseLeave={(e) => {
-          if (!connected && !loading) {
-            e.currentTarget.style.boxShadow = '0 0 15px rgba(255, 0, 122, 0.3)';
-            e.currentTarget.style.transform = 'none';
-          }
-        }}
-      >
-        {loading ? (
-          'Conectando...'
-        ) : connected ? (
-          <>
-            <CheckCircle size={18} /> Instalado en tu red
-          </>
-        ) : (
-          <>
-            <UserPlus size={18} /> Conectar con Profesor
-          </>
+      <div style={{ display: 'flex', gap: '12px', marginTop: 'auto' }}>
+        <button
+          onClick={handleConnect}
+          disabled={loading || connected}
+          style={{
+            flex: 1,
+            padding: '12px',
+            borderRadius: '12px',
+            border: 'none',
+            background: connected ? 'rgba(0, 255, 170, 0.1)' : 'var(--neon-pink)',
+            color: connected ? 'var(--neon-cyan)' : 'white',
+            fontWeight: 600,
+            cursor: connected || loading ? 'not-allowed' : 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '8px',
+            transition: 'all 0.2s ease',
+            boxShadow: connected ? 'none' : '0 0 15px rgba(255, 0, 122, 0.3)'
+          }}
+        >
+          {loading ? '...' : connected ? <><CheckCircle size={18} /> En tu Red</> : <><UserPlus size={18} /> Conectar</>}
+        </button>
+
+        {connected && (
+          <Link href={`/profesores/${teacher.id}`} style={{
+            flex: 1,
+            padding: '12px',
+            borderRadius: '12px',
+            background: 'var(--neon-cyan)',
+            color: 'black',
+            textAlign: 'center',
+            textDecoration: 'none',
+            fontWeight: 700,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '8px',
+            transition: 'all 0.2s ease',
+            boxShadow: '0 0 15px rgba(0, 255, 170, 0.4)'
+          }}>
+            <Eye size={18} /> Ver Clases
+          </Link>
         )}
-      </button>
+      </div>
     </div>
   );
 }
