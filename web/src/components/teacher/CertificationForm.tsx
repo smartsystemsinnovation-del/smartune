@@ -6,7 +6,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { Upload, Send, FileText, CheckCircle2, Loader2 } from 'lucide-react';
 import { createClient } from '@/utils/supabase/client';
-import styles from './page.module.css';
+import styles from '@/app/hazte-profesor/page.module.css';
 
 const formSchema = z.object({
   title: z.string().min(5, "El título debe tener al menos 5 caracteres"),

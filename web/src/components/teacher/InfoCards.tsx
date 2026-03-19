@@ -1,5 +1,5 @@
 import { Info, Lightbulb, GraduationCap } from 'lucide-react';
-import styles from './page.module.css';
+import styles from '@/app/hazte-profesor/page.module.css';
 
 export default function InfoCards() {
   return (
