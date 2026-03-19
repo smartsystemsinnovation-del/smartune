@@ -14,7 +14,8 @@ export default function CreateClassForm({ students, teacherId }: { students: any
     title: '',
     description: '',
     studentId: '',
-    dateTime: ''
+    date: '',
+    time: ''
   });
 
   // Calcular la fecha mínima "Hoy a las 00:00" en el huso horario local del usuario
@@ -36,8 +37,8 @@ export default function CreateClassForm({ students, teacherId }: { students: any
     setError('');
     
     try {
-      if (!formData.dateTime) throw new Error("Debes elegir una fecha y hora");
-      const scheduledAt = new Date(formData.dateTime).toISOString();
+      if (!formData.date || !formData.time) throw new Error("Debes elegir una fecha y hora");
+      const scheduledAt = new Date(`${formData.date}T${formData.time}:00`).toISOString();
 
       const response = await fetch('/api/create-class', {
         method: 'POST',
@@ -132,39 +133,79 @@ export default function CreateClassForm({ students, teacherId }: { students: any
         )}
       </div>
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-        <label style={{ fontSize: '14px', color: 'rgba(255, 255, 255, 0.6)', fontWeight: 600 }}>
-          <Calendar size={14} style={{ marginRight: 4, display: 'inline-block' }} /> 
-          Fecha y Hora de la Clase *
-        </label>
+      {/* Date & Time Premium Cards */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginTop: '8px' }}>
         
-        {/* Usamos el min calculado con el offset de zona horaria local para que no bloquee 'hoy' si es tarde */}
-        <input 
-          type="datetime-local" 
-          name="dateTime" 
-          value={formData.dateTime} 
-          onChange={handleChange}
-          required
-          min={getMinDateTime()}
-          style={{ 
-            width: '100%', 
-            padding: '14px', 
-            background: 'rgba(0, 0, 0, 0.4)', 
-            border: '1px solid rgba(255, 255, 255, 0.1)', 
-            color: 'var(--neon-cyan)', 
-            borderRadius: '8px', 
-            fontSize: '16px',
-            fontFamily: 'inherit',
-            outline: 'none',
-            boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.5)',
-            cursor: 'pointer'
-          }} 
-          onFocus={(e) => e.target.style.borderColor = 'var(--neon-cyan)'}
-          onBlur={(e) => e.target.style.borderColor = 'rgba(255, 255, 255, 0.1)'}
-        />
-        <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.4)', margin: 0 }}>
-          El enlace de Google Meet se programará para este horario exacto.
-        </p>
+        <div style={{ 
+          background: 'rgba(0, 0, 0, 0.4)', 
+          padding: '24px', 
+          borderRadius: '16px', 
+          border: '1px solid rgba(0, 255, 170, 0.2)',
+          boxShadow: 'inset 0 0 20px rgba(0, 255, 170, 0.05)',
+          transition: 'all 0.3s ease'
+        }}
+        onMouseEnter={(e) => e.currentTarget.style.boxShadow = 'inset 0 0 20px rgba(0, 255, 170, 0.15)'}
+        onMouseLeave={(e) => e.currentTarget.style.boxShadow = 'inset 0 0 20px rgba(0, 255, 170, 0.05)'}
+        >
+          <h4 style={{ margin: '0 0 16px 0', fontSize: '15px', color: 'rgba(255,255,255,0.9)', display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 600 }}>
+            <Calendar size={20} color="var(--neon-cyan)"/> Día de la Clase
+          </h4>
+          <input 
+            type="date" 
+            name="date" 
+            value={formData.date} 
+            onChange={handleChange}
+            required
+            min={getMinDateTime().split('T')[0]} // Extrae solo YYYY-MM-DD
+            style={{ 
+              width: '100%', 
+              padding: '16px', 
+              background: 'rgba(255, 255, 255, 0.05)', 
+              border: 'none', 
+              borderRadius: '8px', 
+              color: 'white', 
+              fontSize: '18px', 
+              fontFamily: 'inherit',
+              outline: 'none',
+              cursor: 'pointer'
+            }} 
+          />
+        </div>
+
+        <div style={{ 
+          background: 'rgba(0, 0, 0, 0.4)', 
+          padding: '24px', 
+          borderRadius: '16px', 
+          border: '1px solid rgba(255, 0, 122, 0.2)',
+          boxShadow: 'inset 0 0 20px rgba(255, 0, 122, 0.05)',
+          transition: 'all 0.3s ease'
+        }}
+        onMouseEnter={(e) => e.currentTarget.style.boxShadow = 'inset 0 0 20px rgba(255, 0, 122, 0.15)'}
+        onMouseLeave={(e) => e.currentTarget.style.boxShadow = 'inset 0 0 20px rgba(255, 0, 122, 0.05)'}
+        >
+          <h4 style={{ margin: '0 0 16px 0', fontSize: '15px', color: 'rgba(255,255,255,0.9)', display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 600 }}>
+            <Clock size={20} color="var(--neon-pink)"/> Hora de Inicio
+          </h4>
+          <input 
+            type="time" 
+            name="time" 
+            value={formData.time} 
+            onChange={handleChange}
+            required
+            style={{ 
+              width: '100%', 
+              padding: '16px', 
+              background: 'rgba(255, 255, 255, 0.05)', 
+              border: 'none', 
+              borderRadius: '8px', 
+              color: 'white', 
+              fontSize: '18px', 
+              fontFamily: 'inherit',
+              outline: 'none',
+              cursor: 'text'
+            }} 
+          />
+        </div>
       </div>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
