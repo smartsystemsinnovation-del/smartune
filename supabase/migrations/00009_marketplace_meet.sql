@@ -15,10 +15,12 @@ CREATE TABLE IF NOT EXISTS public.student_teacher_connections (
 -- Políticas RLS para Conexiones
 ALTER TABLE public.student_teacher_connections ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Usuarios pueden ver sus propias conexiones" ON public.student_teacher_connections;
 CREATE POLICY "Usuarios pueden ver sus propias conexiones" 
 ON public.student_teacher_connections FOR SELECT 
 USING (auth.uid() = student_id OR auth.uid() = teacher_id);
 
+DROP POLICY IF EXISTS "Estudiantes pueden crear conexiones" ON public.student_teacher_connections;
 CREATE POLICY "Estudiantes pueden crear conexiones" 
 ON public.student_teacher_connections FOR INSERT 
 WITH CHECK (auth.uid() = student_id);
@@ -39,10 +41,12 @@ CREATE TABLE IF NOT EXISTS public.classes (
 -- Políticas RLS para Clases
 ALTER TABLE public.classes ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Usuarios pueden ver sus propias clases" ON public.classes;
 CREATE POLICY "Usuarios pueden ver sus propias clases" 
 ON public.classes FOR SELECT 
 USING (auth.uid() = student_id OR auth.uid() = teacher_id);
 
+DROP POLICY IF EXISTS "Profesores pueden crear clases" ON public.classes;
 CREATE POLICY "Profesores pueden crear clases" 
 ON public.classes FOR INSERT 
 WITH CHECK (auth.uid() = teacher_id);

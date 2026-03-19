@@ -14,8 +14,7 @@ export default function CreateClassForm({ students, teacherId }: { students: any
     title: '',
     description: '',
     studentId: '',
-    date: '',
-    time: ''
+    dateTime: ''
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -28,8 +27,8 @@ export default function CreateClassForm({ students, teacherId }: { students: any
     setError('');
     
     try {
-      // Combinar fecha y hora para el ScheduledAt
-      const scheduledAt = new Date(`${formData.date}T${formData.time}:00`).toISOString();
+      if (!formData.dateTime) throw new Error("Debes elegir una fecha y hora");
+      const scheduledAt = new Date(formData.dateTime).toISOString();
 
       const response = await fetch('/api/create-class', {
         method: 'POST',
@@ -124,30 +123,39 @@ export default function CreateClassForm({ students, teacherId }: { students: any
         )}
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-          <label style={{ fontSize: '14px', color: 'rgba(255, 255, 255, 0.6)', fontWeight: 600 }}><Calendar size={14} style={{marginRight: 4, display: 'inline-block'}}/> Fecha *</label>
-          <input 
-            type="date" 
-            name="date" 
-            value={formData.date} 
-            onChange={handleChange}
-            required
-            min={new Date().toISOString().split('T')[0]}
-            style={{ width: '100%', padding: '14px', background: 'rgba(0, 0, 0, 0.3)', border: '1px solid rgba(255, 255, 255, 0.1)', color: 'white', borderRadius: '8px', fontSize: '16px' }} 
-          />
-        </div>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-          <label style={{ fontSize: '14px', color: 'rgba(255, 255, 255, 0.6)', fontWeight: 600 }}><Clock size={14} style={{marginRight: 4, display: 'inline-block'}}/> Hora *</label>
-          <input 
-            type="time" 
-            name="time" 
-            value={formData.time} 
-            onChange={handleChange}
-            required
-            style={{ width: '100%', padding: '14px', background: 'rgba(0, 0, 0, 0.3)', border: '1px solid rgba(255, 255, 255, 0.1)', color: 'white', borderRadius: '8px', fontSize: '16px' }} 
-          />
-        </div>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+        <label style={{ fontSize: '14px', color: 'rgba(255, 255, 255, 0.6)', fontWeight: 600 }}>
+          <Calendar size={14} style={{ marginRight: 4, display: 'inline-block' }} /> 
+          Fecha y Hora de la Clase *
+        </label>
+        
+        {/* Usamos el min calculado con el offset de zona horaria local para que no bloquee 'hoy' si es tarde */}
+        <input 
+          type="datetime-local" 
+          name="dateTime" 
+          value={formData.dateTime} 
+          onChange={handleChange}
+          required
+          min={new Date(new Date().getTime() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 16)}
+          style={{ 
+            width: '100%', 
+            padding: '14px', 
+            background: 'rgba(0, 0, 0, 0.4)', 
+            border: '1px solid rgba(255, 255, 255, 0.1)', 
+            color: 'var(--neon-cyan)', 
+            borderRadius: '8px', 
+            fontSize: '16px',
+            fontFamily: 'inherit',
+            outline: 'none',
+            boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.5)',
+            cursor: 'pointer'
+          }} 
+          onFocus={(e) => e.target.style.borderColor = 'var(--neon-cyan)'}
+          onBlur={(e) => e.target.style.borderColor = 'rgba(255, 255, 255, 0.1)'}
+        />
+        <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.4)', margin: 0 }}>
+          El enlace de Google Meet se programará para este horario exacto.
+        </p>
       </div>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
