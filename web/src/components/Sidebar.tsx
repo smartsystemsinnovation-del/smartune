@@ -95,10 +95,12 @@ export default function Sidebar() {
                   <span className={styles.icon}>🎮</span>
                   Minijuegos
                 </Link>
-                <Link href="/clases" className={`${styles.navItem} ${isPrefixActive('/clases') ? styles.active : ''}`} onClick={() => setIsOpen(false)}>
-                  <span className={styles.icon}>📚</span>
-                  Clases
-                </Link>
+                {userRole === 'profesor' && (
+                  <Link href="/teacher/clases/crear" className={`${styles.navItem} ${isPrefixActive('/teacher/clases/crear') ? styles.active : ''}`} onClick={() => setIsOpen(false)}>
+                    <span className={styles.icon}>📚</span>
+                    Crear Clases
+                  </Link>
+                )}
                 <Link href="/ia-studio" className={`${styles.navItem} ${isPrefixActive('/ia-studio') ? styles.active : ''}`} onClick={() => setIsOpen(false)}>
                   <span className={styles.icon}>🪄</span>
                   IA Studio

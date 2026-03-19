@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -41,6 +41,29 @@ export default function CertificationForm() {
   } = useForm<FormValues>({
     resolver: zodResolver(formSchema),
   });
+
+  useEffect(() => {
+    const checkUserRole = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.user) {
+        const { data: usuario } = await supabase
+          .from('usuarios')
+          .select('rol')
+          .eq('id', session.user.id)
+          .single();
+        
+        if (usuario?.rol === 'profesor_pendiente') {
+          setIsDone(true);
+          setValidationResult({ status: 'pending', score: 0, reason: 'Ya tienes una solicitud en proceso de verificación manual.' });
+        } else if (usuario?.rol === 'profesor') {
+          setIsDone(true);
+          setValidationResult({ status: 'approved', score: 100, reason: 'Tu cuenta ya está habilitada al 100% como Profesor. Accede a las herramientas de Educación desde tu menú lateral.' });
+        }
+      }
+    };
+
+    checkUserRole();
+  }, [supabase]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
