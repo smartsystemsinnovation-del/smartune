@@ -1,12 +1,35 @@
 import { createClient } from '@/utils/supabase/server';
 import Navigation from '@/components/Navigation';
 import AuthGatekeeper from '@/components/AuthGatekeeper';
+import TeacherCard from './TeacherCard';
 import styles from '../dashboard/page.module.css';
 
 export default async function ProfesoresPage() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   const isAuthenticated = !!user;
+
+  let teachers: any[] = [];
+  let connectedTeacherIds = new Set<string>();
+
+  if (isAuthenticated) {
+    const { data: perfiles_profesores } = await supabase
+      .from('usuarios')
+      .select('id, nombre, correo, avatar_url, instrumento')
+      .eq('rol', 'profesor');
+    
+    if (perfiles_profesores) teachers = perfiles_profesores;
+
+    const { data: conexiones } = await supabase
+      .from('student_teacher_connections')
+      .select('teacher_id')
+      .eq('student_id', user.id)
+      .eq('status', 'accepted');
+    
+    if (conexiones) {
+      conexiones.forEach(c => connectedTeacherIds.add(c.teacher_id));
+    }
+  }
 
   return (
     <main className={styles.main}>
@@ -41,9 +64,24 @@ export default async function ProfesoresPage() {
               { text: "Consulta tus dudas directamente desde la plataforma" }
             ]}
           />
+        ) : teachers.length > 0 ? (
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
+            gap: '24px',
+            marginTop: '32px'
+          }}>
+            {teachers.map(teacher => (
+              <TeacherCard 
+                key={teacher.id} 
+                teacher={teacher} 
+                alreadyConnected={connectedTeacherIds.has(teacher.id)} 
+              />
+            ))}
+          </div>
         ) : (
           <div className={styles.emptyState}>
-            <p>La lista de profesores verificados estará disponible pronto.</p>
+            <p>La lista de profesores verificados estará disponible pronto. ¡Sé el primero en unirte desde "Hazte Profesor"!</p>
           </div>
         )}
       </div>
