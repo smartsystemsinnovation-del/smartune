@@ -62,15 +62,15 @@ export async function updateSession(request: NextRequest) {
     }
 
     // Comprobar rol
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('roles(name)')
+    const { data: usuario } = await supabase
+      .from('usuarios')
+      .select('rol')
       .eq('id', user.id)
       .single()
 
-    const roleName = (profile?.roles as any)?.name
+    const roleName = usuario?.rol
 
-    if (roleName !== 'profesor_aprobado') {
+    if (roleName !== 'profesor') {
       const url = request.nextUrl.clone()
       url.pathname = '/hazte-profesor'
       return NextResponse.redirect(url)

@@ -21,13 +21,13 @@ export default function Sidebar() {
       setUser(currentUser);
 
       if (currentUser) {
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('*, roles(name)')
+        const { data: usuario } = await supabase
+          .from('usuarios')
+          .select('rol')
           .eq('id', currentUser.id)
           .single();
         
-        setUserRole(profile?.roles?.name || 'estudiante');
+        setUserRole(usuario?.rol || 'estudiante');
       } else {
         setUserRole(null);
       }
@@ -138,7 +138,7 @@ export default function Sidebar() {
 
         <div className={styles.spacer} />
 
-        {userRole === 'profesor_aprobado' ? (
+        {userRole === 'profesor' ? (
           <div className={styles.menuSection}>
             <p className={styles.sectionTitle}>Panel de Control Profesor</p>
             <nav className={styles.navGroup}>
