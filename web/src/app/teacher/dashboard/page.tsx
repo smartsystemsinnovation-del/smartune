@@ -1,7 +1,8 @@
 import { createClient } from '@/utils/supabase/server';
 import { redirect } from 'next/navigation';
-import { Video, Calendar, Clock, PlusCircle } from 'lucide-react';
+import { Video, Calendar, PlusCircle } from 'lucide-react';
 import Link from 'next/link';
+import LocalTime from '@/components/LocalTime';
 
 export default async function TeacherDashboard() {
   const supabase = await createClient();
@@ -87,9 +88,6 @@ export default async function TeacherDashboard() {
           ) : (
             <div style={{ display: 'grid', gap: '24px' }}>
               {classes.map(cls => {
-                const dateObj = new Date(cls.scheduled_at);
-                const day = dateObj.toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-                const time = dateObj.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
                 const student = Array.isArray(cls.student) ? cls.student[0] : cls.student;
 
                 return (
@@ -112,13 +110,7 @@ export default async function TeacherDashboard() {
                       <h3 style={{ margin: 0, fontSize: '24px', fontWeight: 600, color: 'white' }}>{cls.title}</h3>
                       
                       <div style={{ display: 'flex', gap: '24px', flexWrap: 'wrap', background: 'rgba(255,255,255,0.03)', padding: '12px 16px', borderRadius: '8px', marginTop: '16px', width: 'fit-content' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', color: 'var(--neon-cyan)', fontSize: '15px', fontWeight: 500 }}>
-                          <Calendar size={18} /> <span style={{ textTransform: 'capitalize' }}>{day}</span>
-                        </div>
-                        <div style={{ width: '1px', background: 'rgba(255,255,255,0.1)' }}></div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', color: 'var(--neon-pink)', fontSize: '15px', fontWeight: 600 }}>
-                          <Clock size={18} /> {time} hrs
-                        </div>
+                        <LocalTime dateIso={cls.scheduled_at} />
                       </div>
                     </div>
 

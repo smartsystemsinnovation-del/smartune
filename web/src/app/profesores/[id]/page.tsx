@@ -1,7 +1,8 @@
 import { createClient } from '@/utils/supabase/server';
 import { redirect } from 'next/navigation';
-import { Video, Calendar, ArrowLeft, Clock } from 'lucide-react';
+import { Video, Calendar, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
+import LocalTime from '@/components/LocalTime';
 
 export default async function TeacherClassesPage({ params }: { params: Promise<{ id: string }> }) {
   const supabase = await createClient();
@@ -137,10 +138,6 @@ export default async function TeacherClassesPage({ params }: { params: Promise<{
           ) : (
             <div style={{ display: 'grid', gap: '24px' }}>
               {classes.map(cls => {
-                const dateObj = new Date(cls.scheduled_at);
-                const day = dateObj.toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-                const time = dateObj.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
-
                 return (
                   <div key={cls.id} style={{
                     background: 'rgba(0, 0, 0, 0.4)',
@@ -158,13 +155,7 @@ export default async function TeacherClassesPage({ params }: { params: Promise<{
                     </div>
                     
                     <div style={{ display: 'flex', gap: '32px', flexWrap: 'wrap', background: 'rgba(255,255,255,0.02)', padding: '16px 24px', borderRadius: '12px' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', color: 'var(--neon-cyan)', fontSize: '16px', fontWeight: 600 }}>
-                        <Calendar size={20} /> <span style={{ textTransform: 'capitalize' }}>{day}</span>
-                      </div>
-                      <div style={{ width: '1px', background: 'rgba(255,255,255,0.1)' }}></div>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', color: 'var(--neon-pink)', fontSize: '16px', fontWeight: 600 }}>
-                        <Clock size={20} /> {time} hrs
-                      </div>
+                      <LocalTime dateIso={cls.scheduled_at} />
                     </div>
 
                     <div style={{ marginTop: '8px' }}>
