@@ -17,6 +17,15 @@ export default function CreateClassForm({ students, teacherId }: { students: any
     dateTime: ''
   });
 
+  // Calcular la fecha mínima "Hoy a las 00:00" en el huso horario local del usuario
+  const getMinDateTime = () => {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const day = String(today.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}T00:00`;
+  };
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
@@ -136,7 +145,7 @@ export default function CreateClassForm({ students, teacherId }: { students: any
           value={formData.dateTime} 
           onChange={handleChange}
           required
-          min={new Date(new Date().getTime() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 16)}
+          min={getMinDateTime()}
           style={{ 
             width: '100%', 
             padding: '14px', 
