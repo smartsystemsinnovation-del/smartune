@@ -50,5 +50,32 @@ export async function updateSession(request: NextRequest) {
     return NextResponse.redirect(url)
   }
 
+  // Rutas de profesores
+  const isTeacherRoute = pathname.startsWith('/teacher')
+
+  if (isTeacherRoute) {
+    if (!user) {
+      const url = request.nextUrl.clone()
+      url.pathname = '/'
+      url.searchParams.set('login', 'true')
+      return NextResponse.redirect(url)
+    }
+
+    // Comprobar rol
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('roles(name)')
+      .eq('id', user.id)
+      .single()
+
+    const roleName = (profile?.roles as any)?.name
+
+    if (roleName !== 'profesor_aprobado') {
+      const url = request.nextUrl.clone()
+      url.pathname = '/apply'
+      return NextResponse.redirect(url)
+    }
+  }
+
   return supabaseResponse
 }
