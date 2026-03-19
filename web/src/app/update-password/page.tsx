@@ -15,27 +15,55 @@ export default function UpdatePasswordPage() {
   const supabase = createClient();
 
   useEffect(() => {
+    let timeoutId: NodeJS.Timeout;
+    
     const checkSession = async () => {
-      // 1. Verificar si hay un código PKCE en la URL
+      // 1. Check if there's a code in the URL (PKCE fallback)
       const query = new URLSearchParams(window.location.search);
       const code = query.get('code');
 
       if (code) {
-        // Intercambiar el código por una sesión
         const { error } = await supabase.auth.exchangeCodeForSession(code);
         if (error) {
-          console.error('Error exchanging code:', error.message);
           setErrorMsg('El enlace de recuperación ha expirado o no es válido.');
+        } else {
+          setVerifying(false);
         }
-      } else {
-        // Si no hay código, verificar si ya tenemos una sesión activa (por hash o cookie)
+        return;
+      }
+
+      // 2. No code, Supabase JS might be parsing hash (#access_token) or reading HttpOnly cookies.
+      // We rely on getSession() and onAuthStateChange to wait for it.
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (session) {
+        setVerifying(false);
+        return;
+      }
+
+      // 3. Fallback listener in case session is still loading
+      const { data: { subscription } } = supabase.auth.onAuthStateChange((event: string, session: any) => {
+        if (event === 'SIGNED_IN' || event === 'PASSWORD_RECOVERY') {
+          setVerifying(false);
+          setErrorMsg('');
+        }
+      });
+
+      // Give Supabase SDK time to parse the URL hash
+      timeoutId = setTimeout(async () => {
         const { data: { session } } = await supabase.auth.getSession();
         if (!session) {
-          setErrorMsg('No se encontró una sesión activa. Por favor, solicita un nuevo enlace de recuperación.');
+          setErrorMsg('El enlace de recuperación de contraseña ha expirado o no es válido.');
         }
-      }
-      setVerifying(false);
+        setVerifying(false);
+      }, 2500);
+
+      return () => {
+        subscription.unsubscribe();
+        clearTimeout(timeoutId);
+      };
     };
+
     checkSession();
   }, [supabase]);
 
