@@ -81,6 +81,12 @@ export default function Sidebar() {
               <span className={styles.icon}>🧭</span>
               Descubre
             </Link>
+            {userRole !== 'profesor' && (
+              <Link href="/profesores" className={`${styles.navItem} ${isPrefixActive('/profesores') ? styles.active : ''}`} onClick={() => setIsOpen(false)}>
+                <span className={styles.icon}>👨‍🏫</span>
+                Profesores
+              </Link>
+            )}
             <Link href="/premium" className={`${styles.navItemPremium} ${isPrefixActive('/premium') ? styles.activePremium : ''}`} onClick={() => setIsOpen(false)}>
               <span className={styles.icon}>⭐️</span>
               Premium
