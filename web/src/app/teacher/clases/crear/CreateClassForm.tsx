@@ -55,7 +55,9 @@ export default function CreateClassForm({ students, teacherId }: { students: any
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || 'Ocurrió un error al agendar la clase.');
+        const errorMsg = data.error || 'Ocurrió un error al agendar la clase.';
+        const detailsMsg = data.details ? ` (Razón técnica: ${data.details})` : '';
+        throw new Error(errorMsg + detailsMsg);
       }
 
       setSuccess(true);
