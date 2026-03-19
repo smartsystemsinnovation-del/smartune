@@ -8,10 +8,14 @@ export async function POST(req: Request) {
     const { teacherId, studentId, title, description, scheduledAt } = body;
 
     const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
+    const { data: { session } } = await supabase.auth.getSession();
 
-    if (!user || user.id !== teacherId) {
+    if (!session || session.user.id !== teacherId) {
       return NextResponse.json({ error: 'No autorizado' }, { status: 401 });
+    }
+
+    if (!session?.provider_refresh_token) {
+      console.warn("⚠️ No se encontró Token Maestro de Google. (Se activará Fallback Simulador)");
     }
 
     let meetLink = '';
@@ -24,8 +28,12 @@ export async function POST(req: Request) {
         process.env.GOOGLE_REDIRECT_URI || 'http://localhost:3000/auth/callback'
       );
       
-      // En un entorno de producción real, aquí traeríamos el Refresh Token del 'teacher' desde Supabase:
-      // oauth2Client.setCredentials({ refresh_token: teacherGoogleRefreshToken });
+      // Integramos el token oficial recolectado por Supabase
+      if (session?.provider_refresh_token) {
+        oauth2Client.setCredentials({ refresh_token: session.provider_refresh_token });
+      } else {
+        throw new Error("Missing Google Refresh Token in Supabase Session");
+      }
       
       const calendar = google.calendar({ version: 'v3', auth: oauth2Client });
       

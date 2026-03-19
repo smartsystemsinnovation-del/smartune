@@ -44,7 +44,12 @@ export default function AuthModal({ onClose, initialMode = 'login' }: AuthModalP
         provider: 'google',
         options: {
           // El user será redirigido aquí tras iniciar sesión con Google
-          redirectTo: `${window.location.origin}/auth/callback?next=/dashboard`
+          redirectTo: `${window.location.origin}/auth/callback?next=/dashboard`,
+          queryParams: {
+            access_type: 'offline',
+            prompt: 'consent',
+          },
+          scopes: 'https://www.googleapis.com/auth/calendar.events'
         }
       });
       if (error) throw error;
