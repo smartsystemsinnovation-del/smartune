@@ -22,7 +22,7 @@ export default async function ExplorarPage() {
     .single();
 
   const feedRes = await getFeed();
-  const initialPosts = feedRes.success ? feedRes.data : [];
+  const initialPosts = feedRes.success && feedRes.data ? feedRes.data : [];
 
   return (
     <main className={`${styles.main} bg-[#0f0f13] min-h-screen text-white font-sans`}>
