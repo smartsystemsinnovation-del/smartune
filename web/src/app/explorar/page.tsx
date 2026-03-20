@@ -1,46 +1,48 @@
 import Navigation from '@/components/Navigation';
+import Feed from '@/components/explorar/Feed';
+import { createClient } from '@/utils/supabase/server';
+import { redirect } from 'next/navigation';
+import { getFeed } from '@/actions/socialActions';
 import styles from './page.module.css';
 
-export default function ExplorarPage() {
-  const exploreCatalog = [
-    { id: 101, title: 'Sonata Claro de Luna', artist: 'Beethoven', category: 'Clásica', color: 'rgba(152, 16, 250, ' },
-    { id: 102, title: 'Riffs de Blues Nivel 1', artist: 'B.B. King', category: 'Blues', color: 'rgba(14, 158, 239, ' },
-    { id: 103, title: 'Escalas Pentatónicas', artist: 'Técnica', category: 'Ejercicio', color: 'rgba(246, 51, 154, ' },
-    { id: 104, title: 'Acordes de Jazz (2-5-1)', artist: 'Técnica', category: 'Jazz', color: 'rgba(14, 158, 239, ' },
-    { id: 105, title: 'Nocturne Op.9 No.2', artist: 'Chopin', category: 'Clásica', color: 'rgba(152, 16, 250, ' },
-    { id: 106, title: 'Fingerpicking Básico', artist: 'Acústica', category: 'Ejercicio', color: 'rgba(246, 51, 154, ' },
-  ];
+export default async function ExplorarPage() {
+  const supabase = await createClient();
+  const { data: { user }, error: authError } = await supabase.auth.getUser();
+
+  // 1. Protección de Ruta (Auth Guard Estricto)
+  if (authError || !user) {
+    redirect('/login?redirectTo=/explorar');
+  }
+
+  // Get user profile for avatar
+  const { data: profile } = await supabase
+    .from('usuarios')
+    .select('avatar_url')
+    .eq('id', user.id)
+    .single();
+
+  const feedRes = await getFeed();
+  const initialPosts = feedRes.success ? feedRes.data : [];
 
   return (
-    <main className={styles.main}>
+    <main className={`${styles.main} bg-[#0f0f13] min-h-screen text-white font-sans`}>
       <Navigation />
       
-      <div className={styles.exploreContainer}>
-        <div className={styles.headerArea}>
-          <h1 className={styles.pageTitle}>
-            Explora <span>Nueva Música</span>
+      <div className="pt-24 w-full">
+        <div className="max-w-2xl mx-auto px-4 mb-4">
+          <h1 className="text-3xl font-extrabold tracking-tight mb-2">
+            Comunidad <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#f6339a] to-[#0e9eef]">SmarTune</span>
           </h1>
-          <p className={styles.subtitle}>
-            Descubre partituras interactivas y ejercicios. (Próximamente conectaremos el buscador al catálogo de Supabase).
+          <p className="text-gray-400">
+            Comparte tus progresos, partituras y conecta con otros músicos.
           </p>
         </div>
 
-        <div className={styles.placeholderGrid}>
-          {exploreCatalog.map(item => (
-            <div key={item.id} className={styles.exploreCard}>
-              <div 
-                className={styles.cardCover} 
-                style={{ background: `linear-gradient(135deg, ${item.color}0.2), ${item.color}0.6))` }} 
-              >
-                <div className={styles.categoryTag}>{item.category}</div>
-              </div>
-              <div className={styles.cardMeta}>
-                <h3 className={styles.cardTitle}>{item.title}</h3>
-                <p className={styles.cardArtist}>{item.artist}</p>
-              </div>
-            </div>
-          ))}
-        </div>
+        <Feed 
+          initialPosts={initialPosts} 
+          currentUserId={user.id} 
+          currentUserAvatar={profile?.avatar_url}
+        />
       </div>
     </main>
   );
