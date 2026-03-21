@@ -40,15 +40,15 @@ export default function StoriesRow({ currentUserAvatar }: StoriesRowProps) {
 
   return (
     <div className="flex gap-5 overflow-x-auto no-scrollbar pb-2">
-      {/* ── Tu historia (Upload) ── */}
+      {/* ── Tu historia ── */}
       <div
         onClick={() => !isUploading && fileInputRef.current?.click()}
         className={`flex-shrink-0 flex flex-col items-center gap-2.5 cursor-pointer group ${isUploading ? 'opacity-50 pointer-events-none' : ''}`}
       >
         <input type="file" ref={fileInputRef} className="hidden" accept="image/*,video/*" onChange={handleStoryUpload} />
         <div className="relative">
-          {/* Animated gradient ring */}
-          <div className="w-[72px] h-[72px] rounded-full story-ring p-[3px]">
+          {/* Static gradient ring */}
+          <div className="w-[72px] h-[72px] rounded-full p-[2.5px] bg-gradient-to-tr from-[#f6339a] via-[#9810fa] to-[#0e9eef]">
             <div className="w-full h-full rounded-full bg-[#181818] p-[2px]">
               <div className="w-full h-full rounded-full overflow-hidden">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -69,7 +69,7 @@ export default function StoriesRow({ currentUserAvatar }: StoriesRowProps) {
             )}
           </div>
         </div>
-        <span className="text-[11px] font-semibold text-white/80 group-hover:text-white transition-colors">
+        <span className="text-[11px] font-semibold text-white/70 group-hover:text-white transition-colors">
           {isUploading ? 'Subiendo...' : 'Tu historia'}
         </span>
       </div>
@@ -77,7 +77,7 @@ export default function StoriesRow({ currentUserAvatar }: StoriesRowProps) {
       {/* ── Other Stories ── */}
       {stories.map(story => (
         <div key={story.id} className="flex-shrink-0 flex flex-col items-center gap-2.5 cursor-pointer group">
-          <div className={`w-[72px] h-[72px] rounded-full p-[3px] ${story.hasNew ? 'story-ring' : 'story-ring-static'}`}>
+          <div className={`w-[72px] h-[72px] rounded-full p-[2.5px] ${story.hasNew ? 'bg-gradient-to-tr from-[#f6339a] via-[#9810fa] to-[#0e9eef]' : 'bg-white/[0.08]'}`}>
             <div className="w-full h-full rounded-full bg-[#181818] p-[2px]">
               <div className="w-full h-full rounded-full overflow-hidden">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -89,7 +89,7 @@ export default function StoriesRow({ currentUserAvatar }: StoriesRowProps) {
               </div>
             </div>
           </div>
-          <span className={`text-[11px] font-medium transition-colors ${story.hasNew ? 'text-white/90' : 'text-white/40'} group-hover:text-white`}>
+          <span className={`text-[11px] font-medium transition-colors ${story.hasNew ? 'text-white/80' : 'text-white/30'} group-hover:text-white`}>
             {story.name}
           </span>
         </div>

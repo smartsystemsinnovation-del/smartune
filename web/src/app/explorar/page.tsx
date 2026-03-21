@@ -23,37 +23,31 @@ export default async function ExplorarPage() {
   const initialPosts = feedRes.success && feedRes.data ? feedRes.data : [];
 
   return (
-    <div className="min-h-screen" style={{ fontFamily: "'Manrope', sans-serif" }}>
-      {/* Centered container */}
-      <div className="max-w-3xl mx-auto px-4 sm:px-6 relative">
-        <div className="flex gap-8 justify-center">
-          
-          {/* ─── CENTER COLUMN (Feed) ─── */}
-          <div className="flex-1 min-w-0 max-w-2xl space-y-10 pt-8 pb-12">
+    <div className="min-h-screen flex justify-center" style={{ fontFamily: "'Manrope', sans-serif" }}>
+      <div className="w-full max-w-[600px] mx-auto px-4 pt-6 pb-12">
+        
+        {/* Novedades (Stories) */}
+        <section className="mb-8">
+          <h2 className="text-[11px] font-bold tracking-[0.2em] text-white/30 uppercase mb-5" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
+            Novedades
+          </h2>
+          <StoriesRow currentUserAvatar={profile?.avatar_url} />
+        </section>
 
-            {/* Novedades (Stories) */}
-            <section>
-              <h2 className="text-sm font-bold tracking-widest text-gray-500 uppercase mb-6 px-1" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
-                Novedades
-              </h2>
-              <StoriesRow currentUserAvatar={profile?.avatar_url} />
-            </section>
-
-            {/* Feed (Composer + Posts) */}
-            <Feed
-              initialPosts={initialPosts}
-              currentUserId={user.id}
-              currentUserAvatar={profile?.avatar_url}
-            />
-          </div>
-
-          {/* ─── RIGHT SIDEBAR (only on xl screens) ─── */}
-          <aside className="hidden xl:flex flex-col w-72 flex-shrink-0 gap-6 pt-8">
-            <RecentFollowers />
-          </aside>
-
-        </div>
+        {/* Feed */}
+        <Feed
+          initialPosts={initialPosts}
+          currentUserId={user.id}
+          currentUserAvatar={profile?.avatar_url}
+        />
       </div>
+
+      {/* Right Sidebar */}
+      <aside className="hidden xl:block w-72 flex-shrink-0 pt-6 pl-8">
+        <div className="sticky top-24">
+          <RecentFollowers />
+        </div>
+      </aside>
     </div>
   );
 }
