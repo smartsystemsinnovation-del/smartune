@@ -13,10 +13,27 @@ export async function fetchYouTubeSongs(genre?: string) {
     // If the genre is just a clean word (not containing "-mix"), append the anti-mix suffix
     query = genre.includes('-mix') ? genre : `${genre}${antiMixSuffix}`; 
   } else {
-    const randomKeywords = ['vevo official video', 'global top 50 hit', '1 BILLION views official', 'chart hits official video'];
-    const extraKeyword = randomKeywords[Math.floor(Math.random() * randomKeywords.length)];
-    const queries = ['pop', 'reggaeton', 'hip hop', 'latin track', 'rock anthems'];
-    query = `${queries[Math.floor(Math.random() * queries.length)]} ${extraKeyword}${antiMixSuffix}`;
+    // To absolutely guarantee famous songs, we randomize from a curated list of global superstars
+    const famousArtists = [
+      'Ed Sheeran official video',
+      'AC/DC official video',
+      'Marshmello official video',
+      'Dua Lipa official video',
+      'The Weeknd official video',
+      'Coldplay official video',
+      'Bruno Mars official video',
+      'Eminem official video',
+      'Rihanna official video',
+      'Katy Perry official video',
+      'Imagine Dragons official video',
+      'Shawn Mendes official video',
+      'Billie Eilish official video',
+      'Justin Bieber official video',
+      'Ariana Grande official video',
+      'Bad Bunny official video',
+      'Shakira official video'
+    ];
+    query = `${famousArtists[Math.floor(Math.random() * famousArtists.length)]}${antiMixSuffix}`;
   }
   
   const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=25&q=${encodeURIComponent(query)}&type=video&videoCategoryId=10&key=${apiKey}`;
