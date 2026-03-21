@@ -5,14 +5,13 @@ export async function fetchYouTubeSongs(genre?: string) {
     throw new Error('YOUTUBE_API_KEY is not set');
   }
 
-  // Enhanced search queries for better variety
-  const randomKeywords = ['vibes', '2024', 'remix', 'playlist', 'bass', 'hits', 'dynamic', 'session'];
-  const extraKeyword = randomKeywords[Math.floor(Math.random() * randomKeywords.length)];
-
+  // Use genre directly if provided, since it might have precise negative keywords (-mix, etc)
   let query = '';
   if (genre) {
-    query = `${genre} ${extraKeyword} music`;
+    query = genre; // Exact precise query
   } else {
+    const randomKeywords = ['vibes', '2024', 'remix', 'bass', 'hits', 'dynamic', 'session'];
+    const extraKeyword = randomKeywords[Math.floor(Math.random() * randomKeywords.length)];
     const queries = ['electronic music', 'phonk music', 'pop hits mix', 'future bass'];
     query = `${queries[Math.floor(Math.random() * queries.length)]} ${extraKeyword}`;
   }

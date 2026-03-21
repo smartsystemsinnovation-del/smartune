@@ -200,7 +200,7 @@ function HomeContent() {
           {releases.map((song, i) => (
             <div key={i} className={styles.card}>
               <div className={styles.cardImgContainer} style={{ overflow: 'hidden' }}>
-                 <img src={song.thumbnailBase} alt={song.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                 <img src={song.coverUrl} alt={song.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
               </div>
               <div style={{ padding: '12px 0' }}>
                 <h3 className={styles.cardTitle} style={{ fontSize: '15px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '140px' }}>
