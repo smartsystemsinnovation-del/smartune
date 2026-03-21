@@ -10,28 +10,61 @@ export async function GET() {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { data, error } = await supabase
+    // 1. Get the list of user IDs this user follows
+    const { data: follows } = await supabase
+      .from('seguidores')
+      .select('seguido_id')
+      .eq('seguidor_id', user.id);
+
+    // Build the list: followed users + self (so you can see your own story)
+    const followedIds = (follows || []).map(f => f.seguido_id);
+    const allIds = [...new Set([user.id, ...followedIds])];
+
+    // 2. Fetch active stories (not expired) only from followed users + self
+    const { data: stories, error } = await supabase
       .from('historias')
-      .select('*, usuarios(nombre, avatar_url)')
+      .select('id, media_url, created_at, expires_at, usuario_id, usuarios(id, nombre, avatar_url)')
+      .in('usuario_id', allIds)
       .gt('expires_at', new Date().toISOString())
       .order('created_at', { ascending: false });
 
-    // For Figma mockup completeness, if there are no real stories yet because the table is new,
-    // we return standard formatted mock data, so the UI doesn't look empty before real data flows.
-    if (error || !data || data.length === 0) {
-      return NextResponse.json({
-         success: true,
-         data: [
-            { id: '1', usuarios: { nombre: 'Lucia M.', avatar_url: 'https://images.unsplash.com/photo-1549834125-82d3c48159a3?w=150&q=80' }, media_url: '' },
-            { id: '2', usuarios: { nombre: 'Marc Beat', avatar_url: 'https://images.unsplash.com/photo-1510915228340-29c85a43dcfe?w=150&q=80' }, media_url: '' },
-            { id: '3', usuarios: { nombre: 'Alex R.', avatar_url: 'https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?w=150&q=80' }, media_url: '' },
-            { id: '4', usuarios: { nombre: 'SynthWave', avatar_url: 'https://images.unsplash.com/photo-1516280440502-6cfae259e8f4?w=150&q=80' }, media_url: '' }
-         ]
+    if (error) {
+      console.error('Error fetching stories:', error);
+      return NextResponse.json({ success: true, data: [] });
+    }
+
+    // 3. Group stories by user (each user shows as one circle, latest story first)
+    const userStoriesMap = new Map<string, any>();
+    for (const story of (stories || [])) {
+      const uid = story.usuario_id;
+      if (!userStoriesMap.has(uid)) {
+        userStoriesMap.set(uid, {
+          userId: uid,
+          nombre: (story.usuarios as any)?.nombre || 'Usuario',
+          avatar_url: (story.usuarios as any)?.avatar_url || '',
+          stories: [],
+          isOwn: uid === user.id,
+        });
+      }
+      userStoriesMap.get(uid).stories.push({
+        id: story.id,
+        media_url: story.media_url,
+        created_at: story.created_at,
+        expires_at: story.expires_at,
       });
     }
 
-    return NextResponse.json({ success: true, data });
+    // Convert to array, put own story first
+    const grouped = Array.from(userStoriesMap.values());
+    grouped.sort((a, b) => {
+      if (a.isOwn) return -1;
+      if (b.isOwn) return 1;
+      return 0;
+    });
+
+    return NextResponse.json({ success: true, data: grouped });
   } catch (error: any) {
+    console.error('Stories GET error:', error);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
@@ -45,16 +78,59 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { media_url } = await request.json();
+    // Accept multipart form data with the actual file
+    const formData = await request.formData();
+    const file = formData.get('file') as File | null;
 
-    const { error } = await supabase
+    if (!file) {
+      return NextResponse.json({ error: 'No file provided' }, { status: 400 });
+    }
+
+    // Upload to Supabase Storage
+    const fileExt = file.name.split('.').pop() || 'jpg';
+    const fileName = `${user.id}/${Date.now()}.${fileExt}`;
+
+    const { error: uploadError } = await supabase.storage
       .from('historias')
-      .insert({ usuario_id: user.id, media_url });
+      .upload(fileName, file, {
+        contentType: file.type,
+        upsert: false,
+      });
 
-    if (error) throw error;
-    
-    return NextResponse.json({ success: true });
+    if (uploadError) {
+      // If bucket doesn't exist, try to create it and retry
+      if (uploadError.message?.includes('not found') || uploadError.message?.includes('Bucket')) {
+        // Try creating the bucket
+        await supabase.storage.createBucket('historias', { public: true, fileSizeLimit: 10485760 });
+        const { error: retryError } = await supabase.storage
+          .from('historias')
+          .upload(fileName, file, { contentType: file.type, upsert: false });
+        if (retryError) throw retryError;
+      } else {
+        throw uploadError;
+      }
+    }
+
+    // Get public URL
+    const { data: urlData } = supabase.storage
+      .from('historias')
+      .getPublicUrl(fileName);
+
+    const publicUrl = urlData.publicUrl;
+
+    // Insert into historias table
+    const { error: insertError } = await supabase
+      .from('historias')
+      .insert({
+        usuario_id: user.id,
+        media_url: publicUrl,
+      });
+
+    if (insertError) throw insertError;
+
+    return NextResponse.json({ success: true, media_url: publicUrl });
   } catch (error: any) {
+    console.error('Stories POST error:', error);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
