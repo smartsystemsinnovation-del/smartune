@@ -11,19 +11,24 @@ export default function Feed({ initialPosts, currentUserId, currentUserAvatar }:
   };
 
   return (
-    <div className="max-w-2xl mx-auto w-full flex flex-col gap-6 pb-20 mt-6 px-4">
-      <CreatePost onPostCreated={handlePostCreated} avatarUrl={currentUserAvatar} />
-      <div className="flex flex-col gap-6 w-full">
+    <div className="w-full flex flex-col pb-4">
+      {/* Post Cards */}
+      <div className="flex flex-col divide-y divide-[#2a2a35]/40">
         {posts.length > 0 ? (
           posts.map(post => (
             <PostCard key={post.id} post={post} currentUserId={currentUserId} />
           ))
         ) : (
-          <div className="text-center text-gray-400 mt-10 p-8 bg-[#1a1a24] rounded-2xl border border-[#2a2a35]">
+          <div className="text-center text-gray-400 py-16 px-8">
             <p className="text-lg font-medium text-white mb-2">Aún no hay publicaciones</p>
             <p className="text-sm">Sé el primero en compartir algo con la comunidad.</p>
           </div>
         )}
+      </div>
+
+      {/* Composer at the bottom (Figma style) */}
+      <div className="px-5 py-4 border-t border-[#2a2a35]/40">
+        <CreatePost onPostCreated={handlePostCreated} avatarUrl={currentUserAvatar} />
       </div>
     </div>
   );
