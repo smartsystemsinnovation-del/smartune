@@ -11,20 +11,21 @@ export default function Feed({ initialPosts, currentUserId, currentUserAvatar }:
   };
 
   return (
-    <div className="space-y-8">
-      {/* Post Composer — Figma glass-card style */}
+    <div className="space-y-6">
+      {/* Post Composer */}
       <CreatePost onPostCreated={handlePostCreated} avatarUrl={currentUserAvatar} />
 
-      {/* Post Feed */}
-      <div className="space-y-8">
+      {/* Feed */}
+      <div className="space-y-5">
         {posts.length > 0 ? (
           posts.map(post => (
             <PostCard key={post.id} post={post} currentUserId={currentUserId} />
           ))
         ) : (
-          <div className="glass-card rounded-2xl p-8 text-center border border-white/5">
-            <p className="text-lg font-medium text-white mb-2">Aún no hay publicaciones</p>
-            <p className="text-sm text-gray-400">Sé el primero en compartir algo con la comunidad.</p>
+          <div className="text-center py-20">
+            <span className="material-symbols-outlined text-5xl text-white/10 mb-4 block">photo_camera</span>
+            <p className="text-[15px] font-bold text-white/80 mb-1">Aún no hay publicaciones</p>
+            <p className="text-[13px] text-white/30">Sé el primero en compartir algo con la comunidad</p>
           </div>
         )}
       </div>

@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, useRef, useCallback } from 'react';
 import { toggleLike, getComments, addComment } from '@/actions/socialActions';
 
 const DEFAULT_AVATAR = 'https://ui-avatars.com/api/?background=f6339a&color=fff&bold=true&size=128&name=';
@@ -11,25 +11,59 @@ export default function PostCard({ post, currentUserId }: { post: any, currentUs
   const [comments, setComments] = useState<any[]>([]);
   const [newComment, setNewComment] = useState('');
   const [isSubmittingComment, setIsSubmittingComment] = useState(false);
+  const [showHeartBurst, setShowHeartBurst] = useState(false);
+  const [likeAnimating, setLikeAnimating] = useState(false);
+  const [saved, setSaved] = useState(false);
+  const lastTapRef = useRef(0);
 
   const timeAgo = (dateString: string) => {
     const diffInMs = new Date().getTime() - new Date(dateString).getTime();
     if (isNaN(diffInMs)) return 'Ahora';
     const diffMins = Math.floor(diffInMs / 60000);
-    if (diffMins < 60) return `${Math.max(1, diffMins)}m`;
+    if (diffMins < 60) return `hace ${Math.max(1, diffMins)} min`;
     const diffHours = Math.floor(diffMins / 60);
-    if (diffHours < 24) return `${diffHours}h`;
-    return `${Math.floor(diffHours / 24)}d`;
+    if (diffHours < 24) return `hace ${diffHours}h`;
+    const days = Math.floor(diffHours / 24);
+    if (days === 1) return 'ayer';
+    return `hace ${days} días`;
   };
 
   const formatCount = (n: number) => {
+    if (n >= 1000000) return (n / 1000000).toFixed(1) + 'M';
     if (n >= 1000) return (n / 1000).toFixed(1) + 'k';
     return String(n);
   };
 
-  const handleLike = async () => {
-    setHasLiked(!hasLiked);
-    setLikesCount(prev => hasLiked ? prev - 1 : prev + 1);
+  const performLike = useCallback(async () => {
+    if (hasLiked) return; // Double-tap only adds likes
+    setHasLiked(true);
+    setLikesCount(prev => prev + 1);
+    setLikeAnimating(true);
+    setTimeout(() => setLikeAnimating(false), 400);
+    const res = await toggleLike(post.id, false);
+    if (!res.success) {
+      setHasLiked(false);
+      setLikesCount(prev => prev - 1);
+    }
+  }, [hasLiked, post.id]);
+
+  const handleDoubleTap = useCallback(() => {
+    const now = Date.now();
+    if (now - lastTapRef.current < 300) {
+      // Double tap detected
+      setShowHeartBurst(true);
+      setTimeout(() => setShowHeartBurst(false), 800);
+      performLike();
+    }
+    lastTapRef.current = now;
+  }, [performLike]);
+
+  const handleLikeButton = async () => {
+    const newLiked = !hasLiked;
+    setHasLiked(newLiked);
+    setLikesCount(prev => newLiked ? prev + 1 : prev - 1);
+    setLikeAnimating(true);
+    setTimeout(() => setLikeAnimating(false), 400);
     const res = await toggleLike(post.id, hasLiked);
     if (!res.success) {
       setHasLiked(hasLiked);
@@ -57,109 +91,164 @@ export default function PostCard({ post, currentUserId }: { post: any, currentUs
     setIsSubmittingComment(false);
   };
 
+  const avatarSrc = post.avatar_url || `${DEFAULT_AVATAR}${encodeURIComponent(post.username || 'U')}`;
+
   return (
-    <article className="glass-card rounded-2xl overflow-hidden shadow-lg border border-white/[0.06] hover:border-[#f6339a]/20 transition-all duration-300 group">
-      <div className="p-6">
-        {/* Header */}
-        <div className="flex justify-between items-start mb-4">
-          <div className="flex gap-4 flex-row">
-            <div className="h-12 w-12 rounded-full overflow-hidden border-2 border-[#f6339a]/20 flex-shrink-0 ring-2 ring-white/[0.04]">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img 
-                src={post.avatar_url || `${DEFAULT_AVATAR}${encodeURIComponent(post.username || 'U')}`} 
-                alt="" 
-                className="w-full h-full object-cover" 
-              />
-            </div>
-            <div>
-              <div className="flex items-center gap-1">
-                <h3 className="font-bold text-white">{post.username || 'Usuario'}</h3>
-                <span className="material-symbols-outlined text-[#f6339a] text-sm" style={{ fontVariationSettings: "'FILL' 1" }}>verified</span>
+    <article className="card-appear bg-[#1a1a22] rounded-2xl overflow-hidden border border-white/[0.04] hover:border-white/[0.08] transition-all duration-300">
+      {/* ── Header ── */}
+      <div className="flex items-center justify-between px-4 py-3">
+        <div className="flex items-center gap-3">
+          {/* Avatar with story-like ring */}
+          <div className="w-[42px] h-[42px] rounded-full story-ring p-[2px]">
+            <div className="w-full h-full rounded-full bg-[#1a1a22] p-[1.5px]">
+              <div className="w-full h-full rounded-full overflow-hidden">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={avatarSrc} alt="" className="w-full h-full object-cover" />
               </div>
-              <p className="text-sm text-gray-400/70">@{post.username?.replace(/\s+/g, '_').toLowerCase() || 'usuario'} • {timeAgo(post.created_at)}</p>
+            </div>
+          </div>
+          <div className="flex flex-col">
+            <div className="flex items-center gap-1.5">
+              <span className="font-bold text-[14px] text-white leading-tight">{post.username || 'Usuario'}</span>
+              <span className="material-symbols-outlined text-[#0e9eef] text-[14px]" style={{ fontVariationSettings: "'FILL' 1" }}>verified</span>
+              <span className="text-white/30 text-xs">•</span>
+              <span className="text-white/40 text-xs font-medium">{timeAgo(post.created_at)}</span>
             </div>
             {currentUserId !== post.user_id && (
-              <button className="ml-4 px-4 py-1.5 bg-gradient-to-r from-[#f6339a] to-[#0e9eef] text-white text-xs font-bold rounded-full shadow-[0_0_10px_rgba(246,51,154,0.2)] hover:scale-105 active:scale-95 transition-all self-center"
-                style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
+              <button className="text-[#0e9eef] text-[12px] font-bold hover:text-[#f6339a] transition-colors text-left mt-0.5">
                 Seguir
               </button>
             )}
           </div>
-          <button className="text-gray-400 hover:text-white">
-            <span className="material-symbols-outlined">more_horiz</span>
+        </div>
+        <button className="text-white/40 hover:text-white transition-colors p-1">
+          <span className="material-symbols-outlined text-xl">more_horiz</span>
+        </button>
+      </div>
+
+      {/* ── Content ── */}
+      <div className="px-4 pb-3">
+        <p className="text-[14px] text-white/90 leading-relaxed">{post.content}</p>
+      </div>
+
+      {/* ── Image (double-tap to like) ── */}
+      {post.image_url && (
+        <div className="relative cursor-pointer select-none" onClick={handleDoubleTap}>
+          <div className="bg-black">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={post.image_url}
+              alt=""
+              className="w-full max-h-[480px] object-cover"
+              draggable={false}
+            />
+          </div>
+          {/* Heart burst overlay on double-tap */}
+          {showHeartBurst && (
+            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+              <svg className="w-24 h-24 text-white drop-shadow-2xl heart-burst" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+              </svg>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* ── Action Bar (Instagram-style) ── */}
+      <div className="px-4 pt-3 pb-1">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            {/* Like */}
+            <button onClick={handleLikeButton} className="hover:opacity-70 transition-opacity">
+              <span
+                className={`material-symbols-outlined text-2xl transition-colors ${likeAnimating ? 'like-pop' : ''} ${hasLiked ? 'text-[#f6339a]' : 'text-white'}`}
+                style={hasLiked ? { fontVariationSettings: "'FILL' 1" } : {}}
+              >
+                favorite
+              </span>
+            </button>
+            {/* Comment */}
+            <button onClick={loadComments} className="hover:opacity-70 transition-opacity">
+              <span className="material-symbols-outlined text-2xl text-white">chat_bubble_outline</span>
+            </button>
+            {/* Share */}
+            <button className="hover:opacity-70 transition-opacity">
+              <span className="material-symbols-outlined text-2xl text-white">send</span>
+            </button>
+          </div>
+          {/* Bookmark */}
+          <button onClick={() => setSaved(!saved)} className="hover:opacity-70 transition-opacity">
+            <span
+              className={`material-symbols-outlined text-2xl ${saved ? 'text-white' : 'text-white'}`}
+              style={saved ? { fontVariationSettings: "'FILL' 1" } : {}}
+            >
+              bookmark
+            </span>
           </button>
         </div>
 
-        {/* Content */}
-        <p className="text-white leading-relaxed mb-6">{post.content}</p>
+        {/* Like count */}
+        <p className="font-bold text-[14px] text-white mt-2">{formatCount(likesCount)} Me gusta</p>
 
-        {/* Image */}
-        {post.image_url && (
-          <div className="rounded-xl overflow-hidden mb-6 bg-[#1f1f1f] max-h-[400px]">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={post.image_url} alt="Post media" className="w-full h-full object-cover group-hover:scale-[1.01] transition-transform duration-700" />
+        {/* Caption with username */}
+        {!post.image_url && (
+          <div className="mt-1">
+            <span className="font-bold text-[14px] text-white mr-1.5">{post.username || 'Usuario'}</span>
+            <span className="text-[14px] text-white/80">{post.content}</span>
           </div>
         )}
 
-        {/* Interaction Bar — Figma exact: favorite, chat_bubble, repeat, share */}
-        <div className="flex items-center justify-between max-w-sm text-gray-400">
-          <button onClick={handleLike} className={`flex items-center gap-2 transition-colors group/btn ${hasLiked ? 'text-[#f6339a]' : 'hover:text-[#f6339a]'}`}>
-            <span className="material-symbols-outlined group-hover/btn:scale-110 transition-transform" style={hasLiked ? { fontVariationSettings: "'FILL' 1" } : {}}>favorite</span>
-            <span className="text-sm font-medium">{formatCount(likesCount)}</span>
+        {/* View all comments link */}
+        {Number(post.comments_count) > 0 && (
+          <button onClick={loadComments} className="text-white/40 text-[14px] mt-1 block hover:text-white/60 transition-colors">
+            Ver los {post.comments_count} comentarios
           </button>
-          <button onClick={loadComments} className="flex items-center gap-2 hover:text-[#f6339a] transition-colors group/btn">
-            <span className="material-symbols-outlined group-hover/btn:scale-110 transition-transform">chat_bubble</span>
-            <span className="text-sm font-medium">{Number(post.comments_count) || 0}</span>
-          </button>
-          <button className="flex items-center gap-2 hover:text-[#f6339a] transition-colors group/btn">
-            <span className="material-symbols-outlined group-hover/btn:scale-110 transition-transform">repeat</span>
-            <span className="text-sm font-medium">{Math.floor(Number(post.likes_count || 0) * 0.3)}</span>
-          </button>
-          <button className="flex items-center gap-2 hover:text-[#f6339a] transition-colors group/btn">
-            <span className="material-symbols-outlined group-hover/btn:scale-110 transition-transform">share</span>
-          </button>
-        </div>
+        )}
       </div>
 
-      {/* Comments Section */}
+      {/* ── Comments Section ── */}
       {showComments && (
-        <div className="px-6 pb-6 pt-2 border-t border-white/5">
-          <div className="flex flex-col gap-3 max-h-[300px] overflow-y-auto pr-2">
+        <div className="px-4 pb-4 pt-2 border-t border-white/[0.04] mt-2">
+          <div className="flex flex-col gap-3 max-h-[250px] overflow-y-auto no-scrollbar">
             {comments.map((comment, idx) => (
-              <div key={idx} className="flex gap-3">
-                <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-[#f6339a] to-[#0e9eef] overflow-hidden flex-shrink-0">
-                  {comment.usuarios?.avatar_url && (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img src={comment.usuarios.avatar_url} alt="" className="w-full h-full object-cover" />
-                  )}
+              <div key={idx} className="flex gap-3 items-start">
+                <div className="w-8 h-8 rounded-full overflow-hidden flex-shrink-0 bg-[#2a2a35]">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={comment.usuarios?.avatar_url || `${DEFAULT_AVATAR}${encodeURIComponent(comment.usuarios?.nombre || 'U')}`}
+                    alt=""
+                    className="w-full h-full object-cover"
+                  />
                 </div>
-                <div className="flex-1 bg-[#1f1f1f] p-3 rounded-xl">
-                  <p className="text-sm">
-                    <span className="font-bold text-gray-200">{comment.usuarios?.nombre || 'Usuario'}</span>
-                    <span className="text-gray-500 text-xs ml-2">{timeAgo(comment.created_at)}</span>
+                <div className="flex-1 min-w-0">
+                  <p className="text-[13px]">
+                    <span className="font-bold text-white mr-1.5">{comment.usuarios?.nombre || 'Usuario'}</span>
+                    <span className="text-white/70">{comment.content}</span>
                   </p>
-                  <p className="text-sm text-gray-300 mt-1">{comment.content}</p>
+                  <span className="text-[11px] text-white/30 mt-0.5 block">{timeAgo(comment.created_at)}</span>
                 </div>
               </div>
             ))}
             {comments.length === 0 && (
-              <p className="text-center text-gray-500 text-sm py-2">No hay comentarios aún. ¡Sé el primero!</p>
+              <p className="text-white/30 text-sm py-2 text-center">Sin comentarios aún</p>
             )}
           </div>
-          <form onSubmit={handleAddComment} className="mt-3 flex gap-2">
+          {/* Add comment */}
+          <form onSubmit={handleAddComment} className="mt-3 flex items-center gap-3 border-t border-white/[0.04] pt-3">
+            <span className="material-symbols-outlined text-white/30 text-xl">mood</span>
             <input
               type="text"
-              placeholder="Escribe un comentario..."
+              placeholder="Añade un comentario..."
               value={newComment}
               onChange={(e) => setNewComment(e.target.value)}
-              className="flex-1 bg-[#1f1f1f] border border-white/5 rounded-full px-4 py-2 text-sm text-white focus:outline-none focus:ring-1 focus:ring-[#f6339a]/40 transition-all"
+              className="flex-1 bg-transparent text-[14px] text-white placeholder:text-white/25 focus:outline-none"
             />
             <button
               type="submit"
               disabled={!newComment.trim() || isSubmittingComment}
-              className={`px-4 py-2 rounded-full font-bold text-xs ${!newComment.trim() || isSubmittingComment ? 'bg-[#2a2a35] text-gray-500 cursor-not-allowed' : 'bg-[#f6339a] text-white hover:bg-[#ff4db8]'} transition-colors`}
+              className={`text-[14px] font-bold transition-colors ${!newComment.trim() || isSubmittingComment ? 'text-[#0e9eef]/30 cursor-not-allowed' : 'text-[#0e9eef] hover:text-white'}`}
             >
-              Enviar
+              Publicar
             </button>
           </form>
         </div>
