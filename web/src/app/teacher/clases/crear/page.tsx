@@ -1,5 +1,4 @@
 import { createClient } from '@/utils/supabase/server';
-import Navigation from '@/components/Navigation';
 import CreateClassForm from './CreateClassForm';
 import styles from '@/app/dashboard/page.module.css';
 import { redirect } from 'next/navigation';
@@ -20,8 +19,7 @@ export default async function CreateClassPage() {
 
   return (
     <main className={styles.main}>
-      <Navigation />
-      <div className={styles.dashboardContainer} style={{ maxWidth: '800px', margin: '0 auto', width: '100%', padding: '0 20px' }}>
+            <div className={styles.dashboardContainer} style={{ maxWidth: '800px', margin: '0 auto', width: '100%', padding: '0 20px' }}>
         <div className={styles.headerSection} style={{ marginBottom: '32px' }}>
           <h1 className={styles.greetingTitle}>
              <span style={{color: 'var(--neon-pink)', marginRight: '12px'}}>📅</span>

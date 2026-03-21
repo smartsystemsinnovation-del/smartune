@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import Navigation from '@/components/Navigation';
 import Link from 'next/link';
 
 interface LikedSong {
@@ -32,8 +31,7 @@ export default function MyPlaylistPage() {
 
   return (
     <div className="flex flex-col min-h-screen">
-      <Navigation />
-      
+            
       <main className="flex-1 p-6 md:p-12">
         <div className="max-w-6xl mx-auto">
           

@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState } from 'react';
-import Navigation from '@/components/Navigation';
 import { useRouter } from 'next/navigation';
 
 export default function IAStudioPage() {
@@ -86,8 +85,7 @@ export default function IAStudioPage() {
 
   return (
     <div className="min-h-screen bg-[#0F0F0F] text-white selection:bg-[#D000FF]/30 font-inter">
-      <Navigation />
-      
+            
       <main className="max-w-4xl mx-auto pt-24 pb-20 px-6 relative">
         <div className="absolute top-20 left-1/2 -translate-x-1/2 w-full h-[400px] bg-gradient-to-b from-[#D000FF]/10 to-transparent -z-10 blur-[120px]"></div>
         

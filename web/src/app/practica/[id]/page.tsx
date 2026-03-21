@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import Navigation from '@/components/Navigation';
 import styles from './page.module.css';
 
 export default function PracticaPage({ params }: { params: { id: string } }) {
@@ -40,8 +39,7 @@ export default function PracticaPage({ params }: { params: { id: string } }) {
 
   return (
     <main className={styles.main}>
-      <Navigation />
-
+      
       <div className={styles.practiceContainer}>
         {/* INTERFAZ DEL MINIJUEGO SIMULADA */}
         <div className={styles.gameArea}>

@@ -1,5 +1,4 @@
 import { getDailyTasks } from "@/actions/practiceActions";
-import Navigation from '@/components/Navigation';
 import { createClient } from '@/utils/supabase/server';
 import { redirect } from 'next/navigation';
 import styles from './page.module.css';
@@ -29,8 +28,7 @@ export default async function DashboardPage() {
 
   return (
     <main className={styles.main}>
-      <Navigation />
-      
+            
       <div className={styles.dashboardContainer}>
         <div className={styles.headerArea}>
           <h1 className={styles.greetingTitle}>

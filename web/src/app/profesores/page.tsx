@@ -1,5 +1,4 @@
 import { createClient } from '@/utils/supabase/server';
-import Navigation from '@/components/Navigation';
 import AuthGatekeeper from '@/components/AuthGatekeeper';
 import TeacherCard from './TeacherCard';
 import styles from '../dashboard/page.module.css';
@@ -33,8 +32,7 @@ export default async function ProfesoresPage() {
 
   return (
     <main className={styles.main}>
-      <Navigation />
-      <div className={styles.dashboardContainer}>
+            <div className={styles.dashboardContainer}>
         <div className={styles.headerSection} style={{ marginBottom: '24px' }}>
           <h1 className={styles.greetingTitle}>
              <span style={{color: 'var(--neon-pink)', marginRight: '12px'}}>👨‍🏫</span>

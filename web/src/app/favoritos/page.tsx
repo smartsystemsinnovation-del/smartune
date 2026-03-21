@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from 'react';
-import Navigation from '@/components/Navigation';
 import AuthGatekeeper from '@/components/AuthGatekeeper';
 import { createClient } from '@/utils/supabase/client';
 import Link from 'next/link';
@@ -222,8 +221,7 @@ export default function MusicSwipePage() {
   if (!user) {
     return (
       <div style={{ padding: '40px 0' }}>
-        <Navigation />
-        <AuthGatekeeper 
+                <AuthGatekeeper 
           iconNode={
             <div style={{ width: 80, height: 80, borderRadius: '50%', border: '2px solid var(--neon-pink)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--neon-pink)" strokeWidth="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
@@ -247,8 +245,7 @@ export default function MusicSwipePage() {
 
   return (
     <div className="flex flex-col min-h-screen">
-      <Navigation />
-      
+            
       <main className="flex-1 flex flex-col items-center justify-center p-4 md:p-8 relative">
         
         <div className="w-full max-w-4xl flex justify-between items-center mb-4">

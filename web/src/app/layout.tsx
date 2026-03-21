@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter, Vazirmatn } from "next/font/google";
 import { Analytics } from "@vercel/analytics/react"; // <-- Analíticas
 import Sidebar from "@/components/Sidebar"; // <-- Sidebar movido hacia arriba
+import Navigation from "@/components/Navigation";
 import RealtimeListener from "@/components/RealtimeListener";
 import "./globals.css";
 
@@ -24,6 +25,7 @@ export default function RootLayout({
         <div className="app-layout">
           <Sidebar />
           <div className="main-content">
+            <Navigation />
             {children}
           </div>
         </div>

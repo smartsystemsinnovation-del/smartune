@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react';
 import { createClient } from '@/utils/supabase/client';
 import { User, Mail, Link as LinkIcon, Music, Save, X } from 'lucide-react';
-import Navigation from '@/components/Navigation';
 import styles from './page.module.css';
 
 const ALL_GENRES = [
@@ -176,8 +175,7 @@ export default function ProfilePage() {
   if (loading) {
     return (
       <main className={styles.main} style={{ justifyContent: 'flex-start' }}>
-        <Navigation />
-        <div className={styles.contentWrapper}>
+                <div className={styles.contentWrapper}>
           <div className={styles.card}>
             <p className={styles.sectionLabel}>Cargando Perfil...</p>
           </div>
@@ -188,8 +186,7 @@ export default function ProfilePage() {
 
   return (
     <main className={styles.main} style={{ justifyContent: 'flex-start' }}>
-      <Navigation />
-      
+            
       <div className={styles.contentWrapper}>
         {/* Background Glows (Figma Style) */}
         <div className={styles.overlayBlur1} />
