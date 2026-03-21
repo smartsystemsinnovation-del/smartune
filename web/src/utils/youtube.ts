@@ -7,13 +7,16 @@ export async function fetchYouTubeSongs(genre?: string) {
 
   // Use genre directly if provided, since it might have precise negative keywords (-mix, etc)
   let query = '';
+  const antiMixSuffix = ' -"mix" -"playlist" -"enganchado" -"recopilacion" -"compilacion" -"álbum"';
+
   if (genre) {
-    query = genre; // Exact precise query
+    // If the genre is just a clean word (not containing "-mix"), append the anti-mix suffix
+    query = genre.includes('-mix') ? genre : `${genre}${antiMixSuffix}`; 
   } else {
-    const randomKeywords = ['vibes', '2024', 'remix', 'bass', 'hits', 'dynamic', 'session'];
+    const randomKeywords = ['vibes 2024', 'hits', 'session', 'official video', 'videoclip oficial'];
     const extraKeyword = randomKeywords[Math.floor(Math.random() * randomKeywords.length)];
-    const queries = ['electronic music', 'phonk music', 'pop hits mix', 'future bass'];
-    query = `${queries[Math.floor(Math.random() * queries.length)]} ${extraKeyword}`;
+    const queries = ['pop', 'rock', 'hip hop', 'electronic', 'R&B'];
+    query = `${queries[Math.floor(Math.random() * queries.length)]} ${extraKeyword}${antiMixSuffix}`;
   }
   
   const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=25&q=${encodeURIComponent(query)}&type=video&videoCategoryId=10&key=${apiKey}`;
@@ -30,13 +33,22 @@ export async function fetchYouTubeSongs(genre?: string) {
 
   const data = await response.json();
   
-  const songs = (data.items || []).map((item: any) => ({
+  let songs = (data.items || []).map((item: any) => ({
     id: item.id.videoId,
     title: item.snippet.title,
     artist: item.snippet.channelTitle,
     coverUrl: item.snippet.thumbnails.high?.url || item.snippet.thumbnails.default?.url,
     previewUrl: `https://www.youtube.com/watch?v=${item.id.videoId}`
   }));
+
+  // Global post-fetch filtering to ensure no stray mixes slip through on ANY endpoint (MusicSwipe, Dashboard, etc)
+  songs = songs.filter((song: any) => {
+    const title = (song.title || '').toLowerCase();
+    return !title.includes('mix') && 
+           !title.includes('playlist') && 
+           !title.includes('enganchado') &&
+           !title.includes('album');
+  });
 
   return songs;
 }
