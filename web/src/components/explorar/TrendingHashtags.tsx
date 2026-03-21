@@ -29,35 +29,25 @@ export default function TrendingHashtags() {
     fetchTags();
   }, []);
 
-  if (loading || tags.length === 0) {
-    return null; // Don't show anything if no trending hashtags (user requirement)
-  }
+  if (loading || tags.length === 0) return null;
 
   return (
-    <div className="bg-[#1c1c24] rounded-2xl p-5 border border-white/5 shadow-xl">
-      <h2 className="text-[12px] font-bold text-gray-400 tracking-widest uppercase mb-5">
+    <section className="glass-card rounded-2xl p-6 border border-white/5">
+      <h2 className="text-sm font-bold tracking-widest text-gray-400 uppercase mb-4" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
         Trending Now
       </h2>
-      
-      <div className="flex flex-col gap-5">
+      <div className="space-y-4">
         {tags.map((tag, idx) => (
-          <div key={idx} className="flex flex-col group cursor-pointer">
-            <span className="text-[11px] text-gray-500 font-medium tracking-wide group-hover:text-gray-400 transition-colors">
-              {tag.category || 'Categoría • Trending'}
-            </span>
-            <span className="text-[14px] font-bold text-white mt-0.5 group-hover:text-[#f6339a] transition-colors">
-              #{tag.name}
-            </span>
-            <span className="text-[11px] text-gray-500 font-medium">
-              {tag.posts} posts
-            </span>
+          <div key={idx} className="cursor-pointer group">
+            <p className="text-xs text-gray-500/60">{tag.category || 'Music • Trending'}</p>
+            <p className="text-sm font-bold text-white group-hover:text-[#f6339a] transition-colors">
+              {tag.name.startsWith('#') ? tag.name : `#${tag.name}`}
+            </p>
+            <p className="text-xs text-gray-500/60">{tag.posts} posts</p>
           </div>
         ))}
       </div>
-      
-      <button className="mt-5 text-[12px] font-bold text-[#f6339a] hover:underline">
-        Show more
-      </button>
-    </div>
+      <button className="mt-6 text-xs font-bold text-[#f6339a] hover:underline">Show more</button>
+    </section>
   );
 }
