@@ -1,8 +1,6 @@
 import Feed from '@/components/explorar/Feed';
-import BottomNav from '@/components/explorar/BottomNav';
 import StoriesRow from '@/components/explorar/StoriesRow';
 import RecentFollowers from '@/components/explorar/RecentFollowers';
-import TrendingHashtags from '@/components/explorar/TrendingHashtags';
 import { createClient } from '@/utils/supabase/server';
 import { redirect } from 'next/navigation';
 import { getFeed } from '@/actions/socialActions';
@@ -25,16 +23,17 @@ export default async function ExplorarPage() {
   const initialPosts = feedRes.success && feedRes.data ? feedRes.data : [];
 
   return (
-    <div className="min-h-screen pb-12" style={{ fontFamily: "'Manrope', sans-serif" }}>
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative">
-        <div className="flex gap-8">
+    <div className="min-h-screen" style={{ fontFamily: "'Manrope', sans-serif" }}>
+      {/* Centered container */}
+      <div className="max-w-3xl mx-auto px-4 sm:px-6 relative">
+        <div className="flex gap-8 justify-center">
           
           {/* ─── CENTER COLUMN (Feed) ─── */}
-          <div className="flex-1 min-w-0 space-y-10 pt-8">
+          <div className="flex-1 min-w-0 max-w-2xl space-y-10 pt-8 pb-12">
 
             {/* Novedades (Stories) */}
             <section>
-              <h2 className="text-sm font-headline font-bold tracking-widest text-gray-400 uppercase mb-6 px-1" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
+              <h2 className="text-sm font-bold tracking-widest text-gray-500 uppercase mb-6 px-1" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
                 Novedades
               </h2>
               <StoriesRow currentUserAvatar={profile?.avatar_url} />
@@ -48,16 +47,13 @@ export default async function ExplorarPage() {
             />
           </div>
 
-          {/* ─── RIGHT SIDEBAR ─── */}
-          <aside className="hidden xl:flex flex-col w-80 flex-shrink-0 gap-8 pt-8">
-            <TrendingHashtags />
+          {/* ─── RIGHT SIDEBAR (only on xl screens) ─── */}
+          <aside className="hidden xl:flex flex-col w-72 flex-shrink-0 gap-6 pt-8">
             <RecentFollowers />
           </aside>
 
         </div>
       </div>
-
-      <BottomNav />
     </div>
   );
 }

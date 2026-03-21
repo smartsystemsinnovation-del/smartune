@@ -2,6 +2,8 @@
 import { useState } from 'react';
 import { toggleLike, getComments, addComment } from '@/actions/socialActions';
 
+const DEFAULT_AVATAR = 'https://ui-avatars.com/api/?background=f6339a&color=fff&bold=true&size=128&name=';
+
 export default function PostCard({ post, currentUserId }: { post: any, currentUserId: string }) {
   const [hasLiked, setHasLiked] = useState(post.hasLiked);
   const [likesCount, setLikesCount] = useState(Number(post.likes_count));
@@ -56,20 +58,18 @@ export default function PostCard({ post, currentUserId }: { post: any, currentUs
   };
 
   return (
-    <article className="glass-card rounded-2xl overflow-hidden shadow-2xl border border-white/5 hover:border-[#f6339a]/20 transition-all group">
+    <article className="glass-card rounded-2xl overflow-hidden shadow-lg border border-white/[0.06] hover:border-[#f6339a]/20 transition-all duration-300 group">
       <div className="p-6">
-        {/* Header — Figma exact layout */}
+        {/* Header */}
         <div className="flex justify-between items-start mb-4">
           <div className="flex gap-4 flex-row">
-            <div className="h-12 w-12 rounded-full overflow-hidden border-2 border-[#f6339a]/30 flex-shrink-0">
-              {post.avatar_url ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={post.avatar_url} alt="" className="w-full h-full object-cover" />
-              ) : (
-                <div className="w-full h-full bg-gradient-to-br from-[#f6339a] to-[#0e9eef] flex items-center justify-center">
-                  <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
-                </div>
-              )}
+            <div className="h-12 w-12 rounded-full overflow-hidden border-2 border-[#f6339a]/20 flex-shrink-0 ring-2 ring-white/[0.04]">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img 
+                src={post.avatar_url || `${DEFAULT_AVATAR}${encodeURIComponent(post.username || 'U')}`} 
+                alt="" 
+                className="w-full h-full object-cover" 
+              />
             </div>
             <div>
               <div className="flex items-center gap-1">
