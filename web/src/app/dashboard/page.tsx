@@ -12,6 +12,18 @@ export default async function DashboardPage() {
     redirect('/?login=true');
   }
 
+  // Fetch the user's profile to check their role and name
+  const { data: userProfile } = await supabase
+    .from('usuarios')
+    .select('rol, nombre')
+    .eq('id', user.id)
+    .single();
+
+  // If the user is a teacher, redirect them to the teacher dashboard
+  if (userProfile?.rol === 'profesor') {
+    redirect('/teacher/dashboard');
+  }
+
   const tasksResponse = await getDailyTasks(user.id);
   const tasks = tasksResponse.data || [];
 
@@ -22,7 +34,7 @@ export default async function DashboardPage() {
       <div className={styles.dashboardContainer}>
         <div className={styles.headerArea}>
           <h1 className={styles.greetingTitle}>
-            Bienvenido de vuelta, <span>Estudiante</span>
+            Bienvenido de vuelta, <span>{userProfile?.nombre?.split(' ')[0] || 'Estudiante'}</span>
           </h1>
           <p className={styles.greetingSubtitle}>
             Tienes <span className={styles.highlight}>{tasks.length} tareas</span> programadas para hoy según tu Curva de Aprendizaje.

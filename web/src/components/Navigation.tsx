@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { createClient } from '@/utils/supabase/client';
 import AuthModal from './AuthModal';
 import styles from './Navigation.module.css';
@@ -68,6 +68,8 @@ export default function Navigation() {
     return user.user_metadata?.full_name?.split(' ')[0] || user.email?.split('@')[0] || 'Usuario';
   };
 
+  const pathname = usePathname();
+
   return (
     <>
       {showModal && (
@@ -87,9 +89,22 @@ export default function Navigation() {
           </div>
           
           <div className={styles.navLinksAuth}>
-            <Link href="/" className="hover:text-[#f6339a] transition-colors">Inicio</Link>
-            <Link href="/favoritos" className="hover:text-[#f6339a] transition-colors">MusicSwipe</Link>
-            <Link href="/ia-studio" className="hover:text-[#f6339a] transition-colors flex items-center gap-1">
+            <Link 
+              href="/dashboard" 
+              className={`transition-colors font-bold text-sm ${pathname === '/dashboard' ? 'text-[#f6339a]' : 'text-gray-300 hover:text-white'}`}
+            >
+              Inicio
+            </Link>
+            <Link 
+              href="/explorar" 
+              className={`transition-colors font-bold text-sm ${pathname === '/explorar' ? 'text-[#f6339a]' : 'text-gray-300 hover:text-white'}`}
+            >
+              MusicSwipe
+            </Link>
+            <Link 
+              href="/ia-studio" 
+              className={`transition-colors flex items-center gap-1 font-bold text-sm ${pathname === '/ia-studio' ? 'text-[#00ffaa]' : 'text-gray-300 hover:text-white'}`}
+            >
               <span>IA Studio</span>
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
@@ -104,10 +119,14 @@ export default function Navigation() {
                   className={styles.avatarCircle}
                   onClick={() => setShowDropdown(!showDropdown)}
                 >
-                  {profile?.avatar_url ? (
-                    <img src={profile.avatar_url} alt="Profile" className={styles.avatarImg} />
+                  {profile?.avatar_url || user?.user_metadata?.avatar_url || user?.user_metadata?.picture ? (
+                    <img 
+                      src={profile?.avatar_url || user?.user_metadata?.avatar_url || user?.user_metadata?.picture} 
+                      alt="Profile" 
+                      className={styles.avatarImg} 
+                    />
                   ) : (
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-gray-400">
                       <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
                       <circle cx="12" cy="7" r="4" />
                     </svg>
