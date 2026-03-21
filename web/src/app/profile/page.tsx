@@ -22,6 +22,7 @@ export default function ProfilePage() {
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
   const [isGoogleUser, setIsGoogleUser] = useState(false);
+  const [userRole, setUserRole] = useState('estudiante');
   const [uploading, setUploading] = useState(false);
 
   const supabase = createClient();
@@ -46,6 +47,7 @@ export default function ProfilePage() {
             setAvatarUrl(dbData.avatar_url || user.user_metadata?.avatar_url || '');
             setInstrument(dbData.instrumento || user.user_metadata?.instrument || 'Ninguno');
             setSelectedGenres(dbData.gustos_musicales || user.user_metadata?.favorite_genres || []);
+            setUserRole(dbData.rol || 'estudiante');
           } else {
             // Fallback a metadata si falla la API
             setUsername(user.user_metadata?.full_name || '');
@@ -254,17 +256,20 @@ export default function ProfilePage() {
               />
             </div>
 
-            <div className={styles.inputWrapper}>
-              <Music className={styles.inputIcon} size={18} />
-              <select 
-                className={styles.input}
+            <div>
+              <p className={styles.sectionLabel}>{userRole === 'profesor' ? 'Instrumento Principal (Enseñar)' : 'Instrumento de Práctica'}</p>
+              <div className={styles.inputWrapper}>
+                <Music className={styles.inputIcon} size={18} />
+                <select 
+                  className={styles.input}
                 value={instrument}
                 onChange={(e) => setInstrument(e.target.value)}
               >
                 {INSTRUMENTS.map(i => (
                   <option key={i} value={i} style={{ background: '#1A1A1A' }}>{i}</option>
                 ))}
-              </select>
+                </select>
+              </div>
             </div>
 
           <div>

@@ -14,9 +14,34 @@ function HomeContent() {
   const [ctaMode, setCtaMode] = useState<'login'|'register'>('register');
   const [user, setUser] = useState<any>(null);
   
+  // New States for Dynamic Modules
+  const [topInstMode, setTopInstMode] = useState<'alumnos'|'profesores'>('alumnos');
+  const [stats, setStats] = useState<{topInstrumentos: {name: string, count: number}[], topEnsenanzas: {name: string, count: number}[]}>({ topInstrumentos: [], topEnsenanzas: [] });
+  const [releases, setReleases] = useState<any[]>([]);
+
+  const instrumentImages: Record<string, string> = {
+    'Guitarra': 'https://images.unsplash.com/photo-1510915361894-db8b60106cb1?w=500&q=80',
+    'Piano': 'https://images.unsplash.com/photo-1552422535-c45813c61732?w=500&q=80',
+    'Flauta': 'https://images.unsplash.com/photo-1573871666457-fa274191c4d4?w=500&q=80',
+    'Violín': 'https://images.unsplash.com/photo-1612225330812-01a9c6b355ec?w=500&q=80',
+    'Batería': 'https://images.unsplash.com/photo-1519892300165-cb5542fb47c7?w=500&q=80',
+    'Voz': 'https://images.unsplash.com/photo-1516280440502-65f6c8d1976a?w=500&q=80',
+    'Bajo': 'https://images.unsplash.com/photo-1514649923863-ceaf75b770dd?w=500&q=80',
+    'Ukelele': 'https://images.unsplash.com/photo-1556012018-50c5c0da73b9?w=500&q=80',
+    'Saxofón': 'https://images.unsplash.com/photo-1573887034934-8c01b1a7d6bc?w=500&q=80',
+  };
+
+  const getInstrumentImage = (name: string) => {
+    return instrumentImages[name] || 'https://images.unsplash.com/photo-1511379938547-c1f69419868d?w=500&q=80';
+  };
+  
   const supabase = createClient();
 
   useEffect(() => {
+    // Fetch stats and new releases independently
+    fetch('/api/public/stats').then(r => r.json()).then(data => setStats(data)).catch(console.error);
+    fetch('/api/public/releases').then(r => r.json()).then(data => setReleases(data)).catch(console.error);
+
     let currentUser: any = null;
 
     const checkUserAndParams = async () => {
@@ -130,25 +155,41 @@ function HomeContent() {
 
       {/* TOP INSTRUMENTOS SECTION */}
       <section className={`${styles.section} fade-in`} style={{ animationDelay: "0.2s" }}>
-        <h2 className={styles.sectionHeader}>Top <span>Instrumentos</span></h2>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '20px', flexWrap: 'wrap', gap: '15px' }}>
+          <h2 className={styles.sectionHeader} style={{ margin: 0 }}>
+            {topInstMode === 'alumnos' ? 'Top ' : 'Top '}
+            <span>{topInstMode === 'alumnos' ? 'Instrumentos' : 'Enseñanzas'}</span>
+          </h2>
+          <div style={{ display: 'flex', background: 'rgba(255,255,255,0.05)', borderRadius: '20px', padding: '4px', border: '1px solid rgba(255,255,255,0.1)' }}>
+            <span 
+              onClick={() => setTopInstMode('alumnos')}
+              style={{ padding: '6px 16px', borderRadius: '16px', fontSize: '13px', fontWeight: 'bold', cursor: 'pointer', transition: 'all 0.3s', background: topInstMode === 'alumnos' ? '#f6339a' : 'transparent', color: topInstMode === 'alumnos' ? 'white' : 'rgba(255,255,255,0.6)' }}
+            >
+              Alumnos
+            </span>
+            <span 
+              onClick={() => setTopInstMode('profesores')}
+              style={{ padding: '6px 16px', borderRadius: '16px', fontSize: '13px', fontWeight: 'bold', cursor: 'pointer', transition: 'all 0.3s', background: topInstMode === 'profesores' ? '#00ffaa' : 'transparent', color: topInstMode === 'profesores' ? '#111' : 'rgba(255,255,255,0.6)' }}
+            >
+              Profesores
+            </span>
+          </div>
+        </div>
         <div className={styles.carousel}>
-          {[
-            { id: 1, name: "Guitarra", count: "1000 personas" },
-            { id: 2, name: "Piano", count: "850 personas" },
-            { id: 3, name: "Flauta", count: "450 personas" },
-            { id: 4, name: "Violín", count: "350 personas" },
-            { id: 5, name: "Batería", count: "278 personas" },
-          ].map((inst) => (
-            <div key={inst.id} className={styles.card}>
-              <div className={styles.cardImgContainer}>
-                <div style={{ width: '100%', height: '100%', background: `linear-gradient(135deg, rgba(238, 16, 176, 0.${inst.id + 1}), rgba(14, 158, 239, 0.${inst.id + 1}))` }} />
+          {(topInstMode === 'alumnos' ? stats.topInstrumentos : stats.topEnsenanzas).map((inst, index) => (
+            <div key={index} className={styles.card}>
+              <div className={styles.cardImgContainer} style={{ overflow: 'hidden' }}>
+                 <img src={getInstrumentImage(inst.name)} alt={inst.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
               </div>
               <div>
                 <h3 className={styles.cardTitle}>{inst.name}</h3>
-                <p className={styles.cardSubtitle}>{inst.count}</p>
+                <p className={styles.cardSubtitle}>{inst.count} {topInstMode === 'alumnos' ? (inst.count === 1 ? 'persona' : 'personas') : (inst.count === 1 ? 'profesor' : 'profesores')}</p>
               </div>
             </div>
           ))}
+          {(topInstMode === 'alumnos' ? stats.topInstrumentos : stats.topEnsenanzas).length === 0 && (
+             <div style={{ color: '#888', fontStyle: 'italic', padding: '20px' }}>Ningún dato registrado aún.</div>
+          )}
         </div>
       </section>
 
@@ -156,23 +197,24 @@ function HomeContent() {
       <section className={`${styles.section} fade-in`} style={{ animationDelay: "0.4s" }}>
         <h2 className={styles.sectionHeader}>Nuevos <span style={{ color: "var(--neon-pink)" }}>Lanzamientos</span></h2>
         <div className={styles.carousel}>
-          {[
-            { id: 1, title: "Time", artist: "Luciano" },
-            { id: 2, title: "112", artist: "Jazzek" },
-            { id: 3, title: "We Don't Care", artist: "Kyanu & Dj Gullum" },
-            { id: 4, title: "Who I Am", artist: "Alan Walker & Elias" },
-            { id: 5, title: "Baixo", artist: "XXAnteria" },
-          ].map((song) => (
-            <div key={song.id} className={styles.card}>
-              <div className={styles.cardImgContainer}>
-                 <div style={{ width: '100%', height: '100%', background: `linear-gradient(45deg, rgba(14, 158, 239, 0.${song.id + 1}), rgba(152, 16, 250, 0.${song.id + 1}))` }} />
+          {releases.map((song, i) => (
+            <div key={i} className={styles.card}>
+              <div className={styles.cardImgContainer} style={{ overflow: 'hidden' }}>
+                 <img src={song.thumbnailBase} alt={song.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
               </div>
-              <div>
-                <h3 className={styles.cardTitle}>{song.title}</h3>
-                <p className={styles.cardSubtitle}>{song.artist}</p>
+              <div style={{ padding: '12px 0' }}>
+                <h3 className={styles.cardTitle} style={{ fontSize: '15px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '140px' }}>
+                  {song.title}
+                </h3>
+                <p className={styles.cardSubtitle} style={{ fontSize: '12px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '140px' }}>
+                  {song.artist}
+                </p>
               </div>
             </div>
           ))}
+          {releases.length === 0 && (
+             <div style={{ color: '#888', fontStyle: 'italic', padding: '20px' }}>Buscando tendencias en YouTube Music...</div>
+          )}
         </div>
       </section>
 
