@@ -23,7 +23,7 @@ class AuthViewModel : ViewModel() {
         viewModelScope.launch {
             _uiState.value = AuthUiState(isLoading = true)
             try {
-                SupabaseClient.auth.loginWith(Email) {
+                SupabaseClient.auth.signInWith(Email) {
                     email = emailInput
                     password = passwordInput
                 }
@@ -54,7 +54,7 @@ class AuthViewModel : ViewModel() {
         viewModelScope.launch {
             _uiState.value = AuthUiState(isLoading = true)
             try {
-                SupabaseClient.auth.loginWith(Google)
+                SupabaseClient.auth.signInWith(Google)
                 _uiState.value = AuthUiState(success = true)
             } catch (e: Exception) {
                 _uiState.value = AuthUiState(error = e.message ?: "Error con Google")
@@ -65,7 +65,7 @@ class AuthViewModel : ViewModel() {
     fun logout() {
         viewModelScope.launch {
             try {
-                SupabaseClient.auth.logout()
+                SupabaseClient.auth.signOut()
             } catch (_: Exception) {}
         }
     }
