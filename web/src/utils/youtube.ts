@@ -11,29 +11,24 @@ export async function fetchYouTubeSongs(genre?: string) {
 
   if (genre) {
     // If the genre is just a clean word (not containing "-mix"), append the anti-mix suffix
-    query = genre.includes('-mix') ? genre : `${genre}${antiMixSuffix}`; 
+    query = genre.includes('-mix') ? genre : `${genre} "official video" ${antiMixSuffix}`; 
   } else {
-    // To absolutely guarantee famous songs, we randomize from a curated list of global superstars
-    const famousArtists = [
-      'Ed Sheeran official video',
-      'AC/DC official video',
-      'Marshmello official video',
-      'Dua Lipa official video',
-      'The Weeknd official video',
-      'Coldplay official video',
-      'Bruno Mars official video',
-      'Eminem official video',
-      'Rihanna official video',
-      'Katy Perry official video',
-      'Imagine Dragons official video',
-      'Shawn Mendes official video',
-      'Billie Eilish official video',
-      'Justin Bieber official video',
-      'Ariana Grande official video',
-      'Bad Bunny official video',
-      'Shakira official video'
+    // We have a master array of global, unmistakable superstars
+    const stars = [
+      '"Ed Sheeran"', '"AC/DC"', '"Dua Lipa"', '"The Weeknd"', 
+      '"Bruno Mars"', '"Eminem"', '"Rihanna"', '"Katy Perry"', 
+      '"Imagine Dragons"', '"Billie Eilish"', '"Justin Bieber"', 
+      '"Ariana Grande"', '"Bad Bunny"', '"Shakira"', '"Coldplay"', 
+      '"Maroon 5"', '"Post Malone"', '"Drake"', '"Taylor Swift"',
+      '"Harry Styles"', '"Miley Cyrus"', '"Lady Gaga"', '"Avicii"'
     ];
-    query = `${famousArtists[Math.floor(Math.random() * famousArtists.length)]}${antiMixSuffix}`;
+    
+    // Pick 4 distinct random stars to mix them up
+    const shuffled = stars.sort(() => 0.5 - Math.random());
+    const selectedStars = shuffled.slice(0, 4);
+
+    // Create a boolean OR query for YouTube: ("Artist 1" | "Artist 2" | "Artist 3") "official video" -mix...
+    query = `(${selectedStars.join(' | ')}) "official video"${antiMixSuffix}`;
   }
   
   const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=25&q=${encodeURIComponent(query)}&type=video&videoCategoryId=10&key=${apiKey}`;
