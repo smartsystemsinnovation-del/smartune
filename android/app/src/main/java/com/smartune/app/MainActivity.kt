@@ -27,7 +27,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
 
         // Handle deep link for OAuth callback
-        SupabaseClient.auth.handleDeeplinks(intent)
+        SupabaseClient.client.handleDeeplinks(intent)
 
         setContent {
             SmarTuneTheme {
