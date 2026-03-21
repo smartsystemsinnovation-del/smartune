@@ -1,10 +1,10 @@
 export default function StoriesRow() {
   const stories = [
-    { id: 1, name: 'New Lessons', img: 'https://images.unsplash.com/photo-1549834125-82d3c48159a3?w=150&q=80', active: true },
+    { id: 1, name: 'Nuevas Clases', img: 'https://images.unsplash.com/photo-1549834125-82d3c48159a3?w=150&q=80', active: true },
     { id: 2, name: 'Top Pro', img: 'https://images.unsplash.com/photo-1510915228340-29c85a43dcfe?w=150&q=80', active: true },
-    { id: 3, name: 'Guitar 101', img: 'https://images.unsplash.com/photo-1516924962500-2b4b3b99ea02?w=150&q=80', active: false },
-    { id: 4, name: 'Beat Theory', img: 'https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?w=150&q=80', active: false },
-    { id: 5, name: 'Vocals', img: 'https://images.unsplash.com/photo-1516280440502-6cfae259e8f4?w=150&q=80', active: false },
+    { id: 3, name: 'Guitarra 101', img: 'https://images.unsplash.com/photo-1516924962500-2b4b3b99ea02?w=150&q=80', active: false },
+    { id: 4, name: 'Teoría Musical', img: 'https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?w=150&q=80', active: false },
+    { id: 5, name: 'Voces', img: 'https://images.unsplash.com/photo-1516280440502-6cfae259e8f4?w=150&q=80', active: false },
   ];
 
   return (
@@ -23,6 +23,17 @@ export default function StoriesRow() {
             </span>
           </div>
         ))}
+        {/* Upload Story Button */}
+        <div className="flex flex-col items-center gap-2 cursor-pointer group">
+          <div className="w-16 h-16 rounded-full bg-[#1f1f23] border-[2px] border-dashed border-[#f6339a] flex items-center justify-center text-[#f6339a] group-hover:bg-[#f6339a]/10 group-hover:scale-105 transition-all">
+            <svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
+            </svg>
+          </div>
+          <span className="text-[11px] font-bold tracking-wide text-[#f6339a]">
+            Subir Historia
+          </span>
+        </div>
       </div>
     </div>
   );

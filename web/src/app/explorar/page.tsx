@@ -1,6 +1,8 @@
 import Feed from '@/components/explorar/Feed';
 import BottomNav from '@/components/explorar/BottomNav';
 import StoriesRow from '@/components/explorar/StoriesRow';
+import RecentFollowers from '@/components/explorar/RecentFollowers';
+import TrendingHashtags from '@/components/explorar/TrendingHashtags';
 import { createClient } from '@/utils/supabase/server';
 import { redirect } from 'next/navigation';
 import { getFeed } from '@/actions/socialActions';
@@ -50,14 +52,25 @@ export default async function ExplorarPage() {
       <div className="w-full max-w-2xl mx-auto">
         <div className="px-4 mt-6 mb-2">
           <h1 className="text-2xl font-black text-[#f6339a] tracking-wide">
-            Feed Musical
+            Descubrir
           </h1>
         </div>
 
         <StoriesRow />
 
+        <div className="mt-2" />
+
+        <TrendingHashtags tags={[
+          { name: 'GuitarraAcustica', posts: 1204 },
+          { name: 'PianoTutorial', posts: 842 },
+          { name: 'VocalTips', posts: 531 },
+          { name: 'SmarTuneTop', posts: 388 }
+        ]} />
+
+        <RecentFollowers />
+
         <div className="px-4 mt-4">
-          <Feed 
+          <Feed  
             initialPosts={initialPosts} 
             currentUserId={user.id} 
             currentUserAvatar={profile?.avatar_url}
