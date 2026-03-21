@@ -1,32 +1,63 @@
-import React from 'react';
+"use client";
 
-interface TrendingHashtagsProps {
-  tags?: { name: string; posts: number }[];
+import React, { useState, useEffect } from 'react';
+
+interface Tag {
+  category?: string;
+  name: string;
+  posts: string | number;
 }
 
-export default function TrendingHashtags({ tags = [] }: TrendingHashtagsProps) {
-  // Requirement: "si no hay hastang en tendencias pues no pongas nada"
-  if (!tags || tags.length === 0) {
-    return null;
+export default function TrendingHashtags() {
+  const [tags, setTags] = useState<Tag[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchTags() {
+      try {
+        const res = await fetch('/api/social/trending');
+        const json = await res.json();
+        if (json.success && json.data) {
+          setTags(json.data);
+        }
+      } catch (e) {
+        console.error('Error fetching trends', e);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchTags();
+  }, []);
+
+  if (loading || tags.length === 0) {
+    return null; // Don't show anything if no trending hashtags (user requirement)
   }
 
   return (
-    <div className="w-full px-4 mb-6">
-      <h2 className="text-[14px] font-bold text-white tracking-wide mb-3 flex items-center gap-2">
-        <svg className="w-4 h-4 text-[#f6339a]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
-        </svg>
-        Tendencias
+    <div className="bg-[#1c1c24] rounded-2xl p-5 border border-white/5 shadow-xl">
+      <h2 className="text-[12px] font-bold text-gray-400 tracking-widest uppercase mb-5">
+        Trending Now
       </h2>
       
-      <div className="flex gap-2 overflow-x-auto custom-scrollbar pb-2">
+      <div className="flex flex-col gap-5">
         {tags.map((tag, idx) => (
-          <div key={idx} className="flex flex-col bg-[#1f1f23] border border-white/5 rounded-xl px-4 py-2 min-w-max hover:border-[#f6339a]/50 hover:bg-[#2a2a35] cursor-pointer transition-colors shadow-sm">
-            <span className="text-[13px] font-bold text-white">#{tag.name}</span>
-            <span className="text-[10px] text-gray-400">{tag.posts} publicaciones</span>
+          <div key={idx} className="flex flex-col group cursor-pointer">
+            <span className="text-[11px] text-gray-500 font-medium tracking-wide group-hover:text-gray-400 transition-colors">
+              {tag.category || 'Categoría • Trending'}
+            </span>
+            <span className="text-[14px] font-bold text-white mt-0.5 group-hover:text-[#f6339a] transition-colors">
+              #{tag.name}
+            </span>
+            <span className="text-[11px] text-gray-500 font-medium">
+              {tag.posts} posts
+            </span>
           </div>
         ))}
       </div>
+      
+      <button className="mt-5 text-[12px] font-bold text-[#f6339a] hover:underline">
+        Show more
+      </button>
     </div>
   );
 }

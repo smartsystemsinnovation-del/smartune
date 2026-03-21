@@ -135,11 +135,21 @@ export default function PostCard({ post, currentUserId }: { post: any, currentUs
               )}
             </div>
           </div>
-          <div>
-            <h3 className="font-bold text-[15px] leading-tight">
-              @{post.username?.replace(/\s+/g, '_').toLowerCase() || 'usuario'}
-            </h3>
-            <p className="text-[11px] text-gray-400 mt-0.5">{timeAgo(post.created_at)}</p>
+          <div className="flex flex-col">
+            <div className="flex items-center gap-2">
+              <h3 className="font-bold text-[15px] leading-tight text-white">
+                {post.username || 'Usuario'}
+              </h3>
+              <svg className="w-3.5 h-3.5 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+              {currentUserId !== post.user_id && (
+                <button className="px-3 py-0.5 bg-[#f6339a] text-white text-[10px] font-bold rounded-full hover:bg-[#ff4db8] transition-colors ml-1 shadow-sm">
+                  Seguir
+                </button>
+              )}
+            </div>
+            <p className="text-[11px] text-gray-400 mt-1">
+              @{post.username?.replace(/\s+/g, '_').toLowerCase() || 'usuario'} • {timeAgo(post.created_at)}
+            </p>
           </div>
         </div>
         <button className="text-gray-500 hover:text-white pb-2 px-1">

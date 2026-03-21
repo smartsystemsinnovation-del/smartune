@@ -49,32 +49,29 @@ export default async function ExplorarPage() {
         </div>
       </header>
       
-      <div className="w-full max-w-2xl mx-auto">
-        <div className="px-4 mt-6 mb-2">
-          <h1 className="text-2xl font-black text-[#f6339a] tracking-wide">
-            Descubrir
-          </h1>
+      <div className="w-full max-w-5xl mx-auto flex flex-col lg:flex-row gap-6 lg:gap-8 px-4 mt-6">
+        {/* Main Column (Feed & Stories) */}
+        <div className="flex-[2] w-full max-w-2xl lg:max-w-none mx-auto">
+          <div className="mb-4">
+            <h2 className="text-[13px] font-bold text-gray-400 tracking-widest uppercase mb-4">
+              Novedades
+            </h2>
+            <StoriesRow currentUserAvatar={profile?.avatar_url} />
+          </div>
+
+          <div className="mt-8">
+            <Feed 
+              initialPosts={initialPosts} 
+              currentUserId={user.id} 
+              currentUserAvatar={profile?.avatar_url}
+            />
+          </div>
         </div>
 
-        <StoriesRow />
-
-        <div className="mt-2" />
-
-        <TrendingHashtags tags={[
-          { name: 'GuitarraAcustica', posts: 1204 },
-          { name: 'PianoTutorial', posts: 842 },
-          { name: 'VocalTips', posts: 531 },
-          { name: 'SmarTuneTop', posts: 388 }
-        ]} />
-
-        <RecentFollowers />
-
-        <div className="px-4 mt-4">
-          <Feed  
-            initialPosts={initialPosts} 
-            currentUserId={user.id} 
-            currentUserAvatar={profile?.avatar_url}
-          />
+        {/* Right Sidebar */}
+        <div className="hidden lg:flex flex-col w-[300px] xl:w-[320px] flex-shrink-0 gap-6">
+          <TrendingHashtags />
+          <RecentFollowers />
         </div>
       </div>
       
