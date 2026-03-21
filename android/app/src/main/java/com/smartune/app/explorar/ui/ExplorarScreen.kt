@@ -310,8 +310,7 @@ private fun PostCardItem(
                                 cursorColor = NeonPink,
                             ),
                             shape = RoundedCornerShape(20.dp),
-                            singleLine = true,
-                            contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp)
+                            singleLine = true
                         )
                         Spacer(modifier = Modifier.width(8.dp))
                         TextButton(

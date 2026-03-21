@@ -4,6 +4,7 @@ import com.smartune.app.core.supabase.SupabaseClient
 import com.smartune.app.explorar.data.models.*
 import io.github.jan.supabase.postgrest.postgrest
 import io.github.jan.supabase.postgrest.query.Columns
+import io.github.jan.supabase.postgrest.rpc
 import io.github.jan.supabase.storage.storage
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put

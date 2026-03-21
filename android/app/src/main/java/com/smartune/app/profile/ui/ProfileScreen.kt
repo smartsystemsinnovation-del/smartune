@@ -1,6 +1,7 @@
 package com.smartune.app.profile.ui
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
@@ -177,7 +178,7 @@ fun ProfileScreen(navController: NavController, onLogout: () -> Unit) {
                         HorizontalDivider(color = TextTertiary.copy(0.1f))
                         MenuOption(Icons.Default.Logout, "Cerrar sesión", NeonPink) {
                             scope.launch {
-                                try { SupabaseClient.auth.logout() } catch (_: Exception) {}
+                                try { SupabaseClient.auth.signOut() } catch (_: Exception) {}
                                 onLogout()
                             }
                         }
