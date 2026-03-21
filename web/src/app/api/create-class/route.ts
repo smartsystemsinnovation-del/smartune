@@ -14,65 +14,66 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'No autorizado' }, { status: 401 });
     }
 
-    // Obtener el Refresh Token Maestro de la Base de Datos
-    const { data: teacherProfile } = await supabase
+    // Obtener correo del alumno para agregarlo como invitado oficial al evento
+    const { data: studentProfile } = await supabase
       .from('usuarios')
-      .select('google_refresh_token')
-      .eq('id', teacherId)
+      .select('correo')
+      .eq('id', studentId)
       .single();
 
-    if (!teacherProfile?.google_refresh_token) {
-      console.warn("⚠️ No se encontró Token Maestro de Google en la BD. (Se activará Fallback Simulador)");
-    }
+    const providerToken = session.provider_token;
 
     let meetLink = '';
     
-    // Configuración del Google Calendar Client (Siguiendo requerimientos MVP)
+    // Configuración de Google Calendar API v3 vía REST (Feature A: Scheduled)
     try {
-      const oauth2Client = new google.auth.OAuth2(
-        process.env.GOOGLE_CLIENT_ID || 'dummy-client-id',
-        process.env.GOOGLE_CLIENT_SECRET || 'dummy-client-secret',
-        process.env.GOOGLE_REDIRECT_URI || 'http://localhost:3000/auth/callback'
-      );
-      
-      // Integramos el token oficial recolectado por Supabase desde la BD
-      if (teacherProfile?.google_refresh_token) {
-        oauth2Client.setCredentials({ refresh_token: teacherProfile.google_refresh_token });
+      if (!providerToken) {
+        console.warn("⚠️ No Provider Token found. El usuario necesita Iniciar Sesión con Google para generar el Meet.");
       } else {
-        throw new Error("Missing Google Refresh Token in Database for this user.");
-      }
-      
-      const calendar = google.calendar({ version: 'v3', auth: oauth2Client });
-      
-      const event = {
-        summary: title,
-        description: description,
-        start: {
-          dateTime: scheduledAt,
-          timeZone: 'UTC',
-        },
-        end: {
-          // Asumimos 1 hora completa de duración de la masterclass
-          dateTime: new Date(new Date(scheduledAt).getTime() + 60 * 60 * 1000).toISOString(),
-          timeZone: 'UTC',
-        },
-        conferenceData: {
-          createRequest: {
-            requestId: crypto.randomUUID(), // Autogenerado de forma nativa en TS
-            conferenceSolutionKey: { type: 'hangoutsMeet' }
+        const eventBody: any = {
+          summary: title,
+          description: description,
+          start: {
+            dateTime: scheduledAt,
+            timeZone: 'UTC',
+          },
+          end: {
+            // Asumimos 1 hora completa de duración de la masterclass
+            dateTime: new Date(new Date(scheduledAt).getTime() + 60 * 60 * 1000).toISOString(),
+            timeZone: 'UTC',
+          },
+          conferenceData: {
+            createRequest: {
+              requestId: crypto.randomUUID(),
+              conferenceSolutionKey: { type: 'hangoutsMeet' }
+            }
           }
+        };
+
+        // Si tenemos el correo del alumno, lo añadimos como invitado para que Meet lo deje entrar directo
+        if (studentProfile?.correo) {
+          eventBody.attendees = [
+            { email: studentProfile.correo }
+          ];
         }
-      };
 
-      // Si OAuth estuviera configurado correctamente en el entorno, esto crea el link real.
-      const calendarResponse = await calendar.events.insert({
-        calendarId: 'primary',
-        conferenceDataVersion: 1,
-        requestBody: event,
-      });
+        const gCaleRes = await fetch('https://www.googleapis.com/calendar/v3/calendars/primary/events?conferenceDataVersion=1', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${providerToken}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(eventBody)
+        });
 
-      meetLink = calendarResponse.data.hangoutLink || '';
-      
+        if (!gCaleRes.ok) {
+           const errText = await gCaleRes.text();
+           throw new Error(`Google Calendar API error: ${errText}`);
+        }
+
+        const calData = await gCaleRes.json();
+        meetLink = calData.hangoutLink || '';
+      }
     } catch (apiError: any) {
       console.warn("⚠️ ERROR GOOGLE API:", apiError.message);
       return NextResponse.json({ 

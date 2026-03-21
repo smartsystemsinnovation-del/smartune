@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter, Vazirmatn } from "next/font/google";
 import { Analytics } from "@vercel/analytics/react"; // <-- Analíticas
 import Sidebar from "@/components/Sidebar"; // <-- Sidebar movido hacia arriba
+import RealtimeListener from "@/components/RealtimeListener";
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
@@ -27,6 +28,7 @@ export default function RootLayout({
           </div>
         </div>
         <Analytics />
+        <RealtimeListener />
       </body>
     </html>
   );

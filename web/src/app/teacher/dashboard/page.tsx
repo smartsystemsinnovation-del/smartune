@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation';
 import { Video, Calendar, PlusCircle } from 'lucide-react';
 import Link from 'next/link';
 import LocalTime from '@/components/LocalTime';
+import InstantCallButton from '@/components/teacher/InstantCallButton';
 
 export default async function TeacherDashboard() {
   const supabase = await createClient();
@@ -15,7 +16,7 @@ export default async function TeacherDashboard() {
   // Verificar si es profesor
   const { data: userProfile } = await supabase
     .from('usuarios')
-    .select('rol, nombre')
+    .select('rol, nombre, avatar_url')
     .eq('id', user.id)
     .single();
 
@@ -130,12 +131,20 @@ export default async function TeacherDashboard() {
                            fontSize: '15px',
                            boxShadow: '0 4px 20px rgba(0, 255, 170, 0.3)',
                          }}>
-                            <Video size={18} /> Iniciar Google Meet
+                            <Video size={18} /> Google Meet Programado
                          </a>
                        ) : (
                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '14px 24px', background: 'rgba(255,255,255,0.05)', color: 'rgba(255,255,255,0.4)', borderRadius: '12px', fontSize: '15px', fontWeight: 600 }}>
                             <Video size={18} /> Error de enlace
                          </div>
+                       )}
+
+                       {student && (
+                         <InstantCallButton 
+                            targetUserId={cls.student_id} 
+                            teacherName={userProfile.nombre} 
+                            teacherAvatar={userProfile.avatar_url}
+                         />
                        )}
                     </div>
                   </div>
