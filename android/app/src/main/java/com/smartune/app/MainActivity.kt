@@ -19,6 +19,7 @@ import com.smartune.app.core.navigation.NavGraph
 import com.smartune.app.core.navigation.Routes
 import com.smartune.app.core.supabase.SupabaseClient
 import com.smartune.app.core.theme.SmarTuneTheme
+import io.github.jan.supabase.gotrue.handleDeeplinks
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
