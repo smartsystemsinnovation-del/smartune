@@ -13,9 +13,9 @@ export async function fetchYouTubeSongs(genre?: string) {
     // If the genre is just a clean word (not containing "-mix"), append the anti-mix suffix
     query = genre.includes('-mix') ? genre : `${genre}${antiMixSuffix}`; 
   } else {
-    const randomKeywords = ['vibes 2024', 'hits', 'session', 'official video', 'videoclip oficial'];
+    const randomKeywords = ['vevo official video', 'global top 50 hit', '1 BILLION views official', 'chart hits official video'];
     const extraKeyword = randomKeywords[Math.floor(Math.random() * randomKeywords.length)];
-    const queries = ['pop', 'rock', 'hip hop', 'electronic', 'R&B'];
+    const queries = ['pop', 'reggaeton', 'hip hop', 'latin track', 'rock anthems'];
     query = `${queries[Math.floor(Math.random() * queries.length)]} ${extraKeyword}${antiMixSuffix}`;
   }
   
