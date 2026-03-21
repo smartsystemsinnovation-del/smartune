@@ -19,13 +19,13 @@ class AuthViewModel : ViewModel() {
     private val _uiState = MutableStateFlow(AuthUiState())
     val uiState = _uiState.asStateFlow()
 
-    fun loginWithEmail(email: String, password: String) {
+    fun loginWithEmail(emailInput: String, passwordInput: String) {
         viewModelScope.launch {
             _uiState.value = AuthUiState(isLoading = true)
             try {
                 SupabaseClient.auth.loginWith(Email) {
-                    this.email = email
-                    this.password = password
+                    email = emailInput
+                    password = passwordInput
                 }
                 _uiState.value = AuthUiState(success = true)
             } catch (e: Exception) {
@@ -34,13 +34,13 @@ class AuthViewModel : ViewModel() {
         }
     }
 
-    fun registerWithEmail(email: String, password: String, nombre: String) {
+    fun registerWithEmail(emailInput: String, passwordInput: String, nombre: String) {
         viewModelScope.launch {
             _uiState.value = AuthUiState(isLoading = true)
             try {
                 SupabaseClient.auth.signUpWith(Email) {
-                    this.email = email
-                    this.password = password
+                    email = emailInput
+                    password = passwordInput
                 }
                 // The trigger in Supabase auto-creates the profile in 'usuarios'
                 _uiState.value = AuthUiState(success = true)

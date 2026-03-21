@@ -1,10 +1,14 @@
 package com.smartune.app.core.supabase
 
 import io.github.jan.supabase.createSupabaseClient
-import io.github.jan.supabase.gotrue.GoTrue
+import io.github.jan.supabase.gotrue.Auth
+import io.github.jan.supabase.gotrue.auth
 import io.github.jan.supabase.postgrest.Postgrest
+import io.github.jan.supabase.postgrest.postgrest
 import io.github.jan.supabase.storage.Storage
+import io.github.jan.supabase.storage.storage
 import io.github.jan.supabase.realtime.Realtime
+import io.github.jan.supabase.realtime.realtime
 
 object SupabaseClient {
 
@@ -15,7 +19,7 @@ object SupabaseClient {
         supabaseUrl = SUPABASE_URL,
         supabaseKey = SUPABASE_ANON_KEY
     ) {
-        install(GoTrue) {
+        install(Auth) {
             scheme = "smartune-auth"
             host = "callback"
         }
@@ -24,7 +28,7 @@ object SupabaseClient {
         install(Realtime)
     }
 
-    val auth get() = client.gotrue
+    val auth get() = client.auth
     val db get() = client.postgrest
     val storage get() = client.storage
     val realtime get() = client.realtime
