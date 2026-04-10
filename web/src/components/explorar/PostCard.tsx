@@ -161,20 +161,15 @@ export default function PostCard({ post, currentUserId }: { post: any, currentUs
 
       {/* Action bar */}
       <div className="px-5 py-4">
-        <div className="flex items-center gap-6">
-          <div className="flex items-center gap-1.5 text-white/30">
-            <EyeIcon className="w-4 h-4" />
-            <span className="text-[12px]">{formatCount(likesCount * 6 || 0)}</span>
-          </div>
-
+        <div className="flex items-center gap-5">
           <button onClick={handleLikeButton} className="flex items-center gap-1.5 transition-all active:scale-90 group">
-            <HeartIcon filled={hasLiked} className={`w-4 h-4 transition-colors ${likeAnimating ? 'like-pop' : ''} ${hasLiked ? 'text-[#f6339a]' : 'text-white/30 group-hover:text-[#f6339a]/70'}`} />
-            <span className={`text-[12px] transition-colors ${hasLiked ? 'text-[#f6339a]' : 'text-white/30 group-hover:text-white/50'}`}>Like</span>
+            <HeartIcon filled={hasLiked} className={`w-[18px] h-[18px] transition-colors ${likeAnimating ? 'like-pop' : ''} ${hasLiked ? 'text-[#f6339a]' : 'text-white/30 group-hover:text-[#f6339a]/70'}`} />
+            <span className={`text-[13px] transition-colors ${hasLiked ? 'text-[#f6339a]' : 'text-white/30 group-hover:text-white/50'}`}>{likesCount > 0 ? formatCount(likesCount) : 'Like'}</span>
           </button>
 
           <button onClick={loadComments} className="flex items-center gap-1.5 transition-all active:scale-90 group">
-            <CommentIcon className="w-4 h-4 text-white/30 group-hover:text-white/50 transition-colors" />
-            <span className="text-[12px] text-white/30 group-hover:text-white/50 transition-colors">Comment</span>
+            <CommentIcon className="w-[18px] h-[18px] text-white/30 group-hover:text-white/50 transition-colors" />
+            <span className="text-[13px] text-white/30 group-hover:text-white/50 transition-colors">{Number(post.comments_count) > 0 ? `${post.comments_count}` : 'Comment'}</span>
           </button>
         </div>
       </div>

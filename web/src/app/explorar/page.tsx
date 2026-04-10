@@ -25,15 +25,15 @@ export default async function ExplorarPage() {
 
   return (
     <div className="min-h-screen bg-[#0d0714] pb-24" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
-      <div className="max-w-[1200px] mx-auto px-6 lg:px-10 pt-10">
-        <div className="flex flex-col lg:flex-row gap-10 lg:gap-16">
+      <div className="max-w-[1100px] mx-auto px-8 lg:px-12 pt-12">
+        <div className="flex flex-col lg:flex-row justify-center gap-12 lg:gap-20">
 
           {/* ═══ COLUMNA PRINCIPAL: Feed ═══ */}
-          <main className="flex-1 min-w-0 max-w-[660px] mx-auto lg:mx-0">
+          <main className="w-full max-w-[580px] mx-auto lg:mx-0">
 
             {/* Stories solo en móvil */}
-            <div className="lg:hidden mb-8">
-              <h2 className="text-lg font-bold text-white mb-3">Stories</h2>
+            <div className="lg:hidden mb-10">
+              <h2 className="text-lg font-bold text-white mb-4">Stories</h2>
               <StoriesRow currentUserAvatar={profile?.avatar_url} />
             </div>
 
@@ -45,27 +45,27 @@ export default async function ExplorarPage() {
           </main>
 
           {/* ═══ SIDEBAR DERECHA ═══ */}
-          <aside className="hidden lg:block w-[300px] flex-shrink-0">
-            <div className="sticky top-10 space-y-10">
+          <aside className="hidden lg:block w-[280px] flex-shrink-0">
+            <div className="sticky top-12 space-y-12">
 
               {/* Stories */}
               <section>
-                <h3 className="text-[18px] font-bold text-white mb-4">Stories</h3>
+                <h3 className="text-[17px] font-bold text-white mb-5">Stories</h3>
                 <StoriesRow currentUserAvatar={profile?.avatar_url} />
               </section>
 
               {/* Suggestions */}
               <section>
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-[18px] font-bold text-white">Suggestions</h3>
-                  <span className="text-[12px] text-white/30 cursor-pointer hover:text-white/60 transition-colors">See all</span>
+                <div className="flex items-center justify-between mb-5">
+                  <h3 className="text-[17px] font-bold text-white">Suggestions</h3>
+                  <span className="text-[11px] text-white/25 cursor-pointer hover:text-white/50 transition-colors">See all</span>
                 </div>
                 <RecentFollowers />
               </section>
 
               {/* Recommendations */}
               <section>
-                <h3 className="text-[18px] font-bold text-white mb-4">Recommendations</h3>
+                <h3 className="text-[17px] font-bold text-white mb-5">Recommendations</h3>
                 <Recommendations />
               </section>
 
