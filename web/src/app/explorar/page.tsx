@@ -45,22 +45,25 @@ export default async function ExplorarPage() {
         </div>
 
         {/* Columna Derecha: Sidebar */}
-        <aside className="hidden lg:flex flex-col w-[35%] max-w-[380px] flex-shrink-0 gap-12 sticky top-12">
+        <aside className="hidden lg:flex flex-col w-[35%] max-w-[340px] flex-shrink-0 gap-10 sticky top-12">
           {/* Stories */}
           <section>
-            <h2 className="text-[24px] font-bold text-white mb-5 tracking-tight">Stories</h2>
+            <h2 className="text-[20px] font-bold text-white mb-4">Stories</h2>
             <StoriesRow currentUserAvatar={profile?.avatar_url} />
           </section>
 
           {/* Suggestions */}
           <section>
-            <h2 className="text-[24px] font-bold text-white mb-5 tracking-tight">Suggestions</h2>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-[20px] font-bold text-white">Suggestions</h2>
+              <button className="text-[12px] text-white/40 hover:text-white transition-colors">See all</button>
+            </div>
             <RecentFollowers />
           </section>
 
-          {/* Recommendations Component */}
+          {/* Recommendations */}
           <section>
-            <h2 className="text-[24px] font-bold text-white mb-5 tracking-tight">Recommendations</h2>
+            <h2 className="text-[20px] font-bold text-white mb-4">Recommendations</h2>
             <Recommendations />
           </section>
         </aside>

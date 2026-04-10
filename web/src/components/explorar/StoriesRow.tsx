@@ -155,7 +155,7 @@ export default function StoriesRow({ currentUserAvatar }: StoriesRowProps) {
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
 
             <div className="absolute bottom-3 left-3 flex items-center gap-2 z-10">
-              <div className="w-6 h-6 rounded-full overflow-hidden border-2 border-[#ea88ff] p-[1px] bg-[#11081f] shadow-[0_0_10px_rgba(234,136,255,0.4)]">
+              <div className="w-6 h-6 rounded-full overflow-hidden border-2 border-white/80 bg-[#0d0714]">
                  {/* eslint-disable-next-line @next/next/no-img-element */}
                  <img src={storyUser.avatar_url || `${DEFAULT_AVATAR}${encodeURIComponent(storyUser.nombre)}`} alt="" className="w-full h-full rounded-full object-cover" />
               </div>
