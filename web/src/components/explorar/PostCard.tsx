@@ -133,78 +133,72 @@ export default function PostCard({ post, currentUserId }: { post: any, currentUs
   const avatarSrc = post.avatar_url || `${DEFAULT_AVATAR}${encodeURIComponent(post.username || 'U')}`;
 
   return (
-    <article className="bg-[#2e1e42]/40 backdrop-blur-md rounded-2xl overflow-hidden border border-[#00ffff]/15 hover:shadow-[0_0_20px_rgba(0,255,255,0.1)] transition-all duration-500">
+    <article className="bg-white rounded-[2rem] overflow-hidden mb-6 shadow-[0_4px_25px_rgba(0,0,0,0.04)] border border-gray-100">
       {/* ── Header ── */}
-      <div className="flex items-center justify-between px-5 py-4">
+      <div className="flex items-center justify-between px-4 py-4">
         <div className="flex items-center gap-3">
-          <div className="w-[42px] h-[42px] rounded-full p-[2px] bg-gradient-to-tr from-[#ea88ff] to-[#00ffff]">
-            <div className="w-full h-full rounded-full bg-[#130921] p-[1.5px]">
-              <div className="w-full h-full rounded-full overflow-hidden">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={avatarSrc} alt="" className="w-full h-full object-cover" />
-              </div>
-            </div>
+          <div className="w-11 h-11 rounded-full overflow-hidden flex-shrink-0 bg-gray-100 ring-2 ring-gray-50">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={avatarSrc} alt="" className="w-full h-full object-cover" />
           </div>
           <div className="flex flex-col">
             <div className="flex items-center gap-1.5">
-              <span className="font-bold text-[14px] text-white">{post.username || 'Usuario'}</span>
-              <VerifiedIcon className="w-3.5 h-3.5 text-[#00ffff]" />
-              <span className="text-white/20 text-xs">•</span>
-              <span className="text-white/35 text-[12px] font-light">{timeAgo(post.created_at)}</span>
+              <span className="font-bold text-[15px] text-gray-900">{post.username || 'Usuario'}</span>
+              <VerifiedIcon className="w-4 h-4 text-blue-500" />
             </div>
-            {currentUserId !== post.user_id && (
-              <button className="text-[#00ffff] text-[12px] font-bold hover:text-[#ea88ff] hover:drop-shadow-[0_0_8px_rgba(234,136,255,0.6)] transition-all text-left mt-0.5">Seguir</button>
-            )}
+            <span className="text-gray-500 text-[12px] font-medium">{timeAgo(post.created_at)}</span>
           </div>
         </div>
-        <button className="text-white/25 hover:text-[#00ffff] transition-colors p-1">
+        <button className="text-gray-400 hover:text-gray-700 transition-colors p-2">
           <MoreIcon className="w-5 h-5" />
         </button>
       </div>
 
-      {/* ── Content ── */}
-      <div className="px-5 pb-4">
-        <p className="text-[15px] text-white/90 leading-relaxed font-light">{post.content}</p>
-      </div>
+      {/* ── Content (Text) ── */}
+      {post.content && (
+        <div className="px-5 pb-3">
+          <p className="text-[15px] text-gray-800 leading-relaxed font-medium">{post.content}</p>
+        </div>
+      )}
 
       {/* ── Image ── */}
       {post.image_url && (
-        <div className="relative cursor-pointer select-none" onClick={handleDoubleTap}>
-          <div className="bg-black">
+        <div className="px-3" onClick={handleDoubleTap}>
+          <div className="relative cursor-pointer select-none rounded-[2rem] overflow-hidden bg-gray-100">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={post.image_url} alt="" className="w-full max-h-[480px] object-cover" draggable={false} />
+            <img src={post.image_url} alt="" className="w-full max-h-[500px] object-cover" draggable={false} />
+            {showHeartBurst && (
+              <div className="absolute inset-0 flex items-center justify-center pointer-events-none bg-black/10">
+                <HeartIcon filled className="w-24 h-24 text-white drop-shadow-xl heart-burst" />
+              </div>
+            )}
           </div>
-          {showHeartBurst && (
-            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-              <HeartIcon filled className="w-24 h-24 text-[#ea88ff] drop-shadow-[0_0_30px_rgba(234,136,255,0.8)] heart-burst" />
-            </div>
-          )}
         </div>
       )}
 
       {/* ── Action Bar ── */}
-      <div className="px-5 pt-4 pb-3">
+      <div className="px-5 pt-4 pb-5">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-5">
-            <button onClick={handleLikeButton} className="hover:opacity-70 active:scale-90 transition-all">
-              <HeartIcon filled={hasLiked} className={`w-6 h-6 transition-all duration-300 ${likeAnimating ? 'like-pop' : ''} ${hasLiked ? 'text-[#ea88ff] drop-shadow-[0_0_10px_rgba(234,136,255,0.6)]' : 'text-[#00ffff] hover:text-[#ea88ff] hover:drop-shadow-[0_0_10px_rgba(234,136,255,0.6)]'}`} />
+          <div className="flex items-center gap-6">
+            <button onClick={handleLikeButton} className="flex items-center gap-2 hover:opacity-70 active:scale-95 transition-all group">
+              <HeartIcon filled={hasLiked} className={`w-[26px] h-[26px] transition-all duration-300 ${likeAnimating ? 'like-pop' : ''} ${hasLiked ? 'text-[#f6339a]' : 'text-gray-700 group-hover:text-[#f6339a]'}`} />
+              <span className="text-[15px] font-bold text-gray-700">{formatCount(likesCount)}</span>
             </button>
-            <button onClick={loadComments} className="hover:opacity-70 active:scale-90 transition-all">
-              <CommentIcon className="w-6 h-6 text-[#00ffff] hover:text-[#ea88ff] hover:drop-shadow-[0_0_10px_rgba(234,136,255,0.6)] transition-all duration-300" />
+            <button onClick={loadComments} className="flex items-center gap-2 hover:opacity-70 active:scale-95 transition-all group">
+              <CommentIcon className="w-[26px] h-[26px] text-gray-700 group-hover:text-gray-900 transition-colors" />
+              <span className="text-[15px] font-bold text-gray-700">{post.comments_count > 0 ? formatCount(Number(post.comments_count)) : ''}</span>
             </button>
-            <button className="hover:opacity-70 active:scale-90 transition-all">
-              <SendIcon className="w-6 h-6 text-[#00ffff] hover:text-[#ea88ff] hover:drop-shadow-[0_0_10px_rgba(234,136,255,0.6)] transition-all duration-300" />
+            <button className="hover:opacity-70 active:scale-95 transition-all">
+              <SendIcon className="w-[26px] h-[26px] text-gray-700 hover:text-gray-900 transition-colors" />
             </button>
           </div>
-          <button onClick={() => setSaved(!saved)} className="hover:opacity-70 active:scale-90 transition-all">
-            <BookmarkIcon filled={saved} className={`w-6 h-6 transition-all duration-300 ${saved ? 'text-[#ea88ff] drop-shadow-[0_0_10px_rgba(234,136,255,0.6)]' : 'text-[#00ffff] hover:text-[#ea88ff] hover:drop-shadow-[0_0_10px_rgba(234,136,255,0.6)]'}`} />
+          <button onClick={() => setSaved(!saved)} className="hover:opacity-70 active:scale-95 transition-all">
+            <BookmarkIcon filled={saved} className={`w-[26px] h-[26px] transition-all duration-300 ${saved ? 'text-gray-900' : 'text-gray-700 hover:text-gray-900'}`} />
           </button>
         </div>
 
-        <p className="font-bold text-[14px] text-white mt-3">{formatCount(likesCount)} Me gusta</p>
-
-        {Number(post.comments_count) > 0 && (
-          <button onClick={loadComments} className="text-white/30 text-[14px] font-light mt-1.5 block hover:text-[#00ffff] transition-colors">
+        {Number(post.comments_count) > 0 && !showComments && (
+          <button onClick={loadComments} className="text-gray-500 text-[14px] font-medium mt-3 block hover:text-gray-700 transition-colors">
             Ver los {post.comments_count} comentarios
           </button>
         )}
@@ -212,38 +206,46 @@ export default function PostCard({ post, currentUserId }: { post: any, currentUs
 
       {/* ── Comments ── */}
       {showComments && (
-        <div className="px-5 pb-5 pt-4 border-t border-white/[0.04] mt-3">
-          <div className="flex flex-col gap-4 max-h-[250px] overflow-y-auto no-scrollbar">
+        <div className="px-5 pb-5 pt-2 border-t border-gray-100">
+          <div className="flex flex-col gap-4 max-h-[250px] overflow-y-auto no-scrollbar pt-3">
             {comments.map((comment, idx) => (
                <div key={idx} className="flex gap-3 items-start">
-                <div className="w-8 h-8 rounded-full overflow-hidden flex-shrink-0 bg-[#130921] border border-[#00ffff]/20">
+                <div className="w-8 h-8 rounded-full overflow-hidden flex-shrink-0 bg-gray-100">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src={comment.usuarios?.avatar_url || `${DEFAULT_AVATAR}${encodeURIComponent(comment.usuarios?.nombre || 'U')}`} alt="" className="w-full h-full object-cover" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-[13px]">
-                    <span className="font-bold text-white mr-1.5">{comment.usuarios?.nombre || 'Usuario'}</span>
-                    <span className="text-white/70 font-light">{comment.content}</span>
+                  <p className="text-[14px]">
+                    <span className="font-bold text-gray-900 mr-2">{comment.usuarios?.nombre || 'Usuario'}</span>
+                    <span className="text-gray-800">{comment.content}</span>
                   </p>
-                  <span className="text-[11px] text-white/30 mt-0.5 block font-light">{timeAgo(comment.created_at)}</span>
+                  <span className="text-[12px] text-gray-400 mt-0.5 block font-medium">{timeAgo(comment.created_at)}</span>
                 </div>
               </div>
             ))}
             {comments.length === 0 && (
-              <p className="text-white/25 text-sm py-2 text-center font-light">Sin comentarios aún</p>
+              <p className="text-gray-400 text-sm py-4 text-center">Sin comentarios aún</p>
             )}
           </div>
-          <form onSubmit={handleAddComment} className="mt-4 flex items-center gap-3 border-t border-[#00ffff]/10 pt-4">
-            <SmileIcon className="w-6 h-6 text-[#00ffff]/50 hover:text-[#ea88ff] hover:drop-shadow-[0_0_8px_rgba(234,136,255,0.6)] transition-all cursor-pointer flex-shrink-0" />
-            <input
-              type="text"
-              placeholder="Añade un comentario..."
-              value={newComment}
-              onChange={(e) => setNewComment(e.target.value)}
-              className="flex-1 bg-transparent text-[14px] text-white font-light placeholder:text-white/30 focus:outline-none"
-            />
+          <form onSubmit={handleAddComment} className="mt-4 flex items-center gap-3 pt-2">
+            <div className="w-8 h-8 rounded-full overflow-hidden flex-shrink-0 bg-gray-100">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={`${DEFAULT_AVATAR}Tu`} alt="Tú" className="w-full h-full object-cover" />
+            </div>
+            <div className="flex-1 relative">
+              <input
+                type="text"
+                placeholder="Añade un comentario..."
+                value={newComment}
+                onChange={(e) => setNewComment(e.target.value)}
+                className="w-full bg-gray-100/80 text-[14px] text-gray-900 placeholder:text-gray-500 rounded-full py-2.5 pl-4 pr-10 focus:outline-none focus:ring-1 focus:ring-gray-300"
+              />
+              <button type="button" className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
+                <SmileIcon className="w-5 h-5 flex-shrink-0" />
+              </button>
+            </div>
             <button type="submit" disabled={!newComment.trim() || isSubmittingComment}
-              className={`text-[14px] font-bold transition-all ${!newComment.trim() || isSubmittingComment ? 'text-[#00ffff]/30 cursor-not-allowed' : 'text-[#00ffff] hover:text-[#ea88ff] hover:drop-shadow-[0_0_8px_rgba(234,136,255,0.8)]'}`}>
+              className={`text-[14px] font-bold transition-all px-2 ${!newComment.trim() || isSubmittingComment ? 'text-blue-300 cursor-not-allowed' : 'text-blue-500 hover:text-blue-600'}`}>
               Publicar
             </button>
           </form>
