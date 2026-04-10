@@ -1,6 +1,7 @@
 package com.smartune.app.profile.ui
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -48,7 +49,14 @@ fun ProfileScreen(navController: NavController, onLogout: () -> Unit) {
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         item {
-            Text("Perfil", fontSize = 22.sp, fontWeight = FontWeight.Bold, color = TextPrimary)
+            Text(
+                "PERFIL", 
+                fontSize = 14.sp, 
+                fontWeight = FontWeight.Bold, 
+                color = TextTertiary, 
+                letterSpacing = 2.sp,
+                modifier = Modifier.padding(bottom = 8.dp)
+            )
         }
 
         if (isLoading) {
@@ -60,7 +68,7 @@ fun ProfileScreen(navController: NavController, onLogout: () -> Unit) {
         } else {
             item {
                 Card(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth().border(1.dp, NeonPink.copy(alpha = 0.2f), RoundedCornerShape(16.dp)),
                     shape = RoundedCornerShape(16.dp),
                     colors = CardDefaults.cardColors(containerColor = BgCard)
                 ) {
@@ -74,7 +82,7 @@ fun ProfileScreen(navController: NavController, onLogout: () -> Unit) {
                                 .size(96.dp)
                                 .clip(CircleShape)
                                 .background(
-                                    brush = Brush.linearGradient(listOf(NeonPink, NeonPurple, NeonBlue)),
+                                    brush = Brush.linearGradient(listOf(NeonCyan, NeonPink)),
                                     shape = CircleShape
                                 )
                         ) {
@@ -94,7 +102,7 @@ fun ProfileScreen(navController: NavController, onLogout: () -> Unit) {
 
                         // Role badge
                         val rolLabel = if (profile?.profesorAprobado == true) "Profesor Verificado" else "Alumno"
-                        val rolColor = if (profile?.profesorAprobado == true) NeonBlue else NeonPink
+                        val rolColor = if (profile?.profesorAprobado == true) NeonCyan else NeonPink
                         Card(
                             shape = RoundedCornerShape(20.dp),
                             colors = CardDefaults.cardColors(containerColor = rolColor.copy(alpha = 0.15f))
@@ -165,7 +173,7 @@ fun ProfileScreen(navController: NavController, onLogout: () -> Unit) {
                 ) {
                     Column {
                         if (profile?.profesorAprobado == true) {
-                            MenuOption(Icons.Default.Dashboard, "Panel de Profesor", NeonBlue) {
+                            MenuOption(Icons.Default.Dashboard, "Panel de Profesor", NeonCyan) {
                                 navController.navigate(Routes.TEACHER_DASHBOARD)
                             }
                             HorizontalDivider(color = TextTertiary.copy(0.1f))

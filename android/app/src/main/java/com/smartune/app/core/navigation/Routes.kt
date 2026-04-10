@@ -23,4 +23,10 @@ object Routes {
     const val PLAYLIST_CREAR = "playlist/crear"
 
     fun profesorDetail(id: String) = "profesor/$id"
+    
+    const val COURSE_DETAIL = "course/{courseId}"
+    fun courseDetail(id: String) = "course/$id"
+    
+    const val PLAYER = "player/{lessonId}"
+    fun player(id: String) = "player/$id"
 }

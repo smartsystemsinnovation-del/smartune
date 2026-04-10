@@ -17,11 +17,29 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
+import coil.compose.AsyncImage
 import com.smartune.app.core.navigation.Routes
 import com.smartune.app.core.theme.*
+import com.smartune.app.home.viewmodel.HomeViewModel
+import com.smartune.app.core.network.model.Cancion
+import com.smartune.app.core.network.model.Instrumento
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.withStyle
 
 @Composable
-fun HomeScreen(navController: NavController) {
+fun HomeScreen(
+    navController: NavController,
+    homeViewModel: HomeViewModel = viewModel()
+) {
+    val uiState by homeViewModel.uiState.collectAsStateWithLifecycle()
+
     LazyColumn(
         modifier = Modifier.fillMaxSize().background(BgMain),
         contentPadding = PaddingValues(16.dp),
@@ -52,7 +70,7 @@ fun HomeScreen(navController: NavController) {
         // Mis Clases section
         item {
             Card(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().clickable { navController.navigate(Routes.courseDetail("1")) },
                 shape = RoundedCornerShape(16.dp),
                 colors = CardDefaults.cardColors(containerColor = BgCard)
             ) {
@@ -119,6 +137,261 @@ fun HomeScreen(navController: NavController) {
                             Text("Accede a funciones exclusivas", color = TextSecondary, fontSize = 13.sp)
                         }
                     }
+                }
+            }
+        }
+
+        item { Spacer(modifier = Modifier.height(16.dp)) }
+
+        // Top Instrumentos
+        item {
+            TopInstrumentosSection(
+                instrumentos = uiState.instrumentos,
+                isAlumnosView = uiState.isAlumnosView,
+                onToggleView = { homeViewModel.toggleInstrumentosView() }
+            )
+        }
+
+        item { Spacer(modifier = Modifier.height(16.dp)) }
+
+        // Nuevos Lanzamientos
+        item {
+            NuevosLanzamientosSection(
+                canciones = uiState.lanzamientos,
+                onCancionClick = { cancionId ->
+                    navController.navigate(Routes.player(cancionId))
+                }
+            )
+        }
+
+        item { Spacer(modifier = Modifier.height(32.dp)) }
+
+        // Nosotros Footer
+        item {
+            NosotrosFooter()
+        }
+        
+        item { Spacer(modifier = Modifier.height(32.dp)) }
+    }
+}
+
+@Composable
+private fun TopInstrumentosSection(
+    instrumentos: List<Instrumento>,
+    isAlumnosView: Boolean,
+    onToggleView: () -> Unit
+) {
+    Column {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = buildAnnotatedString {
+                    append("Top ")
+                    withStyle(SpanStyle(color = NeonPink)) { append("Instrumentos") }
+                },
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold,
+                color = TextPrimary
+            )
+            
+            // Toggle Switch
+            Surface(
+                shape = RoundedCornerShape(20.dp),
+                color = BgCard.copy(alpha = 0.5f),
+                modifier = Modifier.clickable { onToggleView() }
+            ) {
+                Row(modifier = Modifier.padding(4.dp)) {
+                    Box(
+                        modifier = Modifier
+                            .background(
+                                color = if (isAlumnosView) NeonPink else androidx.compose.ui.graphics.Color.Transparent,
+                                shape = RoundedCornerShape(16.dp)
+                            )
+                            .padding(horizontal = 12.dp, vertical = 6.dp)
+                    ) {
+                        Text("Alumnos", fontSize = 10.sp, fontWeight = FontWeight.Bold, color = if (isAlumnosView) TextPrimary else TextSecondary)
+                    }
+                    Box(
+                        modifier = Modifier
+                            .background(
+                                color = if (!isAlumnosView) NeonPink else androidx.compose.ui.graphics.Color.Transparent,
+                                shape = RoundedCornerShape(16.dp)
+                            )
+                            .padding(horizontal = 12.dp, vertical = 6.dp)
+                    ) {
+                        Text("Profesores", fontSize = 10.sp, fontWeight = FontWeight.Bold, color = if (!isAlumnosView) TextPrimary else TextSecondary)
+                    }
+                }
+            }
+        }
+        
+        Spacer(modifier = Modifier.height(16.dp))
+        
+        val filteredInstrumentos = if (isAlumnosView) {
+            instrumentos.filter { it.totalAlumnos > 0 }.sortedByDescending { it.totalAlumnos }.take(10)
+        } else {
+            instrumentos.filter { it.totalProfesores > 0 }.sortedByDescending { it.totalProfesores }.take(10)
+        }
+        
+        if (filteredInstrumentos.isEmpty()) {
+            Text(
+                text = "Ningún dato registrado aún.",
+                fontStyle = androidx.compose.ui.text.font.FontStyle.Italic,
+                color = TextSecondary,
+                modifier = Modifier.padding(16.dp)
+            )
+        } else {
+            LazyRow(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                items(filteredInstrumentos) { instrumento ->
+                    Card(
+                        modifier = Modifier.width(160.dp),
+                        shape = RoundedCornerShape(12.dp),
+                        colors = CardDefaults.cardColors(containerColor = BgCard)
+                    ) {
+                        Column {
+                            AsyncImage(
+                                model = instrumento.imagenUrl,
+                                contentDescription = instrumento.nombre,
+                                contentScale = ContentScale.Crop,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(100.dp)
+                                    .clip(RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp))
+                            )
+                            Column(modifier = Modifier.padding(12.dp)) {
+                                Text(instrumento.nombre, fontWeight = FontWeight.Bold, fontSize = 14.sp, color = TextPrimary)
+                                Spacer(modifier = Modifier.height(4.dp))
+                                
+                                val amountText = if (isAlumnosView) {
+                                    if (instrumento.totalAlumnos == 1) "1 persona" else "${instrumento.totalAlumnos} personas"
+                                } else {
+                                    if (instrumento.totalProfesores == 1) "1 profesor" else "${instrumento.totalProfesores} profesores"
+                                }
+                                
+                                Text(
+                                    text = amountText,
+                                    fontSize = 12.sp,
+                                    color = TextSecondary
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun NuevosLanzamientosSection(
+    canciones: List<Cancion>,
+    onCancionClick: (String) -> Unit
+) {
+    Column {
+        Text(
+            text = buildAnnotatedString {
+                append("Nuevos ")
+                withStyle(SpanStyle(color = NeonPink)) { append("Lanzamientos") }
+            },
+            fontSize = 20.sp,
+            fontWeight = FontWeight.Bold,
+            color = TextPrimary
+        )
+        
+        Spacer(modifier = Modifier.height(16.dp))
+        
+        LazyRow(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+            items(canciones) { cancion ->
+                Card(
+                    modifier = Modifier.width(120.dp).clickable { onCancionClick(cancion.id) },
+                    shape = RoundedCornerShape(12.dp),
+                    colors = CardDefaults.cardColors(containerColor = BgCard)
+                ) {
+                    Column {
+                        if (cancion.coverUrl != null) {
+                            AsyncImage(
+                                model = cancion.coverUrl,
+                                contentDescription = cancion.titulo,
+                                contentScale = ContentScale.Crop,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(120.dp)
+                                    .clip(RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp))
+                            )
+                        } else {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(120.dp)
+                                    .background(BgCardHover),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Icon(Icons.Default.MusicNote, contentDescription = null, tint = TextTertiary, modifier = Modifier.size(48.dp))
+                            }
+                        }
+                        
+                        Column(modifier = Modifier.padding(12.dp)) {
+                            Text(
+                                cancion.titulo, 
+                                fontWeight = FontWeight.Bold, 
+                                fontSize = 12.sp, 
+                                color = TextPrimary,
+                                maxLines = 1,
+                                overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
+                            )
+                            Spacer(modifier = Modifier.height(4.dp))
+                            Text(
+                                cancion.artista ?: "SmarTune", 
+                                fontSize = 10.sp, 
+                                color = TextSecondary,
+                                maxLines = 1,
+                                overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun NosotrosFooter() {
+    Column(modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp)) {
+        HorizontalDivider(color = BgCard, thickness = 1.dp)
+        Spacer(modifier = Modifier.height(32.dp))
+        
+        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.Top) {
+            Column(modifier = Modifier.weight(1f)) {
+                Text("Nosotros", fontSize = 18.sp, fontWeight = FontWeight.Bold, color = TextPrimary)
+                Spacer(modifier = Modifier.height(12.dp))
+                Text(
+                    "SmarTune es una plataforma creada para revolucionar el aprendizaje musical. En este lugar podrás escuchar, practicar y aprender usando nuestros algoritmos de retención de la familia Ebbinghaus. Únete a nuestro plan premium para desbloquear todo el potencial.",
+                    fontSize = 11.sp,
+                    color = TextSecondary,
+                    lineHeight = 16.sp
+                )
+            }
+            Spacer(modifier = Modifier.width(16.dp))
+            Column(horizontalAlignment = Alignment.End) {
+                Text(
+                    text = buildAnnotatedString {
+                        append("Smar")
+                        withStyle(SpanStyle(color = NeonBlue)) { append("Tune") }
+                    },
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = NeonPink
+                )
+                Spacer(modifier = Modifier.height(12.dp))
+                Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                    // Placeholder icons for Facebook, Instagram, Twitter
+                    Icon(Icons.Default.Public, contentDescription = "Facebook", tint = TextSecondary, modifier = Modifier.size(20.dp))
+                    Icon(Icons.Default.CameraAlt, contentDescription = "Instagram", tint = TextSecondary, modifier = Modifier.size(20.dp))
+                    Icon(Icons.Default.Tag, contentDescription = "X", tint = TextSecondary, modifier = Modifier.size(20.dp))
                 }
             }
         }

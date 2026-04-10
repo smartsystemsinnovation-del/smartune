@@ -1,6 +1,10 @@
 package com.smartune.app.explorar.ui
 
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -8,16 +12,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.FavoriteBorder
-import androidx.compose.material.icons.filled.Bookmark
-import androidx.compose.material.icons.filled.BookmarkBorder
-import androidx.compose.material.icons.filled.ChatBubbleOutline
-import androidx.compose.material.icons.filled.MoreHoriz
-import androidx.compose.material.icons.filled.Send
-import androidx.compose.material.icons.filled.Verified
-import androidx.compose.material.icons.filled.SentimentSatisfied
-import androidx.compose.material.icons.filled.Image
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -25,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -33,121 +29,239 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
+import com.smartune.app.core.supabase.SupabaseClient
 import com.smartune.app.core.theme.*
 import com.smartune.app.explorar.data.models.Post
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.pullrefresh.PullRefreshIndicator
+import androidx.compose.material.pullrefresh.pullRefresh
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import com.smartune.app.explorar.viewmodel.ExplorarViewModel
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun ExplorarScreen(
     navController: NavController,
     viewModel: ExplorarViewModel = viewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val context = LocalContext.current
+    val snackbarHostState = remember { SnackbarHostState() }
 
-    LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(BgMain),
-        contentPadding = PaddingValues(bottom = 16.dp)
-    ) {
-        // ── Header ──
-        item {
-            Text(
-                text = "NOVEDADES",
-                fontSize = 11.sp,
-                fontWeight = FontWeight.Bold,
-                color = TextTertiary,
-                letterSpacing = 2.sp,
-                modifier = Modifier.padding(start = 16.dp, top = 16.dp, bottom = 12.dp)
-            )
-        }
+    // Show post errors in snackbar
+    LaunchedEffect(uiState.postError) {
+        uiState.postError?.let { snackbarHostState.showSnackbar(it) }
+    }
 
-        // ── Composer ──
-        item {
-            CreatePostComposer(
-                isPosting = uiState.isPosting,
-                onPost = { content -> viewModel.createPost(content) }
-            )
-        }
+    // Safely get current user's avatar for the composer
+    val currentUser = remember { SupabaseClient.auth.currentSessionOrNull()?.user }
+    val currentAvatarUrl: String = remember(currentUser) {
+        val meta = currentUser?.userMetadata
+        val raw = meta?.get("avatar_url")?.toString()?.trim('"') ?: ""
+        raw.ifEmpty { "https://ui-avatars.com/api/?background=0D0D0D&color=F2359D&bold=true&name=Yo" }
+    }
 
-        item { Spacer(modifier = Modifier.height(12.dp)) }
+    val pullRefreshState = rememberPullRefreshState(
+        refreshing = uiState.isRefreshing,
+        onRefresh = { viewModel.refreshFeed() }
+    )
 
-        // ── Feed ──
-        if (uiState.isLoading) {
-            item {
-                Box(modifier = Modifier.fillMaxWidth().padding(48.dp), contentAlignment = Alignment.Center) {
-                    CircularProgressIndicator(color = NeonPink, modifier = Modifier.size(32.dp))
-                }
-            }
-        } else if (uiState.posts.isEmpty()) {
-            item {
-                Column(
-                    modifier = Modifier.fillMaxWidth().padding(48.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Icon(Icons.Default.Image, contentDescription = null, tint = TextTertiary, modifier = Modifier.size(48.dp))
-                    Spacer(modifier = Modifier.height(12.dp))
-                    Text("Aún no hay publicaciones", fontWeight = FontWeight.Bold, color = TextSecondary)
-                    Text("Sé el primero en compartir algo", fontSize = 13.sp, color = TextTertiary)
-                }
-            }
-        } else {
-            items(uiState.posts, key = { it.id }) { post ->
-                PostCardItem(
-                    post = post,
-                    comments = uiState.comments[post.id] ?: emptyList(),
-                    onLike = { viewModel.toggleLike(post.id, post.hasLiked) },
-                    onLoadComments = { viewModel.loadComments(post.id) },
-                    onAddComment = { content -> viewModel.addComment(post.id, content) }
+    Scaffold(
+        containerColor = BgMain,
+        snackbarHost = {
+            SnackbarHost(snackbarHostState) { data ->
+                Snackbar(
+                    snackbarData = data,
+                    containerColor = NeonRed.copy(alpha = 0.9f),
+                    contentColor = TextPrimary
                 )
-                Spacer(modifier = Modifier.height(8.dp))
             }
+        }
+    ) { paddingValues ->
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+                .pullRefresh(pullRefreshState)
+        ) {
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(BgMain),
+                contentPadding = PaddingValues(bottom = 16.dp)
+            ) {
+                item {
+                    CreatePostComposer(
+                        isPosting = uiState.isPosting,
+                        currentAvatarUrl = currentAvatarUrl,
+                        context = context,
+                        onPost = { content, bytes, name -> viewModel.createPost(content, bytes, name) }
+                    )
+                }
+
+                item { Spacer(modifier = Modifier.height(12.dp)) }
+
+                if (uiState.isLoading) {
+                    item {
+                        Box(modifier = Modifier.fillMaxWidth().padding(48.dp), contentAlignment = Alignment.Center) {
+                            CircularProgressIndicator(color = NeonPink, modifier = Modifier.size(32.dp))
+                        }
+                    }
+                } else if (uiState.posts.isEmpty()) {
+                    item {
+                        Column(
+                            modifier = Modifier.fillMaxWidth().padding(48.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Icon(Icons.Default.Image, contentDescription = null, tint = TextTertiary, modifier = Modifier.size(48.dp))
+                            Spacer(modifier = Modifier.height(12.dp))
+                            Text("Aún no hay publicaciones", fontWeight = FontWeight.Bold, color = TextSecondary)
+                            Text("Sé el primero en compartir algo", fontSize = 13.sp, color = TextTertiary)
+                        }
+                    }
+                } else {
+                    items(uiState.posts, key = { it.id }) { post ->
+                        PostCardItem(
+                            post = post,
+                            comments = uiState.comments[post.id] ?: emptyList(),
+                            onLike = { viewModel.toggleLike(post.id, post.hasLiked) },
+                            onLoadComments = { viewModel.loadComments(post.id) },
+                            onAddComment = { content -> viewModel.addComment(post.id, content) }
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+                    }
+                }
+            }
+
+            PullRefreshIndicator(
+                refreshing = uiState.isRefreshing,
+                state = pullRefreshState,
+                modifier = Modifier.align(Alignment.TopCenter),
+                backgroundColor = BgCard,
+                contentColor = NeonPink
+            )
         }
     }
 }
 
+
+
 @Composable
-private fun CreatePostComposer(isPosting: Boolean, onPost: (String) -> Unit) {
+private fun CreatePostComposer(
+    isPosting: Boolean,
+    currentAvatarUrl: String,
+    context: android.content.Context,
+    onPost: (String, ByteArray?, String?) -> Unit
+) {
     var content by remember { mutableStateOf("") }
+    var selectedImageUri by remember { mutableStateOf<Uri?>(null) }
     var expanded by remember { mutableStateOf(false) }
+    val MAX_CHARS = 500
+
+    val launcher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri ->
+        selectedImageUri = uri
+        if (uri != null) expanded = true
+    }
 
     Card(
-        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp),
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(containerColor = BgCard)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
-            OutlinedTextField(
-                value = content,
-                onValueChange = { content = it; if (it.isNotEmpty()) expanded = true },
-                placeholder = { Text("¿Qué está pulsando hoy?", color = TextTertiary, fontSize = 14.sp) },
-                modifier = Modifier.fillMaxWidth(),
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = NeonPink.copy(alpha = 0.3f),
-                    unfocusedBorderColor = TextTertiary.copy(alpha = 0.1f),
-                    focusedTextColor = TextPrimary,
-                    unfocusedTextColor = TextPrimary,
-                    cursorColor = NeonPink,
-                    focusedContainerColor = BgMain.copy(alpha = 0.5f),
-                    unfocusedContainerColor = BgMain.copy(alpha = 0.5f),
-                ),
-                shape = RoundedCornerShape(12.dp),
-                maxLines = if (expanded) 4 else 1,
-                minLines = 1
-            )
-            if (expanded || content.isNotEmpty()) {
-                Spacer(modifier = Modifier.height(12.dp))
-                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
-                    Button(
-                        onClick = { onPost(content); content = ""; expanded = false },
-                        enabled = content.isNotBlank() && !isPosting,
-                        shape = RoundedCornerShape(20.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = NeonPink),
-                        contentPadding = PaddingValues(horizontal = 24.dp, vertical = 8.dp)
+            Row(verticalAlignment = Alignment.Top) {
+                AsyncImage(
+                    model = currentAvatarUrl,
+                    contentDescription = null,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .size(40.dp)
+                        .clip(CircleShape)
+                        .background(NeonPurple)
+                )
+                Spacer(modifier = Modifier.width(12.dp))
+                OutlinedTextField(
+                    value = content,
+                    onValueChange = { if (it.length <= MAX_CHARS) { content = it; if (it.isNotEmpty()) expanded = true } },
+                    placeholder = { Text("¿Qué está pulsando hoy?", color = TextTertiary, fontSize = 14.sp) },
+                    modifier = Modifier.weight(1f),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = NeonPink.copy(alpha = 0.3f),
+                        unfocusedBorderColor = TextTertiary.copy(alpha = 0.1f),
+                        focusedTextColor = TextPrimary,
+                        unfocusedTextColor = TextPrimary,
+                        cursorColor = NeonPink,
+                        focusedContainerColor = BgMain.copy(alpha = 0.5f),
+                        unfocusedContainerColor = BgMain.copy(alpha = 0.5f),
+                    ),
+                    shape = RoundedCornerShape(12.dp),
+                    maxLines = if (expanded) 5 else 2
+                )
+            }
+
+            // Image preview
+            if (selectedImageUri != null) {
+                Spacer(modifier = Modifier.height(8.dp))
+                Box {
+                    AsyncImage(
+                        model = selectedImageUri,
+                        contentDescription = null,
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(180.dp)
+                            .clip(RoundedCornerShape(12.dp))
+                    )
+                    IconButton(
+                        onClick = { selectedImageUri = null },
+                        modifier = Modifier
+                            .align(Alignment.TopEnd)
+                            .padding(4.dp)
+                            .size(28.dp)
+                            .background(BgMain.copy(alpha = 0.7f), CircleShape)
                     ) {
-                        if (isPosting) CircularProgressIndicator(color = TextPrimary, modifier = Modifier.size(16.dp), strokeWidth = 2.dp)
-                        else Text("Publicar", fontWeight = FontWeight.Bold, fontSize = 13.sp)
+                        Icon(Icons.Default.Close, contentDescription = "Quitar imagen", tint = TextPrimary, modifier = Modifier.size(16.dp))
                     }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(10.dp))
+            // Toolbar row
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                IconButton(onClick = { launcher.launch("image/*") }, modifier = Modifier.size(36.dp)) {
+                    Icon(Icons.Default.Image, contentDescription = "Adjuntar imagen", tint = NeonPink, modifier = Modifier.size(22.dp))
+                }
+                Spacer(modifier = Modifier.weight(1f))
+                Text(
+                    "${content.length}/$MAX_CHARS",
+                    fontSize = 11.sp,
+                    color = if (content.length > MAX_CHARS * 0.9) NeonPink else TextTertiary
+                )
+                Spacer(modifier = Modifier.width(12.dp))
+                Button(
+                    onClick = {
+                        val imageBytes = selectedImageUri?.let { uri ->
+                            context.contentResolver.openInputStream(uri)?.readBytes()
+                        }
+                        val imageName = selectedImageUri?.lastPathSegment
+                        onPost(content, imageBytes, imageName)
+                        content = ""
+                        selectedImageUri = null
+                        expanded = false
+                    },
+                    enabled = content.isNotBlank() && !isPosting,
+                    shape = RoundedCornerShape(20.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = NeonPink),
+                    contentPadding = PaddingValues(horizontal = 20.dp, vertical = 8.dp),
+                    modifier = Modifier.height(36.dp)
+                ) {
+                    if (isPosting) CircularProgressIndicator(color = TextPrimary, modifier = Modifier.size(14.dp), strokeWidth = 2.dp)
+                    else Text("Publicar", fontWeight = FontWeight.Bold, fontSize = 13.sp)
                 }
             }
         }
@@ -203,7 +317,16 @@ private fun PostCardItem(
                         Text(formatTimeAgo(post.createdAt), color = TextTertiary, fontSize = 12.sp)
                     }
                 }
-                Icon(Icons.Default.MoreHoriz, contentDescription = null, tint = TextTertiary, modifier = Modifier.size(20.dp))
+                
+                Button(
+                    onClick = { /* Follow action */ },
+                    colors = ButtonDefaults.buttonColors(containerColor = NeonPink),
+                    contentPadding = PaddingValues(horizontal = 12.dp, vertical = 0.dp),
+                    modifier = Modifier.height(28.dp),
+                    shape = RoundedCornerShape(14.dp)
+                ) {
+                    Text("Seguir", fontSize = 11.sp, fontWeight = FontWeight.Bold, color = TextPrimary)
+                }
             }
 
             // ── Content ──

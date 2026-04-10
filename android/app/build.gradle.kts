@@ -52,6 +52,7 @@ dependencies {
     implementation("androidx.compose.ui:ui-graphics")
     implementation("androidx.compose.ui:ui-tooling-preview")
     implementation("androidx.compose.material3:material3")
+    implementation("androidx.compose.material:material") // Required for PullRefresh API
     implementation("androidx.compose.material:material-icons-extended")
     implementation("androidx.compose.foundation:foundation")
 
@@ -86,6 +87,9 @@ dependencies {
     implementation("io.github.jan-tennert.supabase:realtime-kt:$supabaseVersion")
     implementation("io.github.jan-tennert.supabase:functions-kt:$supabaseVersion")
     implementation("io.github.jan-tennert.supabase:compose-auth:$supabaseVersion")
+    
+    // Required by Supabase for AutoLoadFromStorage on Android
+    implementation("com.russhwolf:multiplatform-settings-no-arg:1.1.1")
 
     // ═══════════════════════════════════════
     //  NETWORKING (Ktor — required by Supabase)

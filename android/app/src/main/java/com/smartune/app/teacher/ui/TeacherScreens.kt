@@ -3,6 +3,7 @@ package com.smartune.app.teacher.ui
 import android.content.Intent
 import android.net.Uri
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -58,7 +59,7 @@ fun TeacherDashboardScreen(navController: NavController) {
                 onClick = { navController.navigate(Routes.CREAR_CLASE) },
                 modifier = Modifier.fillMaxWidth().height(52.dp),
                 shape = RoundedCornerShape(12.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = NeonBlue)
+                colors = ButtonDefaults.buttonColors(containerColor = NeonCyan)
             ) {
                 Icon(Icons.Default.Add, contentDescription = null, modifier = Modifier.size(20.dp))
                 Spacer(modifier = Modifier.width(8.dp))
@@ -79,7 +80,7 @@ fun TeacherDashboardScreen(navController: NavController) {
         } else if (clases.isEmpty()) {
             item {
                 Card(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth().border(1.dp, NeonPink.copy(0.2f), RoundedCornerShape(16.dp)),
                     shape = RoundedCornerShape(16.dp),
                     colors = CardDefaults.cardColors(containerColor = BgCard)
                 ) {
@@ -103,7 +104,7 @@ fun TeacherDashboardScreen(navController: NavController) {
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(Icons.Default.VideoCall, contentDescription = null, tint = NeonBlue, modifier = Modifier.size(20.dp))
+                            Icon(Icons.Default.VideoCall, contentDescription = null, tint = NeonCyan, modifier = Modifier.size(20.dp))
                             Spacer(modifier = Modifier.width(8.dp))
                             Text(clase.titulo, fontWeight = FontWeight.Bold, color = TextPrimary, fontSize = 15.sp)
                         }
@@ -119,7 +120,7 @@ fun TeacherDashboardScreen(navController: NavController) {
                                     context.startActivity(intent)
                                 },
                                 shape = RoundedCornerShape(20.dp),
-                                colors = ButtonDefaults.buttonColors(containerColor = NeonBlue),
+                                colors = ButtonDefaults.buttonColors(containerColor = NeonCyan),
                                 modifier = Modifier.fillMaxWidth()
                             ) {
                                 Icon(Icons.Default.VideoCall, contentDescription = null, modifier = Modifier.size(18.dp))

@@ -23,8 +23,8 @@ export default async function ExplorarPage() {
   const initialPosts = feedRes.success && feedRes.data ? feedRes.data : [];
 
   return (
-    <div className="min-h-screen flex justify-center" style={{ fontFamily: "'Manrope', sans-serif" }}>
-      <div className="w-full max-w-[600px] mx-auto px-4 pt-6 pb-12">
+    <div className="min-h-screen flex justify-center bg-[#130921] text-white" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
+      <div className="w-full max-w-[600px] mx-auto px-4 pt-8 pb-16">
         
         {/* Novedades (Stories) */}
         <section className="mb-8">

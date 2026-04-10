@@ -2,18 +2,20 @@ package com.smartune.app.core.theme
 
 import androidx.compose.ui.graphics.Color
 
-// SmarTune Brand Colors
-val NeonPink = Color(0xFFF6339A)
-val NeonPurple = Color(0xFF9810FA)
+// SmarTune Brand Colors (Midnight Nocturne Palette)
+val NeonPink = Color(0xFFF2359D)
+val NeonPurple = Color(0xFF591948)
+val NeonGreen = Color(0xFF56A672)
+val NeonRed = Color(0xFFD93B3B)
+val NeonCyan = Color(0xFF00FFFF)
 val NeonBlue = Color(0xFF0E9EEF)
-val NeonPinkAlt = Color(0xFFEE10B0)
 
 // Surfaces
-val BgMain = Color(0xFF181818)
-val BgCard = Color(0xFF1A1A22)
-val BgCardHover = Color(0xFF1F1F2A)
-val BgSurface = Color(0xFF1F1F1F)
-val BgHeader = Color(0xFF1E1E1E)
+val BgMain = Color(0xFF0D0D0D)
+val BgCard = Color(0xFF1A1A1A)
+val BgCardHover = Color(0xFF242424)
+val BgSurface = Color(0xFF121212)
+val BgHeader = Color(0xFF0D0D0D)
 
 // Text
 val TextPrimary = Color.White

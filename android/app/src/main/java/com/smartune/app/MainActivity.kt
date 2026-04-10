@@ -11,6 +11,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
@@ -22,30 +23,33 @@ import com.smartune.app.core.theme.SmarTuneTheme
 import io.github.jan.supabase.gotrue.handleDeeplinks
 
 class MainActivity : ComponentActivity() {
+    override fun onNewIntent(intent: android.content.Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        SupabaseClient.client.handleDeeplinks(intent)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
-        // Handle deep link for OAuth callback
-        SupabaseClient.client.handleDeeplinks(intent)
+        // Handle deep link for OAuth callback on cold start
+        val isRecovery = intent?.data?.toString()?.contains("type=recovery") == true
+        intent?.let { SupabaseClient.client.handleDeeplinks(it) }
 
         setContent {
             SmarTuneTheme {
                 val navController = rememberNavController()
-                var isLoggedIn by remember { mutableStateOf<Boolean?>(null) }
+                val sessionStatus by SupabaseClient.auth.sessionStatus.collectAsState(
+                    initial = io.github.jan.supabase.gotrue.SessionStatus.LoadingFromStorage
+                )
 
-                // Check session on launch
-                LaunchedEffect(Unit) {
-                    isLoggedIn = try {
-                        SupabaseClient.auth.loadFromStorage()
-                        SupabaseClient.auth.currentSessionOrNull() != null
-                    } catch (e: Exception) {
-                        false
-                    }
+                // Show nothing while checking auth initially
+                if (sessionStatus is io.github.jan.supabase.gotrue.SessionStatus.LoadingFromStorage) {
+                    return@SmarTuneTheme
                 }
 
-                // Show nothing while checking auth
-                if (isLoggedIn == null) return@SmarTuneTheme
+                val isLoggedIn = sessionStatus is io.github.jan.supabase.gotrue.SessionStatus.Authenticated
 
                 val navBackStackEntry by navController.currentBackStackEntryAsState()
                 val currentRoute = navBackStackEntry?.destination?.route
@@ -63,6 +67,7 @@ class MainActivity : ComponentActivity() {
                     NavGraph(
                         navController = navController,
                         isLoggedIn = isLoggedIn ?: false,
+                        startWithRecovery = isRecovery,
                         modifier = Modifier.padding(innerPadding)
                     )
                 }
