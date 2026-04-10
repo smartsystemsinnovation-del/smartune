@@ -1,8 +1,9 @@
 'use client';
 import { useState, useRef, useCallback } from 'react';
 import { toggleLike, getComments, addComment } from '@/actions/socialActions';
+import { motion } from 'framer-motion';
 
-const DEFAULT_AVATAR = 'https://ui-avatars.com/api/?background=f6339a&color=fff&bold=true&size=128&name=';
+const DEFAULT_AVATAR = 'https://ui-avatars.com/api/?background=ea88ff&color=fff&bold=true&size=128&name=';
 
 /* ── SVG Icon Components ── */
 const HeartIcon = ({ filled, className }: { filled: boolean; className?: string }) => (
@@ -133,23 +134,31 @@ export default function PostCard({ post, currentUserId }: { post: any, currentUs
   const avatarSrc = post.avatar_url || `${DEFAULT_AVATAR}${encodeURIComponent(post.username || 'U')}`;
 
   return (
-    <article className="bg-[#1a1a22] rounded-[32px] p-5 lg:p-6 overflow-hidden border border-white/[0.02] shadow-lg">
+    <motion.article 
+      className="bg-[#2e1e42]/20 backdrop-blur-md rounded-[32px] p-5 lg:p-6 overflow-hidden border border-[#00ffff]/10 relative transition-colors duration-300 z-10"
+      whileHover={{ 
+        y: -5, 
+        boxShadow: "0px 10px 40px rgba(0, 255, 255, 0.08)",
+        borderColor: "rgba(0, 255, 255, 0.3)"
+      }}
+      transition={{ type: "spring", stiffness: 400, damping: 25 }}
+    >
       {/* ── Header ── */}
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-4">
-          <div className="w-[48px] h-[48px] rounded-full overflow-hidden border border-white/10 bg-[#2a2a35] flex-shrink-0">
+          <div className="w-[48px] h-[48px] rounded-full overflow-hidden border-2 border-[#00ffff]/50 shadow-[0_0_15px_rgba(0,255,255,0.3)] bg-[#2a2a35] flex-shrink-0">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={avatarSrc} alt="" className="w-full h-full object-cover" />
           </div>
           <div className="flex flex-col">
             <div className="flex items-center gap-1.5">
               <span className="font-bold text-[16px] text-white tracking-tight">{post.username || 'Usuario'}</span>
-              <VerifiedIcon className="w-4 h-4 text-[#0e9eef]" />
+              <VerifiedIcon className="w-4 h-4 text-[#00ffff]" />
             </div>
             <span className="text-white/40 text-[13px]">{timeAgo(post.created_at)}</span>
           </div>
         </div>
-        <button className="text-white/30 hover:text-white/80 transition-colors p-2 bg-white/[0.03] hover:bg-white/[0.08] rounded-full">
+        <button className="text-white/30 hover:text-[#00ffff] transition-colors p-2 bg-white/[0.03] hover:bg-[#00ffff]/10 rounded-full">
           <MoreIcon className="w-5 h-5" />
         </button>
       </div>
@@ -171,11 +180,11 @@ export default function PostCard({ post, currentUserId }: { post: any, currentUs
           
           {/* Reaction Bubble Mockup overlay */}
           <div className="absolute bottom-3 right-3 flex items-center gap-2 opacity-90 group-hover:opacity-100 transition-opacity">
-            <div className="hidden sm:flex bg-black/40 backdrop-blur-md rounded-full px-2 py-1 gap-1 border border-white/10 shadow-lg">
+            <div className="hidden sm:flex bg-[#11081f]/80 backdrop-blur-md rounded-full px-2 py-1 gap-1 border border-[#ea88ff]/30 shadow-[0_0_15px_rgba(234,136,255,0.2)]">
               <span className="text-[14px]">🔥</span><span className="text-[14px]">😍</span><span className="text-[14px]">😱</span><span className="text-[14px]">🤬</span><span className="text-[14px]">❤️</span>
-              <div className="ml-1 w-5 h-5 flex items-center justify-center rounded-full bg-white/20 select-none cursor-pointer hover:bg-white/40"><span className="text-[10px] text-white">✖</span></div>
+              <div className="ml-1 w-5 h-5 flex items-center justify-center rounded-full bg-white/10 select-none cursor-pointer hover:bg-white/20"><span className="text-[10px] text-white">✖</span></div>
             </div>
-            <div className="bg-gradient-to-r from-[#f6339a] to-[#ff6b6b] rounded-full px-3 py-1 text-white font-bold text-[13px] shadow-[0_0_15px_rgba(246,51,154,0.4)] flex items-center gap-1 cursor-pointer hover:scale-105 transition-transform">
+            <div className="bg-[#ea88ff] rounded-full px-3 py-1 text-black font-bold text-[13px] shadow-[0_0_15px_rgba(234,136,255,0.6)] flex items-center gap-1 cursor-pointer hover:scale-105 transition-transform">
               🔥 Woow!!!
             </div>
           </div>
@@ -183,7 +192,7 @@ export default function PostCard({ post, currentUserId }: { post: any, currentUs
           {/* Heart Burst animation */}
           {showHeartBurst && (
             <div className="absolute inset-0 flex items-center justify-center pointer-events-none bg-black/20">
-              <HeartIcon filled className="w-28 h-28 text-[#f6339a] drop-shadow-[0_0_40px_rgba(246,51,154,0.8)] heart-burst" />
+              <HeartIcon filled className="w-28 h-28 text-[#ea88ff] drop-shadow-[0_0_40px_rgba(234,136,255,0.8)] heart-burst" />
             </div>
           )}
         </div>
@@ -197,14 +206,14 @@ export default function PostCard({ post, currentUserId }: { post: any, currentUs
         </div>
         
         <button onClick={handleLikeButton} className="flex items-center gap-2 hover:opacity-80 active:scale-95 transition-all group">
-          <HeartIcon filled={hasLiked} className={`w-[22px] h-[22px] transition-colors ${likeAnimating ? 'like-pop' : ''} ${hasLiked ? 'text-[#f6339a]' : 'text-[#f6339a]/60 group-hover:text-[#f6339a]'}`} />
-          <span className={`text-[14px] font-bold ${hasLiked ? 'text-[#f6339a]' : 'text-[#f6339a]/60 group-hover:text-[#f6339a]'}`}>Like</span>
-          {likesCount > 0 && <span className="text-[12px] font-bold text-white/30 ml-1">({formatCount(likesCount)})</span>}
+          <HeartIcon filled={hasLiked} className={`w-[22px] h-[22px] transition-colors ${likeAnimating ? 'like-pop' : ''} ${hasLiked ? 'text-[#ea88ff]' : 'text-white/40 group-hover:text-[#ea88ff]'}`} />
+          <span className={`text-[14px] font-bold transition-colors ${hasLiked ? 'text-[#ea88ff]' : 'text-white/40 group-hover:text-[#ea88ff]'}`}>Like</span>
+          {likesCount > 0 && <span className="text-[12px] font-bold text-[#ea88ff]/40 ml-1">({formatCount(likesCount)})</span>}
         </button>
 
         <button onClick={loadComments} className="flex items-center gap-2 hover:opacity-80 active:scale-95 transition-all group">
-          <CommentIcon className="w-[22px] h-[22px] text-white/50 group-hover:text-white/80 transition-colors" />
-          <span className="text-[14px] font-bold text-white/50 group-hover:text-white/80 transition-colors">Comment</span>
+          <CommentIcon className="w-[22px] h-[22px] text-white/40 group-hover:text-white/80 transition-colors" />
+          <span className="text-[14px] font-bold text-white/40 group-hover:text-white/80 transition-colors">Comment</span>
           {Number(post.comments_count) > 0 && <span className="text-[12px] font-bold text-white/30 ml-1">({post.comments_count})</span>}
         </button>
       </div>
@@ -242,19 +251,19 @@ export default function PostCard({ post, currentUserId }: { post: any, currentUs
                 placeholder="Añade un comentario..."
                 value={newComment}
                 onChange={(e) => setNewComment(e.target.value)}
-                className="w-full bg-white/[0.05] border border-white/[0.05] text-[14px] text-white rounded-full py-2.5 pl-4 pr-12 focus:outline-none focus:border-white/20 transition-colors placeholder:text-white/30"
+                className="w-full bg-[#11081f]/40 border border-[#00ffff]/10 text-[14px] text-white rounded-full py-2.5 pl-4 pr-12 focus:outline-none focus:border-[#00ffff]/40 transition-colors placeholder:text-white/30 shadow-[0_0_10px_rgba(0,255,255,0.05)] focus:shadow-[0_0_15px_rgba(0,255,255,0.15)]"
               />
-              <button type="button" className="absolute right-4 top-1/2 -translate-y-1/2 text-white/30 hover:text-white/60">
+              <button type="button" className="absolute right-4 top-1/2 -translate-y-1/2 text-[#00ffff] hover:text-[#ea88ff] transition-colors">
                 <SmileIcon className="w-5 h-5 flex-shrink-0" />
               </button>
             </div>
             <button type="submit" disabled={!newComment.trim() || isSubmittingComment}
-              className={`text-[14px] font-bold px-4 py-2 rounded-full transition-all ${!newComment.trim() || isSubmittingComment ? 'bg-white/[0.05] text-white/20 cursor-not-allowed' : 'bg-[#0e9eef] text-white hover:bg-[#0c8ad1]'}`}>
+              className={`text-[14px] font-bold px-4 py-2 rounded-full transition-all ${!newComment.trim() || isSubmittingComment ? 'bg-white/[0.05] text-white/20 cursor-not-allowed' : 'bg-[#00ffff] text-black hover:bg-white shadow-[0_0_15px_rgba(0,255,255,0.4)] hover:shadow-white'}`}>
               Send
             </button>
           </form>
         </div>
       )}
-    </article>
+    </motion.article>
   );
 }

@@ -25,7 +25,7 @@ export default async function ExplorarPage() {
   const initialPosts = feedRes.success && feedRes.data ? feedRes.data : [];
 
   return (
-    <div className="min-h-screen pb-20 pt-8 px-4" style={{ fontFamily: "'Inter', sans-serif" }}>
+    <div className="min-h-screen pb-20 pt-8 px-4 bg-[#0d0714]" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
       <div className="max-w-[1100px] mx-auto flex items-start flex-col lg:flex-row gap-8 lg:gap-14">
         
         {/* Columna Izquierda: Feeds */}

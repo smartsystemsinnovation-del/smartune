@@ -42,14 +42,14 @@ export default function RecentFollowers() {
   if (loading || followers.length === 0) return null;
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-6">
       {followers.map(user => {
         const isFollowed = followedIds.has(user.id);
         const avatarSrc = user.avatar_url || `${DEFAULT_AVATAR}${encodeURIComponent(user.nombre)}`;
         return (
           <div key={user.id} className="flex items-center justify-between group">
             <div className="flex items-center gap-3">
-              <div className="h-11 w-11 rounded-full overflow-hidden bg-[#2a2a35] border border-white/5">
+              <div className="h-11 w-11 rounded-full overflow-hidden bg-[#2e1e42]/50 border border-[#00ffff]/20 shadow-[0_0_10px_rgba(0,255,255,0.1)]">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={avatarSrc} alt={user.nombre} className="w-full h-full object-cover" />
               </div>
@@ -60,10 +60,10 @@ export default function RecentFollowers() {
             </div>
             <button
               onClick={() => handleFollow(user.id)}
-              className={`text-[12px] font-bold px-4 py-1.5 rounded-full transition-all duration-200 active:scale-95 ${
+              className={`text-[12px] font-bold px-4 py-1.5 rounded-full transition-all duration-300 active:scale-95 ${
                 isFollowed
-                  ? 'bg-white/[0.06] text-white/50 hover:bg-white/10'
-                  : 'bg-white text-black hover:bg-gray-200'
+                  ? 'bg-white/[0.04] text-white/40 hover:bg-white/10'
+                  : 'bg-white/[0.04] border border-[#ea88ff]/40 text-[#ea88ff] hover:bg-[#ea88ff] hover:text-black hover:shadow-[0_0_15px_rgba(234,136,255,0.4)]'
               }`}
             >
               {isFollowed ? 'Following' : 'Follow'}
