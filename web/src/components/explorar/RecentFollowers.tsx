@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 
-const DEFAULT_AVATAR = 'https://ui-avatars.com/api/?background=2a2a35&color=fff&bold=true&size=128&name=';
+const DEFAULT_AVATAR = 'https://ui-avatars.com/api/?background=2e1e42&color=fff&bold=true&size=128&name=';
 
 interface Follower {
   id: string;
@@ -42,28 +42,28 @@ export default function RecentFollowers() {
   if (loading || followers.length === 0) return null;
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-4">
       {followers.map(user => {
         const isFollowed = followedIds.has(user.id);
         const avatarSrc = user.avatar_url || `${DEFAULT_AVATAR}${encodeURIComponent(user.nombre)}`;
         return (
           <div key={user.id} className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-full overflow-hidden bg-[#2a2040] flex-shrink-0">
+            <div className="flex items-center gap-3 min-w-0">
+              <div className="h-9 w-9 rounded-full overflow-hidden bg-[#2e1e42] flex-shrink-0">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={avatarSrc} alt={user.nombre} className="w-full h-full object-cover" />
               </div>
-              <div className="flex flex-col">
-                <p className="text-[13px] font-bold text-white leading-tight">{user.nombre}</p>
-                <p className="text-[11px] text-white/30">Suggested for you</p>
+              <div className="min-w-0">
+                <p className="text-[13px] font-semibold text-white leading-tight truncate">{user.nombre}</p>
+                <p className="text-[11px] text-white/25">Suggested for you</p>
               </div>
             </div>
             <button
               onClick={() => handleFollow(user.id)}
-              className={`text-[11px] font-bold px-4 py-1.5 rounded-lg transition-all duration-200 active:scale-95 ${
+              className={`text-[11px] font-semibold px-3.5 py-1 rounded-md transition-all flex-shrink-0 ml-3 ${
                 isFollowed
-                  ? 'bg-white/10 text-white/50'
-                  : 'bg-white/10 text-white hover:bg-white/20'
+                  ? 'bg-[#2e1e42] text-white/40'
+                  : 'bg-[#2e1e42] text-white/70 hover:bg-[#9810fa] hover:text-white'
               }`}
             >
               {isFollowed ? 'Following' : 'Follow'}

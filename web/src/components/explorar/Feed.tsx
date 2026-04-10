@@ -28,20 +28,20 @@ export default function Feed({ initialPosts, currentUserId, currentUserAvatar }:
   };
 
   return (
-    <div className="space-y-6 lg:space-y-8 w-full">
-      {/* Feeds Header from mockup */}
-      <div className="flex items-center justify-between mb-2">
-        <h1 className="text-[28px] lg:text-[32px] font-extrabold text-white tracking-tight">Feeds</h1>
-        <div className="flex items-center gap-4 lg:gap-6 text-[14px] font-bold">
-          <button className="text-white transition-opacity">Recents</button>
-          <button className="text-white/40 hover:text-white/80 transition-colors">Friends</button>
-          <button className="text-white/40 hover:text-white/80 transition-colors">Popular</button>
+    <div className="space-y-6 w-full">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <h1 className="text-[24px] font-bold text-white">Feeds</h1>
+        <div className="flex items-center gap-5 text-[13px] font-medium">
+          <button className="text-white">Recents</button>
+          <button className="text-white/30 hover:text-white/60 transition-colors">Friends</button>
+          <button className="text-white/30 hover:text-white/60 transition-colors">Popular</button>
         </div>
       </div>
 
-      {/* Main feed list */}
+      {/* Feed list */}
       <motion.div 
-        className="space-y-5 lg:space-y-8"
+        className="space-y-5"
         variants={containerVariants}
         initial="hidden"
         animate="show"
@@ -53,20 +53,15 @@ export default function Feed({ initialPosts, currentUserId, currentUserAvatar }:
             </motion.div>
           ))
         ) : (
-          <div className="text-center py-20 bg-[#1a1025]/40 backdrop-blur-md rounded-3xl border border-white/5">
-            <svg className="w-14 h-14 text-white/10 mx-auto mb-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2">
-              <rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/>
-            </svg>
-            <p className="text-[15px] font-bold text-white/70 mb-1">Aún no hay publicaciones</p>
-            <p className="text-[13px] text-white/25">Sé el primero en compartir algo con la comunidad</p>
+          <div className="text-center py-16 bg-[#17102a] rounded-2xl border border-[#2e1e42]">
+            <p className="text-[14px] text-white/40 mb-1">No posts yet</p>
+            <p className="text-[12px] text-white/20">Be the first to share something</p>
           </div>
         )}
       </motion.div>
 
-      {/* Create Post at the bottom to match mockup architecture */}
-      <div className="pt-2 pb-6">
-        <CreatePost onPostCreated={handlePostCreated} avatarUrl={currentUserAvatar} />
-      </div>
+      {/* Create Post */}
+      <CreatePost onPostCreated={handlePostCreated} avatarUrl={currentUserAvatar} />
     </div>
   );
 }

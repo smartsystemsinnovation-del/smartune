@@ -4,7 +4,6 @@ import RecentFollowers from '@/components/explorar/RecentFollowers';
 import { createClient } from '@/utils/supabase/server';
 import { redirect } from 'next/navigation';
 import { getFeed } from '@/actions/socialActions';
-
 import Recommendations from '@/components/explorar/Recommendations';
 
 export default async function ExplorarPage() {
@@ -25,49 +24,55 @@ export default async function ExplorarPage() {
   const initialPosts = feedRes.success && feedRes.data ? feedRes.data : [];
 
   return (
-    <div className="min-h-screen pb-20 pt-8 px-4 bg-[#0d0714]" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
-      <div className="max-w-[1100px] mx-auto flex items-start flex-col lg:flex-row gap-8 lg:gap-14">
-        
-        {/* Columna Izquierda: Feeds */}
-        <div className="w-full lg:w-[65%] min-w-0 max-w-[700px] mx-auto lg:mx-0">
-          {/* Novedades visibles solo en móvil para no perder funcionalidad arriba */}
-          <div className="lg:hidden mb-10 w-full overflow-hidden">
-             <h2 className="text-[22px] font-bold text-white mb-4 tracking-tight">Stories</h2>
-             <StoriesRow currentUserAvatar={profile?.avatar_url} />
-          </div>
+    <div className="min-h-screen bg-[#0d0714] pb-24" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
+      <div className="max-w-[1200px] mx-auto px-6 lg:px-10 pt-10">
+        <div className="flex flex-col lg:flex-row gap-10 lg:gap-16">
 
-          {/* Componente Feed */}
-          <Feed
-            initialPosts={initialPosts}
-            currentUserId={user.id}
-            currentUserAvatar={profile?.avatar_url}
-          />
-        </div>
+          {/* ═══ COLUMNA PRINCIPAL: Feed ═══ */}
+          <main className="flex-1 min-w-0 max-w-[660px] mx-auto lg:mx-0">
 
-        {/* Columna Derecha: Sidebar */}
-        <aside className="hidden lg:flex flex-col w-[35%] max-w-[340px] flex-shrink-0 gap-10 sticky top-12">
-          {/* Stories */}
-          <section>
-            <h2 className="text-[20px] font-bold text-white mb-4">Stories</h2>
-            <StoriesRow currentUserAvatar={profile?.avatar_url} />
-          </section>
-
-          {/* Suggestions */}
-          <section>
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-[20px] font-bold text-white">Suggestions</h2>
-              <button className="text-[12px] text-white/40 hover:text-white transition-colors">See all</button>
+            {/* Stories solo en móvil */}
+            <div className="lg:hidden mb-8">
+              <h2 className="text-lg font-bold text-white mb-3">Stories</h2>
+              <StoriesRow currentUserAvatar={profile?.avatar_url} />
             </div>
-            <RecentFollowers />
-          </section>
 
-          {/* Recommendations */}
-          <section>
-            <h2 className="text-[20px] font-bold text-white mb-4">Recommendations</h2>
-            <Recommendations />
-          </section>
-        </aside>
+            <Feed
+              initialPosts={initialPosts}
+              currentUserId={user.id}
+              currentUserAvatar={profile?.avatar_url}
+            />
+          </main>
 
+          {/* ═══ SIDEBAR DERECHA ═══ */}
+          <aside className="hidden lg:block w-[300px] flex-shrink-0">
+            <div className="sticky top-10 space-y-10">
+
+              {/* Stories */}
+              <section>
+                <h3 className="text-[18px] font-bold text-white mb-4">Stories</h3>
+                <StoriesRow currentUserAvatar={profile?.avatar_url} />
+              </section>
+
+              {/* Suggestions */}
+              <section>
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-[18px] font-bold text-white">Suggestions</h3>
+                  <span className="text-[12px] text-white/30 cursor-pointer hover:text-white/60 transition-colors">See all</span>
+                </div>
+                <RecentFollowers />
+              </section>
+
+              {/* Recommendations */}
+              <section>
+                <h3 className="text-[18px] font-bold text-white mb-4">Recommendations</h3>
+                <Recommendations />
+              </section>
+
+            </div>
+          </aside>
+
+        </div>
       </div>
     </div>
   );
