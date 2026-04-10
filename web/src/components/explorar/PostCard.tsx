@@ -122,11 +122,11 @@ export default function PostCard({ post, currentUserId }: { post: any, currentUs
       whileHover={{ y: -3, borderColor: 'rgba(152, 16, 250, 0.35)' }}
       transition={{ type: 'spring', stiffness: 400, damping: 30 }}
     >
-      <div className="p-5">
+      <div className="p-6">
         {/* Header */}
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full overflow-hidden bg-[#2e1e42] flex-shrink-0">
+            <div className="w-11 h-11 rounded-full overflow-hidden bg-[#2e1e42] flex-shrink-0">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={avatarSrc} alt="" className="w-full h-full object-cover" />
             </div>
@@ -159,24 +159,37 @@ export default function PostCard({ post, currentUserId }: { post: any, currentUs
         </div>
       )}
 
-      {/* Action bar */}
-      <div className="px-5 py-4">
-        <div className="flex items-center gap-5">
-          <button onClick={handleLikeButton} className="flex items-center gap-1.5 transition-all active:scale-90 group">
-            <HeartIcon filled={hasLiked} className={`w-[18px] h-[18px] transition-colors ${likeAnimating ? 'like-pop' : ''} ${hasLiked ? 'text-[#f6339a]' : 'text-white/30 group-hover:text-[#f6339a]/70'}`} />
-            <span className={`text-[13px] transition-colors ${hasLiked ? 'text-[#f6339a]' : 'text-white/30 group-hover:text-white/50'}`}>{likesCount > 0 ? formatCount(likesCount) : 'Like'}</span>
-          </button>
+      {/* ── Action bar ── */}
+      <div className="px-6 py-4 border-t border-[#2e1e42]/60">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-6">
+            {/* Like */}
+            <button onClick={handleLikeButton} className="flex items-center gap-2 transition-all active:scale-90 group">
+              <HeartIcon filled={hasLiked} className={`w-5 h-5 transition-colors ${likeAnimating ? 'like-pop' : ''} ${hasLiked ? 'text-[#f6339a]' : 'text-white/40 group-hover:text-[#f6339a]'}`} />
+              <span className={`text-[13px] font-medium transition-colors ${hasLiked ? 'text-[#f6339a]' : 'text-white/40 group-hover:text-white/60'}`}>{likesCount > 0 ? formatCount(likesCount) : 'Like'}</span>
+            </button>
 
-          <button onClick={loadComments} className="flex items-center gap-1.5 transition-all active:scale-90 group">
-            <CommentIcon className="w-[18px] h-[18px] text-white/30 group-hover:text-white/50 transition-colors" />
-            <span className="text-[13px] text-white/30 group-hover:text-white/50 transition-colors">{Number(post.comments_count) > 0 ? `${post.comments_count}` : 'Comment'}</span>
+            {/* Comment */}
+            <button onClick={loadComments} className="flex items-center gap-2 transition-all active:scale-90 group">
+              <CommentIcon className="w-5 h-5 text-white/40 group-hover:text-white/60 transition-colors" />
+              <span className="text-[13px] font-medium text-white/40 group-hover:text-white/60 transition-colors">{Number(post.comments_count) > 0 ? post.comments_count : 'Comment'}</span>
+            </button>
+          </div>
+
+          {/* Share */}
+          <button className="flex items-center gap-2 text-white/25 hover:text-white/50 transition-colors active:scale-90">
+            <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8" />
+              <polyline strokeLinecap="round" strokeLinejoin="round" points="16 6 12 2 8 6" />
+              <line strokeLinecap="round" x1="12" y1="2" x2="12" y2="15" />
+            </svg>
           </button>
         </div>
       </div>
 
       {/* Comments */}
       {showComments && (
-        <div className="px-5 pb-5 pt-2 border-t border-[#2e1e42]">
+        <div className="px-6 pb-6 pt-3 border-t border-[#2e1e42]/60">
           <div className="flex flex-col gap-3 max-h-[220px] overflow-y-auto no-scrollbar">
             {comments.map((comment, idx) => (
               <div key={idx} className="flex gap-2.5 items-start">

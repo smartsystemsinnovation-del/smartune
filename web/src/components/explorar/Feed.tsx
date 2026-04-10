@@ -41,7 +41,7 @@ export default function Feed({ initialPosts, currentUserId, currentUserAvatar }:
 
       {/* Feed list */}
       <motion.div 
-        className="space-y-6"
+        className="space-y-8"
         variants={containerVariants}
         initial="hidden"
         animate="show"
