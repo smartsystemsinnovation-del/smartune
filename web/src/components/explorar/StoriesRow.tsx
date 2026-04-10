@@ -106,8 +106,8 @@ export default function StoriesRow({ currentUserAvatar }: StoriesRowProps) {
         >
           <input type="file" ref={fileInputRef} className="hidden" accept="image/*,video/*" onChange={handleStoryUpload} />
           <div className="relative">
-            <div className={`w-[72px] h-[72px] rounded-full p-[2.5px] ${hasOwnStory ? 'bg-gradient-to-tr from-[#f6339a] via-[#9810fa] to-[#0e9eef]' : 'bg-gray-200'}`}>
-              <div className="w-full h-full rounded-full bg-white p-[2px]">
+            <div className={`w-[72px] h-[72px] rounded-full p-[2.5px] ${hasOwnStory ? 'bg-gradient-to-tr from-[#f6339a] via-[#9810fa] to-[#0e9eef]' : 'bg-white/[0.08]'}`}>
+              <div className="w-full h-full rounded-full bg-[#181818] p-[2px]">
                 <div className="w-full h-full rounded-full overflow-hidden">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
@@ -121,7 +121,7 @@ export default function StoriesRow({ currentUserAvatar }: StoriesRowProps) {
             {/* Plus badge — always shown to allow uploading new stories */}
             <div
               onClick={(e) => { e.stopPropagation(); if (!isUploading) fileInputRef.current?.click(); }}
-              className="absolute -bottom-0.5 -right-0.5 w-6 h-6 bg-[#0e9eef] border-[2.5px] border-white rounded-full flex items-center justify-center shadow-md hover:bg-[#f6339a] transition-colors"
+              className="absolute -bottom-0.5 -right-0.5 w-6 h-6 bg-[#0e9eef] border-[2.5px] border-[#181818] rounded-full flex items-center justify-center shadow-lg hover:bg-[#f6339a] transition-colors"
             >
               {isUploading ? (
                 <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin" />
@@ -130,7 +130,7 @@ export default function StoriesRow({ currentUserAvatar }: StoriesRowProps) {
               )}
             </div>
           </div>
-          <span className="text-[11px] font-semibold text-gray-600 group-hover:text-gray-900 transition-colors">
+          <span className="text-[11px] font-semibold text-white/70 group-hover:text-white transition-colors">
             {isUploading ? 'Subiendo...' : 'Tu historia'}
           </span>
         </div>
@@ -142,8 +142,8 @@ export default function StoriesRow({ currentUserAvatar }: StoriesRowProps) {
             onClick={() => openStory(storyUser)}
             className="flex-shrink-0 flex flex-col items-center gap-2.5 cursor-pointer group"
           >
-            <div className="w-[72px] h-[72px] rounded-full p-[2.5px] bg-gradient-to-tr from-[#f6339a] via-[#0e9eef] to-[#0e9eef]">
-              <div className="w-full h-full rounded-full bg-white p-[2px]">
+            <div className="w-[72px] h-[72px] rounded-full p-[2.5px] bg-gradient-to-tr from-[#f6339a] via-[#9810fa] to-[#0e9eef]">
+              <div className="w-full h-full rounded-full bg-[#181818] p-[2px]">
                 <div className="w-full h-full rounded-full overflow-hidden">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
@@ -154,7 +154,7 @@ export default function StoriesRow({ currentUserAvatar }: StoriesRowProps) {
                 </div>
               </div>
             </div>
-            <span className="text-[11px] font-medium text-gray-700 group-hover:text-gray-900 transition-colors">
+            <span className="text-[11px] font-medium text-white/80 group-hover:text-white transition-colors">
               {storyUser.nombre.length > 10 ? storyUser.nombre.substring(0, 10) + '...' : storyUser.nombre}
             </span>
           </div>
