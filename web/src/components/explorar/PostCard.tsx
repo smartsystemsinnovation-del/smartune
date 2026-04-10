@@ -133,118 +133,124 @@ export default function PostCard({ post, currentUserId }: { post: any, currentUs
   const avatarSrc = post.avatar_url || `${DEFAULT_AVATAR}${encodeURIComponent(post.username || 'U')}`;
 
   return (
-    <article className="bg-[#1a1a22] rounded-2xl overflow-hidden border border-white/[0.04] hover:border-white/[0.08] transition-all duration-300">
+    <article className="bg-[#1a1a22] rounded-[32px] p-5 lg:p-6 overflow-hidden border border-white/[0.02] shadow-lg">
       {/* ── Header ── */}
-      <div className="flex items-center justify-between px-4 py-3">
-        <div className="flex items-center gap-3">
-          <div className="w-[42px] h-[42px] rounded-full p-[2px] bg-gradient-to-tr from-[#f6339a] via-[#9810fa] to-[#0e9eef]">
-            <div className="w-full h-full rounded-full bg-[#1a1a22] p-[1.5px]">
-              <div className="w-full h-full rounded-full overflow-hidden">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={avatarSrc} alt="" className="w-full h-full object-cover" />
-              </div>
-            </div>
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center gap-4">
+          <div className="w-[48px] h-[48px] rounded-full overflow-hidden border border-white/10 bg-[#2a2a35] flex-shrink-0">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={avatarSrc} alt="" className="w-full h-full object-cover" />
           </div>
           <div className="flex flex-col">
             <div className="flex items-center gap-1.5">
-              <span className="font-bold text-[14px] text-white">{post.username || 'Usuario'}</span>
-              <VerifiedIcon className="w-3.5 h-3.5 text-[#0e9eef]" />
-              <span className="text-white/20 text-xs">•</span>
-              <span className="text-white/35 text-[12px]">{timeAgo(post.created_at)}</span>
+              <span className="font-bold text-[16px] text-white tracking-tight">{post.username || 'Usuario'}</span>
+              <VerifiedIcon className="w-4 h-4 text-[#0e9eef]" />
             </div>
-            {currentUserId !== post.user_id && (
-              <button className="text-[#0e9eef] text-[12px] font-bold hover:text-[#f6339a] transition-colors text-left mt-0.5">Seguir</button>
-            )}
+            <span className="text-white/40 text-[13px]">{timeAgo(post.created_at)}</span>
           </div>
         </div>
-        <button className="text-white/25 hover:text-white/60 transition-colors p-1">
+        <button className="text-white/30 hover:text-white/80 transition-colors p-2 bg-white/[0.03] hover:bg-white/[0.08] rounded-full">
           <MoreIcon className="w-5 h-5" />
         </button>
       </div>
 
-      {/* ── Content ── */}
-      <div className="px-4 pb-3">
-        <p className="text-[14px] text-white/85 leading-relaxed">{post.content}</p>
-      </div>
+      {/* ── Content Text (Above Image) ── */}
+      {post.content && (
+        <div className="mb-4 pr-2">
+          <p className="text-[15px] font-medium text-white/90 leading-relaxed">{post.content}</p>
+        </div>
+      )}
 
       {/* ── Image ── */}
       {post.image_url && (
-        <div className="relative cursor-pointer select-none" onClick={handleDoubleTap}>
-          <div className="bg-black">
+        <div className="relative cursor-pointer select-none mb-4 rounded-[24px] overflow-hidden group" onClick={handleDoubleTap}>
+          <div className="bg-[#111116] w-full">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={post.image_url} alt="" className="w-full max-h-[480px] object-cover" draggable={false} />
+            <img src={post.image_url} alt="" className="w-full max-h-[500px] object-cover group-hover:scale-[1.02] transition-transform duration-500" draggable={false} />
           </div>
+          
+          {/* Reaction Bubble Mockup overlay */}
+          <div className="absolute bottom-3 right-3 flex items-center gap-2 opacity-90 group-hover:opacity-100 transition-opacity">
+            <div className="hidden sm:flex bg-black/40 backdrop-blur-md rounded-full px-2 py-1 gap-1 border border-white/10 shadow-lg">
+              <span className="text-[14px]">🔥</span><span className="text-[14px]">😍</span><span className="text-[14px]">😱</span><span className="text-[14px]">🤬</span><span className="text-[14px]">❤️</span>
+              <div className="ml-1 w-5 h-5 flex items-center justify-center rounded-full bg-white/20 select-none cursor-pointer hover:bg-white/40"><span className="text-[10px] text-white">✖</span></div>
+            </div>
+            <div className="bg-gradient-to-r from-[#f6339a] to-[#ff6b6b] rounded-full px-3 py-1 text-white font-bold text-[13px] shadow-[0_0_15px_rgba(246,51,154,0.4)] flex items-center gap-1 cursor-pointer hover:scale-105 transition-transform">
+              🔥 Woow!!!
+            </div>
+          </div>
+
+          {/* Heart Burst animation */}
           {showHeartBurst && (
-            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-              <HeartIcon filled className="w-24 h-24 text-white drop-shadow-2xl heart-burst" />
+            <div className="absolute inset-0 flex items-center justify-center pointer-events-none bg-black/20">
+              <HeartIcon filled className="w-28 h-28 text-[#f6339a] drop-shadow-[0_0_40px_rgba(246,51,154,0.8)] heart-burst" />
             </div>
           )}
         </div>
       )}
 
-      {/* ── Action Bar ── */}
-      <div className="px-4 pt-3 pb-1">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <button onClick={handleLikeButton} className="hover:opacity-70 active:scale-90 transition-all">
-              <HeartIcon filled={hasLiked} className={`w-6 h-6 transition-colors ${likeAnimating ? 'like-pop' : ''} ${hasLiked ? 'text-[#f6339a]' : 'text-white'}`} />
-            </button>
-            <button onClick={loadComments} className="hover:opacity-70 active:scale-90 transition-all">
-              <CommentIcon className="w-6 h-6 text-white" />
-            </button>
-            <button className="hover:opacity-70 active:scale-90 transition-all">
-              <SendIcon className="w-6 h-6 text-white" />
-            </button>
-          </div>
-          <button onClick={() => setSaved(!saved)} className="hover:opacity-70 active:scale-90 transition-all">
-            <BookmarkIcon filled={saved} className="w-6 h-6 text-white" />
-          </button>
+      {/* ── Action Bar (Inline text layout) ── */}
+      <div className="flex items-center gap-6 mt-2">
+        <div className="flex items-center gap-2 text-white/40">
+          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path strokeLinecap="round" strokeLinejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
+          <span className="text-[14px] font-bold tracking-wide">6355</span>
         </div>
+        
+        <button onClick={handleLikeButton} className="flex items-center gap-2 hover:opacity-80 active:scale-95 transition-all group">
+          <HeartIcon filled={hasLiked} className={`w-[22px] h-[22px] transition-colors ${likeAnimating ? 'like-pop' : ''} ${hasLiked ? 'text-[#f6339a]' : 'text-[#f6339a]/60 group-hover:text-[#f6339a]'}`} />
+          <span className={`text-[14px] font-bold ${hasLiked ? 'text-[#f6339a]' : 'text-[#f6339a]/60 group-hover:text-[#f6339a]'}`}>Like</span>
+          {likesCount > 0 && <span className="text-[12px] font-bold text-white/30 ml-1">({formatCount(likesCount)})</span>}
+        </button>
 
-        <p className="font-bold text-[14px] text-white mt-2.5">{formatCount(likesCount)} Me gusta</p>
-
-        {Number(post.comments_count) > 0 && (
-          <button onClick={loadComments} className="text-white/30 text-[14px] mt-1 block hover:text-white/50 transition-colors">
-            Ver los {post.comments_count} comentarios
-          </button>
-        )}
+        <button onClick={loadComments} className="flex items-center gap-2 hover:opacity-80 active:scale-95 transition-all group">
+          <CommentIcon className="w-[22px] h-[22px] text-white/50 group-hover:text-white/80 transition-colors" />
+          <span className="text-[14px] font-bold text-white/50 group-hover:text-white/80 transition-colors">Comment</span>
+          {Number(post.comments_count) > 0 && <span className="text-[12px] font-bold text-white/30 ml-1">({post.comments_count})</span>}
+        </button>
       </div>
 
-      {/* ── Comments ── */}
+      {/* ── Comments Section ── */}
       {showComments && (
-        <div className="px-4 pb-4 pt-2 border-t border-white/[0.04] mt-2">
-          <div className="flex flex-col gap-3 max-h-[250px] overflow-y-auto no-scrollbar">
+        <div className="pb-2 pt-4 border-t border-white/[0.04] mt-4">
+          <div className="flex flex-col gap-4 max-h-[250px] overflow-y-auto no-scrollbar pt-2">
             {comments.map((comment, idx) => (
               <div key={idx} className="flex gap-3 items-start">
                 <div className="w-8 h-8 rounded-full overflow-hidden flex-shrink-0 bg-[#2a2a35]">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src={comment.usuarios?.avatar_url || `${DEFAULT_AVATAR}${encodeURIComponent(comment.usuarios?.nombre || 'U')}`} alt="" className="w-full h-full object-cover" />
                 </div>
-                <div className="flex-1 min-w-0">
+                <div className="flex-1 min-w-0 bg-white/[0.02] p-3 rounded-2xl rounded-tl-none">
                   <p className="text-[13px]">
-                    <span className="font-bold text-white mr-1.5">{comment.usuarios?.nombre || 'Usuario'}</span>
-                    <span className="text-white/65">{comment.content}</span>
+                    <span className="font-bold text-white mr-2">{comment.usuarios?.nombre || 'Usuario'}</span>
+                    <span className="text-white/70">{comment.content}</span>
                   </p>
-                  <span className="text-[11px] text-white/25 mt-0.5 block">{timeAgo(comment.created_at)}</span>
+                  <span className="text-[11px] text-white/30 mt-1 block">{timeAgo(comment.created_at)}</span>
                 </div>
               </div>
             ))}
             {comments.length === 0 && (
-              <p className="text-white/25 text-sm py-2 text-center">Sin comentarios aún</p>
+              <p className="text-white/30 text-sm py-4 text-center">Sin comentarios aún</p>
             )}
           </div>
-          <form onSubmit={handleAddComment} className="mt-3 flex items-center gap-3 border-t border-white/[0.04] pt-3">
-            <SmileIcon className="w-6 h-6 text-white/25 flex-shrink-0" />
-            <input
-              type="text"
-              placeholder="Añade un comentario..."
-              value={newComment}
-              onChange={(e) => setNewComment(e.target.value)}
-              className="flex-1 bg-transparent text-[14px] text-white placeholder:text-white/20 focus:outline-none"
-            />
+          <form onSubmit={handleAddComment} className="mt-4 flex items-center gap-3">
+            <div className="w-8 h-8 rounded-full overflow-hidden flex-shrink-0 bg-[#2a2a35] hidden sm:block">
+               <img src={`${DEFAULT_AVATAR}Tu`} alt="Tú" className="w-full h-full object-cover" />
+            </div>
+            <div className="flex-1 relative">
+              <input
+                type="text"
+                placeholder="Añade un comentario..."
+                value={newComment}
+                onChange={(e) => setNewComment(e.target.value)}
+                className="w-full bg-white/[0.05] border border-white/[0.05] text-[14px] text-white rounded-full py-2.5 pl-4 pr-12 focus:outline-none focus:border-white/20 transition-colors placeholder:text-white/30"
+              />
+              <button type="button" className="absolute right-4 top-1/2 -translate-y-1/2 text-white/30 hover:text-white/60">
+                <SmileIcon className="w-5 h-5 flex-shrink-0" />
+              </button>
+            </div>
             <button type="submit" disabled={!newComment.trim() || isSubmittingComment}
-              className={`text-[14px] font-bold transition-colors ${!newComment.trim() || isSubmittingComment ? 'text-[#0e9eef]/25 cursor-not-allowed' : 'text-[#0e9eef] hover:text-white'}`}>
-              Publicar
+              className={`text-[14px] font-bold px-4 py-2 rounded-full transition-all ${!newComment.trim() || isSubmittingComment ? 'bg-white/[0.05] text-white/20 cursor-not-allowed' : 'bg-[#0e9eef] text-white hover:bg-[#0c8ad1]'}`}>
+              Send
             </button>
           </form>
         </div>

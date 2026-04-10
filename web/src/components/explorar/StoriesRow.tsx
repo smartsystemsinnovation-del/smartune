@@ -92,7 +92,7 @@ export default function StoriesRow({ currentUserAvatar }: StoriesRowProps) {
 
   return (
     <>
-      <div className="flex gap-5 overflow-x-auto no-scrollbar pb-2">
+      <div className="flex gap-4 overflow-x-auto no-scrollbar pb-2">
         {/* ── Tu historia (Upload / View) ── */}
         <div
           onClick={() => {
@@ -102,37 +102,40 @@ export default function StoriesRow({ currentUserAvatar }: StoriesRowProps) {
               if (!isUploading) fileInputRef.current?.click();
             }
           }}
-          className={`flex-shrink-0 flex flex-col items-center gap-2.5 cursor-pointer group ${isUploading ? 'opacity-50 pointer-events-none' : ''}`}
+          className={`flex-shrink-0 relative w-[130px] h-[200px] rounded-2xl overflow-hidden cursor-pointer group shadow-lg border border-white/5 ${isUploading ? 'opacity-50 pointer-events-none' : ''}`}
         >
           <input type="file" ref={fileInputRef} className="hidden" accept="image/*,video/*" onChange={handleStoryUpload} />
-          <div className="relative">
-            <div className={`w-[72px] h-[72px] rounded-full p-[2.5px] ${hasOwnStory ? 'bg-gradient-to-tr from-[#f6339a] via-[#9810fa] to-[#0e9eef]' : 'bg-white/[0.08]'}`}>
-              <div className="w-full h-full rounded-full bg-[#181818] p-[2px]">
-                <div className="w-full h-full rounded-full overflow-hidden">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={currentUserAvatar || `${DEFAULT_AVATAR}U`}
-                    alt="Tu historia"
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                  />
-                </div>
-              </div>
-            </div>
-            {/* Plus badge — always shown to allow uploading new stories */}
-            <div
-              onClick={(e) => { e.stopPropagation(); if (!isUploading) fileInputRef.current?.click(); }}
-              className="absolute -bottom-0.5 -right-0.5 w-6 h-6 bg-[#0e9eef] border-[2.5px] border-[#181818] rounded-full flex items-center justify-center shadow-lg hover:bg-[#f6339a] transition-colors"
-            >
+          
+          {/* Background image: user avatar or own story cover */}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={hasOwnStory ? ownStory!.stories[0].media_url : (currentUserAvatar || `${DEFAULT_AVATAR}U`)}
+            alt="Tu historia"
+            className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+
+          {/* Plus badge or Loading */}
+          {!hasOwnStory && (
+            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
               {isUploading ? (
-                <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                <div className="w-8 h-8 border-4 border-white border-t-transparent rounded-full animate-spin" />
               ) : (
-                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3.5" strokeLinecap="round"><path d="M12 5v14M5 12h14"/></svg>
+                <div className="w-10 h-10 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center transition-colors">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round"><path d="M12 5v14M5 12h14"/></svg>
+                </div>
               )}
             </div>
+          )}
+
+          {/* User badge bottom */}
+          <div className="absolute bottom-3 left-3 flex items-center gap-2">
+            <div className="w-6 h-6 rounded-full overflow-hidden border border-white bg-[#181818]">
+               {/* eslint-disable-next-line @next/next/no-img-element */}
+               <img src={currentUserAvatar || `${DEFAULT_AVATAR}U`} alt="" className="w-full h-full object-cover" />
+            </div>
+            <span className="text-[11px] font-bold text-white tracking-wide">Add Story</span>
           </div>
-          <span className="text-[11px] font-semibold text-white/70 group-hover:text-white transition-colors">
-            {isUploading ? 'Subiendo...' : 'Tu historia'}
-          </span>
         </div>
 
         {/* ── Stories from people you follow ── */}
@@ -140,23 +143,27 @@ export default function StoriesRow({ currentUserAvatar }: StoriesRowProps) {
           <div
             key={storyUser.userId}
             onClick={() => openStory(storyUser)}
-            className="flex-shrink-0 flex flex-col items-center gap-2.5 cursor-pointer group"
+            className="flex-shrink-0 relative w-[130px] h-[200px] rounded-2xl overflow-hidden cursor-pointer group shadow-lg border border-white/5"
           >
-            <div className="w-[72px] h-[72px] rounded-full p-[2.5px] bg-gradient-to-tr from-[#f6339a] via-[#9810fa] to-[#0e9eef]">
-              <div className="w-full h-full rounded-full bg-[#181818] p-[2px]">
-                <div className="w-full h-full rounded-full overflow-hidden">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={storyUser.avatar_url || `${DEFAULT_AVATAR}${encodeURIComponent(storyUser.nombre)}`}
-                    alt={storyUser.nombre}
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                  />
-                </div>
+            {/* Background image: first story cover */}
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={storyUser.stories.length > 0 ? storyUser.stories[0].media_url : storyUser.avatar_url}
+              alt={storyUser.nombre}
+              className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+
+            {/* User badge bottom */}
+            <div className="absolute bottom-3 left-3 flex items-center gap-2">
+              <div className="w-6 h-6 rounded-full overflow-hidden border-2 border-[#f6339a] p-[1px] bg-[#181818]">
+                 {/* eslint-disable-next-line @next/next/no-img-element */}
+                 <img src={storyUser.avatar_url || `${DEFAULT_AVATAR}${encodeURIComponent(storyUser.nombre)}`} alt="" className="w-full h-full rounded-full object-cover" />
               </div>
+              <span className="text-[11px] font-bold text-white tracking-wide truncate max-w-[70px]">
+                {storyUser.nombre}
+              </span>
             </div>
-            <span className="text-[11px] font-medium text-white/80 group-hover:text-white transition-colors">
-              {storyUser.nombre.length > 10 ? storyUser.nombre.substring(0, 10) + '...' : storyUser.nombre}
-            </span>
           </div>
         ))}
       </div>

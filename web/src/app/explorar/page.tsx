@@ -5,6 +5,8 @@ import { createClient } from '@/utils/supabase/server';
 import { redirect } from 'next/navigation';
 import { getFeed } from '@/actions/socialActions';
 
+import Recommendations from '@/components/explorar/Recommendations';
+
 export default async function ExplorarPage() {
   const supabase = await createClient();
   const { data: { user }, error: authError } = await supabase.auth.getUser();
@@ -23,31 +25,47 @@ export default async function ExplorarPage() {
   const initialPosts = feedRes.success && feedRes.data ? feedRes.data : [];
 
   return (
-    <div className="min-h-screen flex justify-center" style={{ fontFamily: "'Manrope', sans-serif" }}>
-      <div className="w-full max-w-[600px] mx-auto px-4 pt-6 pb-12">
+    <div className="min-h-screen pb-20 pt-8 px-4" style={{ fontFamily: "'Inter', sans-serif" }}>
+      <div className="max-w-[1100px] mx-auto flex items-start flex-col lg:flex-row gap-8 lg:gap-14">
         
-        {/* Novedades (Stories) */}
-        <section className="mb-8">
-          <h2 className="text-[11px] font-bold tracking-[0.2em] text-white/30 uppercase mb-5" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
-            Novedades
-          </h2>
-          <StoriesRow currentUserAvatar={profile?.avatar_url} />
-        </section>
+        {/* Columna Izquierda: Feeds */}
+        <div className="w-full lg:w-[65%] min-w-0 max-w-[700px] mx-auto lg:mx-0">
+          {/* Novedades visibles solo en móvil para no perder funcionalidad arriba */}
+          <div className="lg:hidden mb-10 w-full overflow-hidden">
+             <h2 className="text-[22px] font-bold text-white mb-4 tracking-tight">Stories</h2>
+             <StoriesRow currentUserAvatar={profile?.avatar_url} />
+          </div>
 
-        {/* Feed */}
-        <Feed
-          initialPosts={initialPosts}
-          currentUserId={user.id}
-          currentUserAvatar={profile?.avatar_url}
-        />
-      </div>
-
-      {/* Right Sidebar */}
-      <aside className="hidden xl:block w-72 flex-shrink-0 pt-6 pl-8">
-        <div className="sticky top-24">
-          <RecentFollowers />
+          {/* Componente Feed */}
+          <Feed
+            initialPosts={initialPosts}
+            currentUserId={user.id}
+            currentUserAvatar={profile?.avatar_url}
+          />
         </div>
-      </aside>
+
+        {/* Columna Derecha: Sidebar */}
+        <aside className="hidden lg:flex flex-col w-[35%] max-w-[380px] flex-shrink-0 gap-12 sticky top-12">
+          {/* Stories */}
+          <section>
+            <h2 className="text-[24px] font-bold text-white mb-5 tracking-tight">Stories</h2>
+            <StoriesRow currentUserAvatar={profile?.avatar_url} />
+          </section>
+
+          {/* Suggestions */}
+          <section>
+            <h2 className="text-[24px] font-bold text-white mb-5 tracking-tight">Suggestions</h2>
+            <RecentFollowers />
+          </section>
+
+          {/* Recommendations Component */}
+          <section>
+            <h2 className="text-[24px] font-bold text-white mb-5 tracking-tight">Recommendations</h2>
+            <Recommendations />
+          </section>
+        </aside>
+
+      </div>
     </div>
   );
 }
