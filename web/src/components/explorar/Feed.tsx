@@ -31,7 +31,7 @@ export default function Feed({ initialPosts, currentUserId, currentUserAvatar }:
     <div className="space-y-8 w-full">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <h1 className="text-[22px] font-bold text-white">Feeds</h1>
+        <h1 className="text-[20px] font-medium text-white/90 tracking-tight">Feeds</h1>
         <div className="flex items-center gap-5 text-[13px] font-medium">
           <button className="text-white">Recents</button>
           <button className="text-white/30 hover:text-white/60 transition-colors">Friends</button>
@@ -41,7 +41,7 @@ export default function Feed({ initialPosts, currentUserId, currentUserAvatar }:
 
       {/* Feed list */}
       <motion.div 
-        className="space-y-8"
+        className="flex flex-col gap-[15px]"
         variants={containerVariants}
         initial="hidden"
         animate="show"

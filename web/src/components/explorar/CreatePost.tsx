@@ -40,7 +40,7 @@ export default function CreatePost({ onPostCreated, avatarUrl }: { onPostCreated
   };
 
   return (
-    <div className="bg-[#17102a] rounded-2xl border border-[#2e1e42] p-5">
+    <div className="bg-transparent border-b border-white/5 pb-4 mb-2">
       <form onSubmit={handleSubmit}>
         {/* Input row */}
         <div className="flex items-center gap-3">
@@ -69,8 +69,7 @@ export default function CreatePost({ onPostCreated, avatarUrl }: { onPostCreated
           </div>
         )}
 
-        {/* Bottom bar */}
-        <div className="flex items-center justify-between mt-4 pt-3 border-t border-[#2e1e42]">
+        <div className="flex items-center justify-between mt-3 pt-3 border-t border-white/5">
           <div className="flex items-center gap-4 text-white/25">
             <button type="button" onClick={() => fileInputRef.current?.click()} className="hover:text-white/50 transition-colors">
               <svg className="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
@@ -85,10 +84,10 @@ export default function CreatePost({ onPostCreated, avatarUrl }: { onPostCreated
           </div>
 
           <button type="submit" disabled={(!content.trim() && !image) || isSubmitting}
-            className={`px-5 py-1.5 rounded-lg font-semibold text-[13px] transition-all ${
+            className={`px-5 py-1.5 rounded-full font-semibold text-[13px] transition-all ${
               ((!content.trim() && !image) || isSubmitting)
-                ? 'bg-[#2e1e42]/50 text-white/15 cursor-not-allowed'
-                : 'bg-[#9810fa] text-white hover:bg-[#7a0dd4] active:scale-95'
+                ? 'bg-white/5 text-white/30 cursor-not-allowed'
+                : 'bg-[var(--neon-purple)] text-white hover:opacity-90 active:scale-95'
             }`}>
             {isSubmitting ? '...' : 'Post'}
           </button>

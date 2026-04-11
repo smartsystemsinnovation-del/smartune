@@ -118,11 +118,10 @@ export default function PostCard({ post, currentUserId }: { post: any, currentUs
 
   return (
     <motion.article
-      className="bg-[#17102a] rounded-2xl border border-[#2e1e42] overflow-hidden"
-      whileHover={{ y: -3, borderColor: 'rgba(152, 16, 250, 0.35)' }}
-      transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+      className="bg-transparent border-b border-white/5 overflow-hidden transition-colors duration-200"
+      whileHover={{ backgroundColor: 'rgba(255, 255, 255, 0.02)' }}
     >
-      <div className="p-6">
+      <div className="p-4 sm:p-5 pb-0">
         {/* Header */}
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
@@ -160,25 +159,25 @@ export default function PostCard({ post, currentUserId }: { post: any, currentUs
       )}
 
       {/* ── Action bar ── */}
-      <div className="px-6 py-4 border-t border-[#2e1e42]/60">
+      <div className="px-4 sm:px-5 py-3 mt-2">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-6">
             {/* Like */}
             <button onClick={handleLikeButton} className="flex items-center gap-2 transition-all active:scale-90 group">
-              <HeartIcon filled={hasLiked} className={`w-5 h-5 transition-colors ${likeAnimating ? 'like-pop' : ''} ${hasLiked ? 'text-[#f6339a]' : 'text-white/40 group-hover:text-[#f6339a]'}`} />
-              <span className={`text-[13px] font-medium transition-colors ${hasLiked ? 'text-[#f6339a]' : 'text-white/40 group-hover:text-white/60'}`}>{likesCount > 0 ? formatCount(likesCount) : 'Like'}</span>
+              <HeartIcon filled={hasLiked} className={`w-[18px] h-[18px] transition-colors ${likeAnimating ? 'like-pop' : ''} ${hasLiked ? 'text-[var(--neon-pink)]' : 'text-white/40 group-hover:text-[var(--neon-pink)]'}`} />
+              <span className={`text-[13px] font-medium transition-colors ${hasLiked ? 'text-[var(--neon-pink)]' : 'text-white/40 group-hover:text-white/60'}`}>{likesCount > 0 ? formatCount(likesCount) : 'Like'}</span>
             </button>
 
             {/* Comment */}
             <button onClick={loadComments} className="flex items-center gap-2 transition-all active:scale-90 group">
-              <CommentIcon className="w-5 h-5 text-white/40 group-hover:text-white/60 transition-colors" />
+              <CommentIcon className="w-[18px] h-[18px] text-white/40 group-hover:text-white/60 transition-colors" />
               <span className="text-[13px] font-medium text-white/40 group-hover:text-white/60 transition-colors">{Number(post.comments_count) > 0 ? post.comments_count : 'Comment'}</span>
             </button>
           </div>
 
           {/* Share */}
           <button className="flex items-center gap-2 text-white/25 hover:text-white/50 transition-colors active:scale-90">
-            <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+            <svg className="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
               <path strokeLinecap="round" strokeLinejoin="round" d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8" />
               <polyline strokeLinecap="round" strokeLinejoin="round" points="16 6 12 2 8 6" />
               <line strokeLinecap="round" x1="12" y1="2" x2="12" y2="15" />
@@ -187,9 +186,8 @@ export default function PostCard({ post, currentUserId }: { post: any, currentUs
         </div>
       </div>
 
-      {/* Comments */}
       {showComments && (
-        <div className="px-6 pb-6 pt-3 border-t border-[#2e1e42]/60">
+        <div className="px-4 sm:px-5 pb-4 pt-2">
           <div className="flex flex-col gap-3 max-h-[220px] overflow-y-auto no-scrollbar">
             {comments.map((comment, idx) => (
               <div key={idx} className="flex gap-2.5 items-start">
@@ -216,14 +214,14 @@ export default function PostCard({ post, currentUserId }: { post: any, currentUs
                 placeholder="Write a comment..."
                 value={newComment}
                 onChange={(e) => setNewComment(e.target.value)}
-                className="w-full bg-[#0d0714] border border-[#2e1e42] text-[13px] text-white rounded-lg py-2 pl-3 pr-10 focus:outline-none focus:border-[#9810fa]/50 transition-colors placeholder:text-white/20"
+                className="w-full bg-transparent border-b border-white/10 text-[13px] text-white py-2 pl-2 pr-8 focus:outline-none focus:border-[var(--neon-purple)] transition-colors placeholder:text-white/20"
               />
               <button type="button" className="absolute right-3 top-1/2 -translate-y-1/2 text-white/20 hover:text-white/40">
                 <SmileIcon className="w-4 h-4" />
               </button>
             </div>
             <button type="submit" disabled={!newComment.trim() || isSubmittingComment}
-              className={`text-[12px] font-semibold px-4 py-2 rounded-lg transition-all ${!newComment.trim() || isSubmittingComment ? 'bg-[#2e1e42]/50 text-white/15 cursor-not-allowed' : 'bg-[#9810fa] text-white hover:bg-[#7a0dd4]'}`}>
+              className={`text-[12px] font-semibold px-4 py-1.5 rounded-full transition-all ${!newComment.trim() || isSubmittingComment ? 'bg-white/5 text-white/15 cursor-not-allowed' : 'bg-[var(--neon-purple)] text-white hover:opacity-90'}`}>
               Send
             </button>
           </form>
