@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, ReactNode } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -129,7 +129,7 @@ function ActionButton({
   active,
   onClick,
 }: {
-  icon: React.ReactNode;
+  icon: ReactNode;
   label: string | number;
   active?: boolean;
   onClick?: () => void;
@@ -224,7 +224,6 @@ function PostCard({ post, onToggleLike }: { post: Post; onToggleLike: (id: numbe
       custom={post.id}
       variants={fadeInUp}
       whileHover="hover"
-      initial="rest"
       className="rounded-3xl overflow-hidden mb-3.5"
       style={{
         background: "rgba(108,63,197,0.10)",
