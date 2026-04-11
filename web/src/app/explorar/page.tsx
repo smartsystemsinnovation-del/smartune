@@ -89,10 +89,7 @@ const fadeInUp = {
   }),
 };
 
-const cardHover = {
-  rest: { y: 0, borderColor: "rgba(180,140,255,0.12)" },
-  hover: { y: -3, borderColor: "rgba(180,140,255,0.30)" },
-};
+
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
 
