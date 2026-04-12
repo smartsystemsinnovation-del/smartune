@@ -211,8 +211,6 @@ export default function PostCard({ post, currentUserId }: { post: any; currentUs
               <CommentIcon className="w-[22px] h-[22px]" />
               <span className="font-extrabold text-[14px] tracking-wide">{formatCount(Number(post.comments_count) || 0)}</span>
             </button>
-
-            </button>
           </div>
         </div>
 
@@ -275,8 +273,6 @@ export default function PostCard({ post, currentUserId }: { post: any; currentUs
               <CommentIcon className="w-7 h-7" />
             </div>
             <span className="text-white text-xs font-black drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">{formatCount(Number(post.comments_count) || 0)}</span>
-          </button>
-
           </button>
         </div>
 
