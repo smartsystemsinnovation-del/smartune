@@ -187,10 +187,6 @@ export default function PostCard({ post, currentUserId }: { post: any; currentUs
               <span className="font-bold text-[14px]">{Number(post.comments_count) > 0 ? post.comments_count : 'Reply'}</span>
             </button>
           </div>
-
-          <button className="p-3 rounded-full bg-white/5 text-white/30 hover:text-white transition-all hover:bg-white/10">
-            <ShareIcon className="w-5 h-5" />
-          </button>
         </div>
       </div>
 
