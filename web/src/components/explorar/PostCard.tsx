@@ -201,25 +201,25 @@ export default function PostCard({ post, currentUserId }: { post: any; currentUs
           </div>
 
           {/* Acciones Inline Contenidas */}
-          <div className="w-full flex justify-center gap-3 pt-4 border-t border-white/[0.03]">
+          <div className="w-full flex justify-center gap-4 pt-4 border-t border-white/[0.03]">
             <button onClick={handleLikeButton} 
-              className={`flex items-center gap-2.5 px-6 py-2.5 rounded-full transition-all active:scale-95 shadow-lg bg-white/10 text-white hover:bg-white/20`}
+              className={`flex items-center gap-3 px-7 py-3 rounded-full transition-all active:scale-95 shadow-lg bg-white/10 text-white hover:bg-white/20`}
             >
               <motion.div whileTap={{ scale: 0.8 }}>
-                <HeartIcon filled={hasLiked} className="w-[18px] h-[18px]" />
+                <HeartIcon filled={hasLiked} className="w-[22px] h-[22px]" />
               </motion.div>
-              <span className={`font-extrabold text-[13px] tracking-wide ${hasLiked ? 'text-[#f6339a]' : 'text-white'}`}>{formatCount(likesCount)}</span>
+              <span className={`font-extrabold text-[14px] tracking-wide ${hasLiked ? 'text-[#f6339a]' : 'text-white'}`}>{formatCount(likesCount)}</span>
             </button>
 
             <button onClick={loadComments} 
-              className="flex items-center gap-2.5 px-6 py-2.5 rounded-full bg-white/10 text-white hover:bg-white/20 transition-all active:scale-95 shadow-lg"
+              className="flex items-center gap-3 px-7 py-3 rounded-full bg-white/10 text-white hover:bg-white/20 transition-all active:scale-95 shadow-lg"
             >
-              <CommentIcon className="w-[18px] h-[18px]" />
-              <span className="font-extrabold text-[13px] tracking-wide">{formatCount(Number(post.comments_count) || 0)}</span>
+              <CommentIcon className="w-[22px] h-[22px]" />
+              <span className="font-extrabold text-[14px] tracking-wide">{formatCount(Number(post.comments_count) || 0)}</span>
             </button>
 
-            <button className="p-3 rounded-full bg-white/10 text-white transition-colors ml-auto shadow-lg hover:bg-white/20">
-              <ShareIcon className="w-5 h-5" />
+            <button className="p-3.5 rounded-full bg-white/10 text-white transition-colors ml-auto shadow-lg hover:bg-white/20">
+              <ShareIcon className="w-[22px] h-[22px]" />
             </button>
           </div>
         </div>
