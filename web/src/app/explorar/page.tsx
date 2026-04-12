@@ -30,10 +30,10 @@ export default async function ExplorarPage() {
       <div className="w-full flex justify-center pt-6 lg:pt-12 px-4 sm:px-6">
 
         {/* ── WRAPPER DE COLUMNAS ── */}
-        <div className="flex flex-col lg:flex-row items-start gap-8 lg:gap-12 w-full max-w-[1050px] justify-center">
+        <div className="flex flex-col lg:flex-row items-start gap-8 lg:gap-12 w-full max-w-[1100px] mx-auto justify-center">
 
           {/* ═════════ COLUMNA PRINCIPAL (FEED & EXPLORE) ═════════ */}
-          <main className="w-full max-w-[600px] min-w-0 mx-auto lg:mx-0 flex flex-col gap-6">
+          <main className="w-full max-w-[600px] min-w-0 flex flex-col gap-6">
 
             {/* Stories Móvil (Solo visible en pantallas pequeñas) */}
             <div className="lg:hidden mt-2">

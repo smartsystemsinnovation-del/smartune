@@ -152,47 +152,43 @@ export default function PostCard({ post, currentUserId }: { post: any; currentUs
       <article className="w-full max-w-[540px] mx-auto mb-6 bg-[#0f0f0f] border border-white/[0.05] rounded-[28px] overflow-hidden shadow-lg transition-colors hover:border-white/[0.08]">
         <div className="p-7 flex flex-col items-center gap-6">
 
-          {/* Header Centrado */}
-          <header className="flex flex-col items-center text-center w-full mb-2">
-            <div className="relative mb-4 group">
-              <div className="absolute inset-0 bg-[#f6339a] blur-2xl opacity-10 group-hover:opacity-20 transition-opacity rounded-full"></div>
-              <img src={avatarSrc} alt="" className="relative w-20 h-20 md:w-24 md:h-24 rounded-full object-cover border-2 border-white/5 p-1 transition-transform duration-500 hover:scale-105" />
+          {/* Header y Contenido Clickable */}
+          <Link href={`/profile/${post.user_id}`} className="flex flex-col items-center w-full group/content">
+            <header className="flex flex-col items-center text-center w-full mb-2">
+              <div className="relative mb-4 group">
+                <div className="absolute inset-0 bg-[#f6339a] blur-2xl opacity-10 group-hover:opacity-20 transition-opacity rounded-full"></div>
+                <img src={avatarSrc} alt="" className="relative w-20 h-20 md:w-24 md:h-24 rounded-full object-cover border-2 border-white/5 p-1 transition-transform duration-500 group-hover/content:scale-105" />
+              </div>
+
+              <h3 className="text-xl md:text-2xl font-bold tracking-tight mb-1 group-hover/content:text-[#f6339a] transition-colors">
+                {post.username || 'Usuario'}
+              </h3>
+
+              <div className="flex items-center justify-center gap-2 mb-4">
+                {(post.rol || '').toLowerCase() === 'profesor' ? (
+                  <span className="text-[10px] text-[#FFD700] font-black uppercase tracking-[0.12em] px-2 py-0.5 rounded-md bg-[#FFD700]/10 border border-[#FFD700]/20 w-fit shadow-[0_0_10px_rgba(255,215,0,0.1)]">
+                    PROFESOR
+                  </span>
+                ) : (
+                  <span className="text-[10px] text-[#f6339a] font-black uppercase tracking-[0.12em] px-2 py-0.5 rounded-md bg-[#f6339a]/10 border border-[#f6339a]/20 w-fit shadow-[0_0_10px_rgba(246,51,154,0.1)]">
+                    ESTUDIANTE
+                  </span>
+                )}
+              </div>
+            </header>
+
+            <div className="px-2 text-center mb-2">
+              <p className="text-[17px] md:text-[18px] leading-relaxed text-white/95 whitespace-pre-wrap break-words font-light group-hover/content:text-white transition-colors">
+                {post.content}
+              </p>
             </div>
+          </Link>
 
-            <h3 className="text-xl md:text-2xl font-bold tracking-tight mb-1">
-              {post.username || 'Usuario'}
-            </h3>
-
-            <div className="flex items-center justify-center gap-2 mb-4">
-              {(post.rol || '').toLowerCase() === 'profesor' ? (
-                <span className="text-[10px] text-[#FFD700] font-black uppercase tracking-[0.12em] px-2 py-0.5 rounded-md bg-[#FFD700]/10 border border-[#FFD700]/20 w-fit shadow-[0_0_10px_rgba(255,215,0,0.1)]">
-                  PROFESOR
-                </span>
-              ) : (
-                <span className="text-[10px] text-[#f6339a] font-black uppercase tracking-[0.12em] px-2 py-0.5 rounded-md bg-[#f6339a]/10 border border-[#f6339a]/20 w-fit shadow-[0_0_10px_rgba(246,51,154,0.1)]">
-                  ESTUDIANTE
-                </span>
-              )}
-            </div>
-
-            {!isOwnPost && !isFollowing && (
-              <button onClick={handleFollow} className="px-5 py-2 bg-gradient-to-r from-[#f6339a] to-[#9810fa] rounded-full text-white text-[12px] font-bold hover:brightness-110 transition-all shadow-[0_0_15px_rgba(246,51,154,0.3)]">
-                Seguir
-              </button>
-            )}
-            {(!isOwnPost && isFollowing) && (
-              <button className="text-white/30 p-2 hover:bg-white/5 rounded-full hover:text-white transition-colors">
-                <MoreIcon className="w-5 h-5" />
-              </button>
-            )}
-          </header>
-
-          {/* Texto Principal Centrado */}
-          <div className="px-2 text-center">
-            <p className="text-[17px] md:text-[18px] leading-relaxed text-white/95 whitespace-pre-wrap break-words font-light">
-              {post.content}
-            </p>
-          </div>
+          {!isOwnPost && !isFollowing && (
+            <button onClick={handleFollow} className="px-5 py-2 bg-gradient-to-r from-[#f6339a] to-[#9810fa] rounded-full text-white text-[12px] font-bold hover:brightness-110 transition-all shadow-[0_0_15px_rgba(246,51,154,0.3)]">
+              Seguir
+            </button>
+          )}
 
           {/* Acciones Inline Contenidas */}
           <div className="w-full flex justify-center gap-4 pt-4 border-t border-white/[0.03]">
@@ -235,8 +231,10 @@ export default function PostCard({ post, currentUserId }: { post: any; currentUs
     <article className="w-full max-w-[420px] sm:max-w-md mx-auto mb-8 relative bg-[#0a0a0a] rounded-[32px] overflow-hidden shadow-2xl">
       <div className="relative w-full aspect-[4/5] sm:aspect-[9/16] max-h-[85vh] cursor-pointer group flex items-center justify-center bg-black" onClick={handleDoubleTap}>
 
-        <img src={post.image_url} alt="" className="absolute inset-0 w-full h-full object-cover opacity-90" draggable={false} />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/10 to-black/20 pointer-events-none" />
+        <Link href={`/profile/${post.user_id}`} className="absolute inset-0 z-0">
+          <img src={post.image_url} alt="" className="w-full h-full object-cover opacity-90 transition-transform duration-700 group-hover:scale-105" draggable={false} />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/10 to-black/20 pointer-events-none" />
+        </Link>
 
         <AnimatePresence>
           {showHeartBurst && (
