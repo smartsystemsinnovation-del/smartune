@@ -9,7 +9,7 @@ const DEFAULT_AVATAR = 'https://ui-avatars.com/api/?background=121212&color=fff&
 
 /* ── Icons ── */
 const HeartIcon = ({ filled, className, style }: { filled: boolean; className?: string; style?: React.CSSProperties }) => (
-  <svg className={className} viewBox="0 0 24 24" fill={filled ? '#ffffff' : 'currentColor'} style={style}>
+  <svg className={className} viewBox="0 0 24 24" fill={filled ? '#f6339a' : 'currentColor'} style={style}>
     <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
   </svg>
 );
@@ -203,14 +203,12 @@ export default function PostCard({ post, currentUserId }: { post: any; currentUs
           {/* Acciones Inline Contenidas */}
           <div className="w-full flex justify-center gap-3 pt-4 border-t border-white/[0.03]">
             <button onClick={handleLikeButton} 
-              className={`flex items-center gap-2.5 px-6 py-2.5 rounded-full transition-all active:scale-95 shadow-lg ${
-                hasLiked ? 'bg-[#f6339a] text-white' : 'bg-white/10 text-white hover:bg-white/20'
-              }`}
+              className={`flex items-center gap-2.5 px-6 py-2.5 rounded-full transition-all active:scale-95 shadow-lg bg-white/10 text-white hover:bg-white/20`}
             >
               <motion.div whileTap={{ scale: 0.8 }}>
                 <HeartIcon filled={hasLiked} className="w-[18px] h-[18px]" />
               </motion.div>
-              <span className="font-extrabold text-[13px] tracking-wide">{formatCount(likesCount)}</span>
+              <span className={`font-extrabold text-[13px] tracking-wide ${hasLiked ? 'text-[#f6339a]' : 'text-white'}`}>{formatCount(likesCount)}</span>
             </button>
 
             <button onClick={loadComments} 
@@ -273,13 +271,11 @@ export default function PostCard({ post, currentUserId }: { post: any; currentUs
 
           <button onClick={handleLikeButton} className="flex flex-col items-center gap-1 group">
             <motion.div whileTap={{ scale: 0.8 }} 
-              className={`p-3 rounded-full shadow-2xl transition-colors ${
-                hasLiked ? 'bg-[#f6339a] text-white' : 'bg-white/10 text-white backdrop-blur-md'
-              }`}
+              className={`p-3 rounded-full shadow-2xl transition-colors bg-white/10 text-white backdrop-blur-md hover:bg-white/20`}
             >
               <HeartIcon filled={hasLiked} className="w-7 h-7" />
             </motion.div>
-            <span className="text-white text-xs font-black drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">{formatCount(likesCount)}</span>
+            <span className={`text-xs font-black drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] ${hasLiked ? 'text-[#f6339a]' : 'text-white'}`}>{formatCount(likesCount)}</span>
           </button>
 
           <button onClick={loadComments} className="flex flex-col items-center gap-1 group">
