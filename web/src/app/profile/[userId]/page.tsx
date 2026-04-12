@@ -98,7 +98,7 @@ export default function PublicProfilePage({ params }: { params: Promise<{ userId
           .eq('user_id', userId);
 
         if (likedIdsData && likedIdsData.length > 0) {
-          const likedIds = likedIdsData.map(l => l.post_id);
+          const likedIds = likedIdsData.map((l: { post_id: string }) => l.post_id);
           const { data: likedPostsData } = await supabase
             .from('vw_posts_with_details')
             .select('*')
