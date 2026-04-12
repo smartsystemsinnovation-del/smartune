@@ -20,12 +20,6 @@ const CommentIcon = ({ className, style }: { className?: string; style?: React.C
   </svg>
 );
 
-const ShareIcon = ({ className, style }: { className?: string; style?: React.CSSProperties }) => (
-  <svg className={className} viewBox="0 0 24 24" fill="currentColor" style={style}>
-    <path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z" />
-  </svg>
-);
-
 const MoreIcon = ({ className }: { className?: string }) => (
   <svg className={className} viewBox="0 0 24 24" fill="currentColor">
     <circle cx="5" cy="12" r="1.5" /><circle cx="12" cy="12" r="1.5" /><circle cx="19" cy="12" r="1.5" />
@@ -218,8 +212,6 @@ export default function PostCard({ post, currentUserId }: { post: any; currentUs
               <span className="font-extrabold text-[14px] tracking-wide">{formatCount(Number(post.comments_count) || 0)}</span>
             </button>
 
-            <button className="p-3.5 rounded-full bg-white/10 text-white transition-colors ml-auto shadow-lg hover:bg-white/20">
-              <ShareIcon className="w-[22px] h-[22px]" />
             </button>
           </div>
         </div>
@@ -285,10 +277,6 @@ export default function PostCard({ post, currentUserId }: { post: any; currentUs
             <span className="text-white text-xs font-black drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">{formatCount(Number(post.comments_count) || 0)}</span>
           </button>
 
-          <button className="flex flex-col items-center gap-1 group">
-            <div className="p-3 rounded-full bg-white/10 text-white backdrop-blur-md shadow-2xl group-hover:bg-white/20 transition-all">
-              <ShareIcon className="w-7 h-7" />
-            </div>
           </button>
         </div>
 
