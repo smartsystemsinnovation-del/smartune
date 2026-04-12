@@ -100,16 +100,6 @@ export default function CreatePost({ onPostCreated, avatarUrl }: { onPostCreated
 
   return (
     <div className="w-full max-w-[540px] mx-auto mb-10">
-
-      {/* Encabezado */}
-      <div className="flex items-center gap-4 mb-4">
-        <div className="flex-1 h-px bg-gradient-to-r from-transparent to-white/10"></div>
-        <span className="text-[10px] font-bold tracking-[0.2em] uppercase text-white/30">
-          Nueva Publicación
-        </span>
-        <div className="flex-1 h-px bg-gradient-to-l from-transparent to-white/10"></div>
-      </div>
-
       {/* Contenedor de la Tarjeta */}
       <motion.div
         animate={{
