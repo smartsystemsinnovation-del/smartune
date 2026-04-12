@@ -6,9 +6,10 @@ import { motion, AnimatePresence } from 'framer-motion';
 const DEFAULT_AVATAR = 'https://ui-avatars.com/api/?background=2e1e42&color=fff&bold=true&size=128&name=';
 
 /* ── Icons ── */
-const HeartIcon = ({ filled, className }: { filled: boolean; className?: string }) => (
+const HeartIcon = ({ filled, className, style }: { filled: boolean; className?: string; style?: React.CSSProperties }) => (
   <svg 
     className={className} 
+    style={style}
     viewBox="0 0 24 24" 
     fill={filled ? '#f6339a' : 'none'} 
     stroke={filled ? '#f6339a' : 'currentColor'} 
@@ -22,8 +23,8 @@ const HeartIcon = ({ filled, className }: { filled: boolean; className?: string 
   </svg>
 );
 
-const CommentIcon = ({ className }: { className?: string }) => (
-  <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+const CommentIcon = ({ className, style }: { className?: string; style?: React.CSSProperties }) => (
+  <svg className={className} style={style} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
     <path strokeLinecap="round" strokeLinejoin="round" d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" />
   </svg>
 );
@@ -40,8 +41,8 @@ const SmileIcon = ({ className }: { className?: string }) => (
   </svg>
 );
 
-const ShareIcon = ({ className }: { className?: string }) => (
-  <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+const ShareIcon = ({ className, style }: { className?: string; style?: React.CSSProperties }) => (
+  <svg className={className} style={style} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
     <path strokeLinecap="round" strokeLinejoin="round" d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8" />
     <polyline strokeLinecap="round" points="16 6 12 2 8 6" />
     <line strokeLinecap="round" x1="12" y1="2" x2="12" y2="15" />
