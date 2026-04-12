@@ -2,6 +2,7 @@
 import { useState, useRef, useCallback } from 'react';
 import { toggleLike, getComments, addComment, toggleFollow } from '@/actions/socialActions';
 import { motion, AnimatePresence } from 'framer-motion';
+import Link from 'next/link';
 
 const DEFAULT_AVATAR = 'https://ui-avatars.com/api/?background=2e1e42&color=fff&bold=true&size=128&name=';
 
@@ -262,12 +263,22 @@ export default function PostCard({
 
             <div>
               <div className="flex items-center gap-4 mb-2">
-                <p
-                  className="font-bold tracking-tight text-white leading-none"
-                  style={{ fontSize: 16 }}
-                >
-                  {post.username || 'Usuario'}
-                </p>
+                {!isOwnPost ? (
+                  <Link
+                    href={`/profile/${post.user_id}`}
+                    className="font-bold tracking-tight text-white leading-none hover:opacity-70 transition-opacity"
+                    style={{ fontSize: 16 }}
+                  >
+                    {post.username || 'Usuario'}
+                  </Link>
+                ) : (
+                  <p
+                    className="font-bold tracking-tight text-white leading-none"
+                    style={{ fontSize: 16 }}
+                  >
+                    {post.username || 'Usuario'}
+                  </p>
+                )}
                 {!isOwnPost && <FollowButton userId={post.user_id} initialFollowing={post.isFollowing} />}
               </div>
               <p style={{ fontSize: 12.5, color: 'rgba(255,255,255,0.25)', fontWeight: 500 }}>
