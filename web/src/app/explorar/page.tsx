@@ -40,9 +40,11 @@ export default async function ExplorarPage() {
               <StoriesRow currentUserAvatar={profile?.avatar_url} />
             </div>
 
-            {/* Creador de Posts (Sticky con sombra neón) */}
-            <div className="mt-2 sticky top-[80px] z-[40] self-start w-full">
-              <CreatePost avatarUrl={profile?.avatar_url} />
+            {/* Creador de Posts (Contenedor Sticky Mejorado) */}
+            <div className="relative w-full" style={{ minHeight: 'fit-content' }}>
+              <div className="sticky top-[90px] z-40 mb-6">
+                <CreatePost avatarUrl={profile?.avatar_url} />
+              </div>
             </div>
 
             {/* Feed Principal */}
