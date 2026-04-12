@@ -3,7 +3,7 @@
 import { createClient } from '@/utils/supabase/server';
 import { revalidatePath } from 'next/cache';
 
-export async function getFeed() {
+export async function getFeed(tab: 'Recientes' | 'Amigos' | 'Populares' = 'Recientes') {
   try {
     const supabase = await createClient();
     const { data: userAuth } = await supabase.auth.getUser();
@@ -12,18 +12,49 @@ export async function getFeed() {
       return { success: false, error: 'Unauthorized' };
     }
 
-    // Fetch posts with details
-    const { data, error } = await supabase
-      .from('vw_posts_with_details')
-      .select('*')
-      .order('created_at', { ascending: false })
-      .limit(50);
+    // Base query setup
+    let query = supabase.from('vw_posts_with_details').select('*');
+
+    // 1. Determine sort order
+    if (tab === 'Populares') {
+      query = query.order('likes_count', { ascending: false }).order('created_at', { ascending: false });
+    } else {
+      query = query.order('created_at', { ascending: false });
+    }
+
+    // 2. Filter for "Amigos" (mutual followers)
+    if (tab === 'Amigos') {
+      // Find people I follow
+      const { data: followings } = await supabase
+        .from('seguidores')
+        .select('seguido_id')
+        .eq('seguidor_id', userAuth.user.id);
+      
+      // Find people that follow me
+      const { data: followers } = await supabase
+        .from('seguidores')
+        .select('seguidor_id')
+        .eq('seguido_id', userAuth.user.id);
+
+      const followedIds = new Set(followings?.map(f => f.seguido_id) || []);
+      const mutualFriends = (followers?.map(f => f.seguidor_id) || []).filter(id => followedIds.has(id));
+
+      if (mutualFriends.length === 0) {
+        // No friends means feed is empty immediately
+        return { success: true, data: [], userId: userAuth.user.id };
+      }
+      
+      query = query.in('user_id', mutualFriends);
+    }
+
+    // Execute Main Query
+    const { data, error } = await query.limit(50);
 
     if (error) {
       return { success: false, error: error.message };
     }
 
-    // Also fetch the user's current likes to know if the heart should be active
+    // Fetch the user's current likes to know if the heart should be active
     const { data: userLikes, error: likesError } = await supabase
       .from('likes')
       .select('post_id')
@@ -33,11 +64,19 @@ export async function getFeed() {
       return { success: false, error: likesError.message };
     }
 
+    // Fetch whom the current user follows to initialize the "Follow" button
+    const { data: followingData } = await supabase
+      .from('seguidores')
+      .select('seguido_id')
+      .eq('seguidor_id', userAuth.user.id);
+
     const likedPostIds = new Set(userLikes.map(l => l.post_id));
+    const followedUserIds = new Set(followingData?.map(f => f.seguido_id) || []);
 
     const posts = data.map(post => ({
       ...post,
-      hasLiked: likedPostIds.has(post.id)
+      hasLiked: likedPostIds.has(post.id),
+      isFollowing: followedUserIds.has(post.user_id)
     }));
 
     return { success: true, data: posts, userId: userAuth.user.id };
@@ -45,6 +84,7 @@ export async function getFeed() {
     return { success: false, error: error.message };
   }
 }
+
 
 export async function createPost(formData: FormData) {
   try {
@@ -184,3 +224,34 @@ export async function addComment(postId: string, content: string) {
     return { success: false, error: error.message };
   }
 }
+
+export async function toggleFollow(targetUserId: string, currentlyFollowing: boolean) {
+  try {
+    const supabase = await createClient();
+    const { data: userAuth } = await supabase.auth.getUser();
+    if (!userAuth.user) return { success: false, error: 'Unauthorized' };
+
+    if (currentlyFollowing) {
+      const { error } = await supabase
+        .from('seguidores')
+        .delete()
+        .match({ seguidor_id: userAuth.user.id, seguido_id: targetUserId });
+        
+      if (error) return { success: false, error: error.message };
+    } else {
+      const { error } = await supabase
+        .from('seguidores')
+        .insert({
+          seguidor_id: userAuth.user.id,
+          seguido_id: targetUserId
+        });
+        
+      if (error) return { success: false, error: error.message };
+    }
+
+    return { success: true, isFollowing: !currentlyFollowing };
+  } catch (error: any) {
+    return { success: false, error: error.message };
+  }
+}
+

@@ -24,8 +24,8 @@ export default async function ExplorarPage() {
   const initialPosts = feedRes.success && feedRes.data ? feedRes.data : [];
 
   return (
-    <div className="min-h-screen bg-[#0d0714] pb-24" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
-      <div className="max-w-[1100px] mx-auto px-8 lg:px-12 pt-12">
+    <div className="min-h-screen bg-[#181818] pb-24" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
+      <div className="max-w-[1200px] mx-auto px-6 lg:px-10 pt-16">
         <div className="flex flex-col lg:flex-row justify-center gap-12 lg:gap-20">
 
           {/* ═══ COLUMNA PRINCIPAL: Feed ═══ */}
@@ -63,11 +63,7 @@ export default async function ExplorarPage() {
                 <RecentFollowers />
               </section>
 
-              {/* Recommendations */}
-              <section>
-                <h3 className="text-[17px] font-bold text-white mb-5">Recommendations</h3>
-                <Recommendations />
-              </section>
+
 
             </div>
           </aside>
