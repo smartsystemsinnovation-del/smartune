@@ -156,8 +156,8 @@ export default function PostCard({ post, currentUserId }: { post: any; currentUs
           <Link href={`/profile/${post.user_id}`} className="flex flex-col items-center w-full group/content">
             <header className="flex flex-col items-center text-center w-full mb-2">
               <div className="relative mb-4 group">
-                <div className="absolute inset-0 bg-[#f6339a] blur-xl opacity-30 transition-opacity rounded-full"></div>
-                <img src={avatarSrc} alt="" className="relative w-20 h-20 md:w-24 md:h-24 rounded-full object-cover border-2 border-[#f6339a]/40 p-1 shadow-[0_0_25px_rgba(246,51,154,0.5)] transition-transform duration-500 group-hover/content:scale-105" />
+                <div className="absolute inset-[-10px] bg-[#f6339a] blur-3xl opacity-30 rounded-full animate-pulse transition-opacity"></div>
+                <img src={avatarSrc} alt="" className="relative w-20 h-20 md:w-24 md:h-24 rounded-full object-cover border-2 border-[#f6339a]/50 p-1 shadow-[0_0_35px_rgba(246,51,154,0.6)] transition-transform duration-500 group-hover/content:scale-105" />
               </div>
 
               <h3 className="text-xl md:text-2xl font-bold tracking-tight mb-1 group-hover/content:text-[#f6339a] transition-colors">
@@ -248,8 +248,8 @@ export default function PostCard({ post, currentUserId }: { post: any; currentUs
         <div className="absolute bottom-6 right-3 flex flex-col items-center gap-6 z-20">
           <div className="relative mb-2">
             <Link href={`/profile/${post.user_id}`} className="relative block">
-              <div className="absolute inset-x-0 inset-y-0 bg-[#f6339a] blur-md opacity-50 rounded-full scale-110"></div>
-              <img src={avatarSrc} className="relative w-12 h-12 rounded-full object-cover border-[2.5px] border-[#f6339a]/60 shadow-[0_0_15px_rgba(246,51,154,0.6)] transition-transform hover:scale-110" alt="" />
+              <div className="absolute inset-[-6px] bg-[#f6339a] blur-xl opacity-50 rounded-full"></div>
+              <img src={avatarSrc} className="relative w-12 h-12 rounded-full object-cover border-2 border-[#f6339a] shadow-[0_0_20px_rgba(246,51,154,0.7)] transition-transform hover:scale-110" alt="" />
             </Link>
             {!isOwnPost && !isFollowing && (
               <button onClick={handleFollow} className="absolute -bottom-2 left-1/2 -translate-x-1/2 bg-[#f6339a] text-white rounded-full w-[24px] h-[24px] flex items-center justify-center text-sm font-bold border-2 border-[#0a0a0a] hover:scale-110 transition-transform shadow-lg">
