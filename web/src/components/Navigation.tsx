@@ -16,9 +16,6 @@ export default function Navigation() {
   const [profile, setProfile] = useState<any>(null);
   const [showDropdown, setShowDropdown] = useState(false);
 
-  const [searchQuery, setSearchQuery] = useState('');
-  const [showSearchError, setShowSearchError] = useState(false);
-
   const supabase = createClient();
 
   useEffect(() => {
@@ -78,19 +75,6 @@ export default function Navigation() {
     return null;
   }
 
-  const handleSearch = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter' && searchQuery.trim() !== '') {
-      setShowSearchError(false);
-      // Native DOM search functionality to highlight and scroll to text
-      const found = (window as any).find(searchQuery, false, false, true, false, false, false);
-      
-      if (!found) {
-        setShowSearchError(true);
-        setTimeout(() => setShowSearchError(false), 3000); // clear error after 3s
-      }
-    }
-  };
-
   return (
     <>
       {showModal && (
@@ -102,27 +86,6 @@ export default function Navigation() {
       
       <nav className={styles.navbar}>
         <div className={styles.authNavbar}>
-          <div className={styles.searchBar} style={{ position: 'relative' }}>
-            <svg className={styles.searchIcon} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M21 21L15 15M17 10C17 13.866 13.866 17 10 17C6.13401 17 3 13.866 3 10C3 6.13401 6.13401 3 10 3C13.866 3 17 6.13401 17 10Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-            <input 
-              type="text" 
-              className={styles.searchInput} 
-              placeholder="Buscar contenido y presionar Enter..."
-              value={searchQuery}
-              onChange={(e) => {
-                setSearchQuery(e.target.value);
-                setShowSearchError(false);
-              }}
-              onKeyDown={handleSearch}
-            />
-            {showSearchError && (
-              <div style={{ position: 'absolute', top: '120%', left: '0', background: 'rgba(246, 51, 154, 0.9)', color: 'white', padding: '6px 12px', borderRadius: '8px', fontSize: '12px', fontWeight: 'bold', zIndex: 100, whiteSpace: 'nowrap', boxShadow: '0 4px 15px rgba(246,51,154,0.3)', animation: 'fadeIn 0.2s ease-in-out' }}>
-                Palabra no encontrada
-              </div>
-            )}
-          </div>
           
           <div className={styles.navLinksAuth}>
             <Link 
