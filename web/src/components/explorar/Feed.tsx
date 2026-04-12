@@ -85,22 +85,7 @@ export default function Feed({
             Explorar
           </h1>
 
-          {/* Post count pill */}
-          {posts.length > 0 && (
-            <motion.span
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="font-semibold rounded-full px-2.5 py-0.5"
-              style={{
-                fontSize: 11,
-                background: 'rgba(246,51,154,0.12)',
-                color: '#f6339a',
-                border: '1px solid rgba(246,51,154,0.2)',
-              }}
-            >
-              {posts.length} posts
-            </motion.span>
-          )}
+
         </div>
 
         {/* Tabs */}
