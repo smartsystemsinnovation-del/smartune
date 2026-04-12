@@ -101,7 +101,7 @@ export default function CreatePost({ onPostCreated, avatarUrl }: { onPostCreated
   return (
     <div className="w-full max-w-[540px] mx-auto mb-10">
 
-      {/* ── Encabezado Elegante ── */}
+      {/* Encabezado */}
       <div className="flex items-center gap-4 mb-4">
         <div className="flex-1 h-px bg-gradient-to-r from-transparent to-white/10"></div>
         <span className="text-[10px] font-bold tracking-[0.2em] uppercase text-white/30">
@@ -110,7 +110,7 @@ export default function CreatePost({ onPostCreated, avatarUrl }: { onPostCreated
         <div className="flex-1 h-px bg-gradient-to-l from-transparent to-white/10"></div>
       </div>
 
-      {/* ── Contenedor de la Tarjeta ── */}
+      {/* Contenedor de la Tarjeta */}
       <motion.div
         animate={{
           borderColor: isFocused ? 'rgba(246, 51, 154, 0.4)' : 'rgba(255, 255, 255, 0.08)',
@@ -120,15 +120,13 @@ export default function CreatePost({ onPostCreated, avatarUrl }: { onPostCreated
         transition={{ duration: 0.3 }}
         className="rounded-[20px] border relative overflow-hidden"
       >
-        {/* Resplandor sutil de fondo */}
         <div className="absolute top-0 left-0 w-full h-32 bg-gradient-to-b from-white/[0.02] to-transparent pointer-events-none" />
 
         <form onSubmit={handleSubmit} className="relative z-10 flex flex-col p-5">
 
-          {/* ── Zona de Escritura (Avatar + Input) ── */}
           <div className="flex gap-4">
             <div className="relative flex-shrink-0">
-              <div className="absolute -inset-0.5 bg-gradient-to-tr from-[#f6339a] to-[#9810fa] rounded-full blur-[2px] opacity-60"></div>
+              {/* ¡Anillo degradado eliminado aquí! */}
               <img
                 src={avatarUrl || DEFAULT_AVATAR}
                 alt="Tu avatar"
@@ -149,7 +147,6 @@ export default function CreatePost({ onPostCreated, avatarUrl }: { onPostCreated
                 style={{ minHeight: '50px' }}
               />
 
-              {/* ── Previsualización de Imagen ── */}
               <AnimatePresence>
                 {imagePreview && (
                   <motion.div
@@ -172,13 +169,10 @@ export default function CreatePost({ onPostCreated, avatarUrl }: { onPostCreated
             </div>
           </div>
 
-          {/* Línea Divisoria */}
           <div className="w-full h-px bg-white/[0.06] mt-4 mb-4"></div>
 
-          {/* ── Barra Inferior (Herramientas + Botón) ── */}
           <div className="flex items-center justify-between">
 
-            {/* Herramientas */}
             <div className="flex items-center gap-1.5">
               <button
                 type="button"
@@ -199,7 +193,6 @@ export default function CreatePost({ onPostCreated, avatarUrl }: { onPostCreated
               </button>
             </div>
 
-            {/* Botón Publicar */}
             <button
               type="submit"
               disabled={!isPostable || isSubmitting}
