@@ -9,20 +9,20 @@ const DEFAULT_AVATAR = 'https://ui-avatars.com/api/?background=121212&color=fff&
 
 /* ── Icons ── */
 const HeartIcon = ({ filled, className, style }: { filled: boolean; className?: string; style?: React.CSSProperties }) => (
-  <svg className={className} viewBox="0 0 24 24" fill={filled ? '#f6339a' : 'none'} stroke={filled ? '#f6339a' : 'currentColor'} strokeWidth={filled ? 0 : 1.5} style={style}>
-    <path strokeLinecap="round" strokeLinejoin="round" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+  <svg className={className} viewBox="0 0 24 24" fill={filled ? '#ffffff' : 'currentColor'} style={style}>
+    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
   </svg>
 );
 
 const CommentIcon = ({ className, style }: { className?: string; style?: React.CSSProperties }) => (
-  <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" style={style}>
-    <path strokeLinecap="round" strokeLinejoin="round" d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" />
+  <svg className={className} viewBox="0 0 24 24" fill="currentColor" style={style}>
+    <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z" />
   </svg>
 );
 
 const ShareIcon = ({ className, style }: { className?: string; style?: React.CSSProperties }) => (
-  <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" style={style}>
-    <path strokeLinecap="round" strokeLinejoin="round" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6L15.316 7.342m1.368 1.316a3 3 0 100-2.684 3 3 0 000 2.684zm0 9.316a3 3 0 100-2.684 3 3 0 000 2.684z" />
+  <svg className={className} viewBox="0 0 24 24" fill="currentColor" style={style}>
+    <path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z" />
   </svg>
 );
 
@@ -202,19 +202,25 @@ export default function PostCard({ post, currentUserId }: { post: any; currentUs
 
           {/* Acciones Inline Contenidas */}
           <div className="w-full flex justify-center gap-3 pt-4 border-t border-white/[0.03]">
-            <button onClick={handleLikeButton} className={`flex items-center gap-2.5 px-6 py-2.5 rounded-full transition-all active:scale-95 ${hasLiked ? 'bg-[#f6339a]/10 text-[#f6339a]' : 'bg-white/[0.03] text-white/40 hover:bg-white/[0.08] hover:text-white'}`}>
+            <button onClick={handleLikeButton} 
+              className={`flex items-center gap-2.5 px-6 py-2.5 rounded-full transition-all active:scale-95 shadow-lg ${
+                hasLiked ? 'bg-[#f6339a] text-white' : 'bg-white text-black'
+              }`}
+            >
               <motion.div whileTap={{ scale: 0.8 }}>
                 <HeartIcon filled={hasLiked} className="w-[18px] h-[18px]" />
               </motion.div>
-              <span className="font-semibold text-[13px] tracking-wide">{formatCount(likesCount)}</span>
+              <span className="font-extrabold text-[13px] tracking-wide">{formatCount(likesCount)}</span>
             </button>
 
-            <button onClick={loadComments} className="flex items-center gap-2.5 px-6 py-2.5 rounded-full bg-white/[0.03] text-white/40 hover:bg-white/[0.08] hover:text-white transition-all active:scale-95">
+            <button onClick={loadComments} 
+              className="flex items-center gap-2.5 px-6 py-2.5 rounded-full bg-white text-black transition-all active:scale-95 shadow-lg"
+            >
               <CommentIcon className="w-[18px] h-[18px]" />
-              <span className="font-semibold text-[13px] tracking-wide">{formatCount(Number(post.comments_count) || 0)}</span>
+              <span className="font-extrabold text-[13px] tracking-wide">{formatCount(Number(post.comments_count) || 0)}</span>
             </button>
 
-            <button className="p-3 rounded-full text-white/40 hover:text-white transition-colors ml-auto">
+            <button className="p-3 rounded-full bg-white text-black transition-colors ml-auto shadow-lg hover:bg-white/90">
               <ShareIcon className="w-5 h-5" />
             </button>
           </div>
@@ -256,32 +262,36 @@ export default function PostCard({ post, currentUserId }: { post: any; currentUs
         <div className="absolute bottom-6 right-3 flex flex-col items-center gap-6 z-20">
           <div className="relative mb-2">
             <Link href={`/profile/${post.user_id}`}>
-              <img src={avatarSrc} className="w-11 h-11 rounded-full object-cover border-2 border-white shadow-lg" alt="" />
+              <img src={avatarSrc} className="w-12 h-12 rounded-full object-cover border-[3px] border-white shadow-[0_0_20px_rgba(0,0,0,0.5)]" alt="" />
             </Link>
             {!isOwnPost && !isFollowing && (
-              <button onClick={handleFollow} className="absolute -bottom-2 left-1/2 -translate-x-1/2 bg-gradient-to-r from-[#f6339a] to-[#9810fa] text-white rounded-full w-[22px] h-[22px] flex items-center justify-center text-sm font-bold border-[1.5px] border-[#0a0a0a] hover:scale-110 transition-transform">
+              <button onClick={handleFollow} className="absolute -bottom-2 left-1/2 -translate-x-1/2 bg-[#f6339a] text-white rounded-full w-[24px] h-[24px] flex items-center justify-center text-sm font-bold border-2 border-[#0a0a0a] hover:scale-110 transition-transform shadow-lg">
                 +
               </button>
             )}
           </div>
 
           <button onClick={handleLikeButton} className="flex flex-col items-center gap-1 group">
-            <motion.div whileTap={{ scale: 0.8 }} className="p-2.5 rounded-full bg-black/30 backdrop-blur-md group-hover:bg-black/50 transition-all">
-              <HeartIcon filled={hasLiked} className={`w-7 h-7 ${hasLiked ? 'text-[#f6339a]' : 'text-white'}`} style={{ filter: 'drop-shadow(0px 2px 4px rgba(0,0,0,0.5))' }} />
+            <motion.div whileTap={{ scale: 0.8 }} 
+              className={`p-3 rounded-full shadow-2xl transition-colors ${
+                hasLiked ? 'bg-[#f6339a] text-white' : 'bg-white text-black'
+              }`}
+            >
+              <HeartIcon filled={hasLiked} className="w-7 h-7" />
             </motion.div>
-            <span className="text-white text-xs font-bold drop-shadow-md">{formatCount(likesCount)}</span>
+            <span className="text-white text-xs font-black drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">{formatCount(likesCount)}</span>
           </button>
 
           <button onClick={loadComments} className="flex flex-col items-center gap-1 group">
-            <div className="p-2.5 rounded-full bg-black/30 backdrop-blur-md group-hover:bg-black/50 transition-all">
-              <CommentIcon className="w-7 h-7 text-white" style={{ filter: 'drop-shadow(0px 2px 4px rgba(0,0,0,0.5))' }} />
+            <div className="p-3 rounded-full bg-white text-black shadow-2xl group-hover:bg-white/90 transition-all">
+              <CommentIcon className="w-7 h-7" />
             </div>
-            <span className="text-white text-xs font-bold drop-shadow-md">{formatCount(Number(post.comments_count) || 0)}</span>
+            <span className="text-white text-xs font-black drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">{formatCount(Number(post.comments_count) || 0)}</span>
           </button>
 
           <button className="flex flex-col items-center gap-1 group">
-            <div className="p-2.5 rounded-full bg-black/30 backdrop-blur-md group-hover:bg-black/50 transition-all">
-              <ShareIcon className="w-7 h-7 text-white" style={{ filter: 'drop-shadow(0px 2px 4px rgba(0,0,0,0.5))' }} />
+            <div className="p-3 rounded-full bg-white text-black shadow-2xl group-hover:bg-white/90 transition-all">
+              <ShareIcon className="w-7 h-7" />
             </div>
           </button>
         </div>
