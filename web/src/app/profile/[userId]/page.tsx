@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { createClient } from '@/utils/supabase/client';
 import Link from 'next/link';
 
-const DEFAULT_AVATAR = 'https://ui-avatars.com/api/?background=2e1e42&color=fff&bold=true&size=128&name=';
+const DEFAULT_AVATAR = 'https://ui-avatars.com/api/?background=2e1e42&color=fff&bold=true&size=150&name=';
 
 interface Post {
   id: string;
@@ -27,36 +27,39 @@ export default function PublicProfilePage({ params }: { params: Promise<{ userId
   const [profile, setProfile] = useState<ProfileData | null>(null);
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
-  const [expandedPost, setExpandedPost] = useState<string | null>(null);
   const [userId, setUserId] = useState<string>('');
+  const [followersCount, setFollowersCount] = useState(0);
+  const [activeTab, setActiveTab] = useState('grid');
   const supabase = createClient();
 
   useEffect(() => {
-    // Resolve params first (Next.js 15+ async params)
-    params.then(({ userId: uid }) => {
-      setUserId(uid);
-    });
+    params.then(({ userId: uid }) => setUserId(uid));
   }, [params]);
 
   useEffect(() => {
     if (!userId) return;
     async function fetchProfile() {
       try {
-        // Fetch user profile
-        const { data: profileData, error: profileError } = await supabase
+        const { data: profileData } = await supabase
           .from('usuarios')
           .select('id, nombre, avatar_url, instrumento, gustos_musicales, rol')
           .eq('id', userId)
           .single();
 
-        if (profileError || !profileData) {
+        if (!profileData) {
           setLoading(false);
           return;
         }
-
         setProfile(profileData);
 
-        // Fetch user posts
+        // Fetch followers count
+        const { count: fCount } = await supabase
+          .from('seguidores')
+          .select('*', { count: 'exact', head: true })
+          .eq('seguido_id', userId);
+        
+        setFollowersCount(fCount || 0);
+
         const { data: postsData } = await supabase
           .from('vw_posts_with_details')
           .select('*')
@@ -70,183 +73,186 @@ export default function PublicProfilePage({ params }: { params: Promise<{ userId
         setLoading(false);
       }
     }
-
     fetchProfile();
   }, [userId, supabase]);
 
   const avatarSrc = profile?.avatar_url || `${DEFAULT_AVATAR}${encodeURIComponent(profile?.nombre || 'U')}`;
+  const totalLikes = posts.reduce((sum, p) => sum + (p.likes_count || 0), 0);
 
   if (loading) {
     return (
-      <div className="min-h-screen" style={{ background: '#181818', fontFamily: "'Space Grotesk', sans-serif" }}>
-        <div className="flex justify-center items-center" style={{ height: '60vh' }}>
-          <div className="w-8 h-8 rounded-full border-2 border-t-[#f6339a] border-white/10 animate-spin" />
-        </div>
+      <div className="w-full flex-1 min-h-screen flex items-center justify-center bg-[#0a0a0a]">
+        <div className="w-8 h-8 border-2 border-[#f6339a] border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
 
   if (!profile) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center" style={{ background: '#181818', fontFamily: "'Space Grotesk', sans-serif" }}>
-        <p className="text-white/40 text-lg font-semibold">Usuario no encontrado</p>
-        <Link href="/explorar" className="mt-4 text-sm" style={{ color: '#f6339a' }}>
-          ← Volver al Explorar
+      <div className="w-full flex-1 min-h-screen flex flex-col items-center justify-center bg-[#0a0a0a] text-white">
+        <p className="text-white/50 mb-4">Usuario no encontrado</p>
+        <Link href="/explorar" className="text-[#f6339a] font-bold text-sm tracking-wide hover:underline">
+          ← Volver
         </Link>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen" style={{ background: '#181818', fontFamily: "'Space Grotesk', sans-serif" }}>
-      <div className="max-w-[540px] mx-auto px-4 pt-8 pb-24">
+    <div className="w-full flex-1 min-h-screen bg-[#0a0a0a] text-white antialiased font-sans pb-20 flex flex-col items-center overflow-x-hidden">
 
-        {/* ─── Header del Perfil ─── */}
-        <div className="flex items-center gap-4 mb-8 pb-5" style={{ borderBottom: '1px solid rgba(255,255,255,0.07)' }}>
-          {/* Avatar */}
-          <div
-            className="flex-shrink-0 rounded-full p-[2px]"
-            style={{
-              background: 'linear-gradient(135deg, rgba(246,51,154,0.6), rgba(152,16,250,0.6))',
-              width: 56,
-              height: 56,
-            }}
-          >
-            <div className="w-full h-full rounded-full overflow-hidden" style={{ background: '#1f1f1f' }}>
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={avatarSrc} alt={profile.nombre} className="w-full h-full object-cover" />
-            </div>
-          </div>
+      {/* --- Banner / Cover --- */}
+      <div className="relative h-32 md:h-48 w-full bg-gradient-to-r from-[#1a0b2e] via-[#2d0a1f] to-[#120518] flex-shrink-0">
+        <div className="absolute inset-0 opacity-20" style={{ backgroundImage: 'radial-gradient(#f6339a 1px, transparent 1px)', backgroundSize: '20px 20px' }}></div>
+        <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-transparent to-[#0a0a0a]"></div>
+      </div>
 
-          {/* Info */}
-          <div>
-            <p className="font-bold text-white leading-tight" style={{ fontSize: 17 }}>
-              {profile.nombre}
-            </p>
-            {profile.instrumento && profile.instrumento !== 'Ninguno' && (
-              <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.35)', marginTop: 2 }}>
-                {profile.instrumento}
-              </p>
-            )}
-            {profile.gustos_musicales && profile.gustos_musicales.length > 0 && (
-              <div className="flex flex-wrap gap-1 mt-2">
-                {profile.gustos_musicales.slice(0, 3).map(genre => (
-                  <span
-                    key={genre}
-                    className="rounded-full px-2 py-0.5"
-                    style={{
-                      fontSize: 10,
-                      fontWeight: 600,
-                      background: 'rgba(246,51,154,0.10)',
-                      color: '#f6339a',
-                      border: '1px solid rgba(246,51,154,0.18)',
-                    }}
-                  >
-                    {genre}
-                  </span>
-                ))}
+      <div className="w-full flex justify-center px-4 sm:px-6">
+        <div className="w-full max-w-[700px] relative -mt-16 md:-mt-20 flex flex-col items-center">
+
+          {/* --- Header / Info de Perfil --- */}
+          <header className="flex flex-col items-center text-center w-full">
+
+            {/* Avatar */}
+            <div className="relative mb-4 group cursor-pointer">
+              <div className="absolute -inset-1 bg-gradient-to-tr from-[#f6339a] via-[#9810fa] to-[#f6339a] rounded-full blur-sm opacity-70 group-hover:opacity-100 transition duration-500"></div>
+              <div className="relative bg-[#0a0a0a] p-1.5 rounded-full">
+                <img
+                  src={avatarSrc}
+                  alt={profile.nombre}
+                  className="w-28 h-28 md:w-32 md:h-32 rounded-full object-cover ring-2 ring-white/10"
+                />
               </div>
-            )}
-          </div>
-        </div>
+            </div>
 
-        {/* ─── Stats ─── */}
-        <div className="flex gap-8 mb-8">
-          <div className="text-center">
-            <p className="font-bold text-white" style={{ fontSize: 18 }}>{posts.length}</p>
-            <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)' }}>Posts</p>
-          </div>
-          <div className="text-center">
-            <p className="font-bold text-white" style={{ fontSize: 18 }}>
-              {posts.reduce((sum, p) => sum + (p.likes_count || 0), 0)}
+            {/* Nombre y Rol */}
+            <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight mb-1">
+              {profile.nombre}
+            </h1>
+            <p className="text-sm font-medium text-white/50 mb-4">
+              @{profile.nombre.toLowerCase().replace(/\s+/g, '')} • {profile.rol || 'Músico'}
             </p>
-            <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)' }}>Likes</p>
-          </div>
-        </div>
 
-        {/* ─── Grid de Posts ─── */}
-        {posts.length === 0 ? (
-          <div
-            className="flex flex-col items-center justify-center py-20 rounded-2xl"
-            style={{ background: '#1f1f1f', border: '1px solid rgba(255,255,255,0.05)' }}
-          >
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2" style={{ color: 'rgba(255,255,255,0.12)' }}>
-              <rect x="3" y="3" width="18" height="18" rx="4" />
-              <path d="M3 9h18M9 21V9" />
-            </svg>
-            <p className="mt-4 font-semibold" style={{ fontSize: 13, color: 'rgba(255,255,255,0.3)' }}>
-              Aún no hay publicaciones
-            </p>
+            {/* Stats */}
+            <div className="flex items-center justify-center gap-8 mb-6 w-full max-w-sm">
+              <div className="flex flex-col items-center">
+                <span className="text-lg md:text-xl font-bold">{posts.length}</span>
+                <span className="text-[11px] text-white/50 font-medium uppercase tracking-wider">Posts</span>
+              </div>
+              <div className="w-px h-8 bg-white/10"></div>
+              <div className="flex flex-col items-center">
+                <span className="text-lg md:text-xl font-bold">{followersCount}</span>
+                <span className="text-[11px] text-white/50 font-medium uppercase tracking-wider">Seguidores</span>
+              </div>
+              <div className="w-px h-8 bg-white/10"></div>
+              <div className="flex flex-col items-center">
+                <span className="text-lg md:text-xl font-bold">{totalLikes}</span>
+                <span className="text-[11px] text-white/50 font-medium uppercase tracking-wider">Me gusta</span>
+              </div>
+            </div>
+
+            {/* Botones de Acción (Sin botón de Mensaje) */}
+            <div className="flex gap-2 w-full max-w-sm mb-6">
+              <button className="flex-1 bg-gradient-to-r from-[#f6339a] to-[#9810fa] hover:brightness-110 text-white font-bold py-2.5 rounded-xl text-sm transition-all shadow-[0_0_15px_rgba(246,51,154,0.3)]">
+                Seguir
+              </button>
+              <button className="bg-white/10 hover:bg-white/20 p-2.5 rounded-xl transition-all backdrop-blur-sm flex items-center justify-center">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8M16 6l-4-4-4 4M12 2v13" />
+                </svg>
+              </button>
+            </div>
+
+            {/* Bio / Etiquetas */}
+            <div className="w-full flex flex-col items-center">
+              {profile.instrumento && (
+                <p className="text-sm text-white/80 mb-3 flex items-center gap-2">
+                  <span className="text-[#f6339a]">🎸</span> {profile.instrumento}
+                </p>
+              )}
+              {profile.gustos_musicales && (
+                <div className="flex flex-wrap justify-center gap-2">
+                  {profile.gustos_musicales.map(genre => (
+                    <span key={genre} className="px-3 py-1 bg-[#1a1a1a] border border-white/5 rounded-full text-xs font-semibold text-white/70">
+                      {genre}
+                    </span>
+                  ))}
+                </div>
+              )}
+            </div>
+          </header>
+
+          {/* --- Pestañas --- */}
+          <div className="flex border-b border-white/10 mt-10 mb-2 w-full">
+            <button
+              onClick={() => setActiveTab('grid')}
+              className={`flex-1 py-4 flex justify-center items-center gap-2 border-b-2 transition-all ${activeTab === 'grid' ? 'border-[#f6339a] text-white' : 'border-transparent text-white/40 hover:text-white/70'}`}
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                <rect x="3" y="3" width="7" height="7" rx="1" />
+                <rect x="14" y="3" width="7" height="7" rx="1" />
+                <rect x="3" y="14" width="7" height="7" rx="1" />
+                <rect x="14" y="14" width="7" height="7" rx="1" />
+              </svg>
+            </button>
+            <button
+              onClick={() => setActiveTab('likes')}
+              className={`flex-1 py-4 flex justify-center items-center gap-2 border-b-2 transition-all ${activeTab === 'likes' ? 'border-[#f6339a] text-white' : 'border-transparent text-white/40 hover:text-white/70'}`}
+            >
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+              </svg>
+            </button>
           </div>
-        ) : (
-          <div className="grid grid-cols-3 gap-[3px]">
-            {posts.map(post => (
-              <div
-                key={post.id}
-                className="relative cursor-pointer overflow-hidden"
-                style={{ aspectRatio: '1 / 1', background: '#1f1f1f', borderRadius: 4 }}
-                onClick={() => setExpandedPost(expandedPost === post.id ? null : post.id)}
-              >
-                {post.image_url ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
-                    src={post.image_url}
-                    alt=""
-                    className="w-full h-full object-cover"
-                    style={{ filter: expandedPost === post.id ? 'brightness(0.4)' : 'brightness(0.85)' }}
-                  />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center p-3">
-                    {/* Gradient background for text posts */}
-                    <div
-                      className="absolute inset-0"
-                      style={{
-                        background: `linear-gradient(135deg, 
-                          hsl(${((post.id.charCodeAt(0) * 37) % 360)}, 25%, 14%), 
-                          hsl(${((post.id.charCodeAt(1) * 53) % 360)}, 30%, 10%))`,
-                      }}
+
+          {/* --- Grid de Posts --- */}
+          {posts.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-24 text-white/30 w-full">
+              <div className="w-16 h-16 mb-4 rounded-full border-2 border-white/10 flex items-center justify-center">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                  <rect x="3" y="3" width="18" height="18" rx="2" />
+                  <circle cx="8.5" cy="8.5" r="1.5" />
+                  <path d="M21 15l-5-5L5 21" />
+                </svg>
+              </div>
+              <p className="text-sm font-medium">Aún no hay publicaciones</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-3 gap-0.5 md:gap-1 w-full">
+              {posts.map(post => (
+                <div
+                  key={post.id}
+                  className="group relative aspect-[3/4] md:aspect-square bg-[#1a1a1a] cursor-pointer overflow-hidden rounded"
+                >
+                  {post.image_url ? (
+                    <img
+                      src={post.image_url}
+                      alt=""
+                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                     />
-                    {expandedPost === post.id ? (
-                      <p
-                        className="relative z-10 text-center leading-snug"
-                        style={{ fontSize: 11, color: 'rgba(255,255,255,0.7)' }}
-                      >
+                  ) : (
+                    <div className="w-full h-full flex flex-col items-center justify-center p-3 text-center"
+                      style={{ background: 'linear-gradient(135deg, rgba(246,51,154,0.05), rgba(152,16,250,0.05))' }}>
+                      <p className="text-[10px] md:text-sm font-medium text-white/80 line-clamp-4">
                         {post.content}
                       </p>
-                    ) : (
-                      <svg className="relative z-10" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2" style={{ color: 'rgba(255,255,255,0.2)' }}>
-                        <rect x="3" y="3" width="18" height="18" rx="4" />
-                        <path d="M3 9h18M9 21V9" />
+                    </div>
+                  )}
+
+                  {/* Overlay */}
+                  <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center">
+                    <div className="flex items-center gap-1.5 text-white font-bold text-sm md:text-base transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
                       </svg>
-                    )}
+                      {post.likes_count}
+                    </div>
                   </div>
-                )}
-
-                {/* Hover overlay */}
-                {expandedPost === post.id && post.image_url && (
-                  <div className="absolute inset-0 flex items-center justify-center p-2">
-                    <p className="text-center text-white text-xs leading-snug line-clamp-4">
-                      {post.content}
-                    </p>
-                  </div>
-                )}
-
-                {/* Likes overlay en esquina */}
-                {post.likes_count > 0 && expandedPost !== post.id && (
-                  <div
-                    className="absolute bottom-1.5 left-1.5 flex items-center gap-1"
-                    style={{ opacity: 0.7 }}
-                  >
-                    <svg width="10" height="10" viewBox="0 0 24 24" fill="#f6339a">
-                      <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
-                    </svg>
-                    <span style={{ fontSize: 10, color: 'white', fontWeight: 700 }}>{post.likes_count}</span>
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-        )}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
