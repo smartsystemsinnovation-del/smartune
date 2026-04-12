@@ -41,7 +41,7 @@ export default async function ExplorarPage() {
             </div>
 
             {/* Creador de Posts (Sticky con sombra neón) */}
-            <div className="mt-2 sticky top-24 z-30">
+            <div className="mt-2 sticky top-[80px] z-[40] self-start w-full">
               <CreatePost avatarUrl={profile?.avatar_url} />
             </div>
 
