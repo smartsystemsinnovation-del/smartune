@@ -4,7 +4,6 @@ import RecentFollowers from '@/components/explorar/RecentFollowers';
 import { createClient } from '@/utils/supabase/server';
 import { redirect } from 'next/navigation';
 import { getFeed } from '@/actions/socialActions';
-import Recommendations from '@/components/explorar/Recommendations';
 
 export default async function ExplorarPage() {
   const supabase = await createClient();
@@ -25,13 +24,16 @@ export default async function ExplorarPage() {
 
   return (
     <div className="min-h-screen bg-[#181818] pb-24" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
-      <div className="max-w-[1200px] mx-auto px-6 lg:px-10 pt-16">
-        <div className="flex flex-col lg:flex-row justify-center gap-12 lg:gap-20">
 
-          {/* ═══ COLUMNA PRINCIPAL: Feed ═══ */}
-          <main className="w-full max-w-[580px] mx-auto lg:mx-0">
+      {/* CONTENEDOR MAESTRO: Centrado absoluto con flex */}
+      <div className="w-full flex justify-center pt-16 px-6">
 
-            {/* Stories solo en móvil */}
+        {/* WRAPPER DE COLUMNAS: max-w-none para que no se pegue a la izquierda en pantallas gigantes */}
+        <div className="flex flex-row items-start gap-12 xl:gap-20 w-full max-w-[1000px] justify-center">
+
+          {/* ═══ COLUMNA PRINCIPAL ═══ */}
+          <main className="w-full max-w-[580px] min-w-0">
+            {/* Stories móvil (solo aparece si la pantalla es pequeña) */}
             <div className="lg:hidden mb-10">
               <h2 className="text-lg font-bold text-white mb-4">Stories</h2>
               <StoriesRow currentUserAvatar={profile?.avatar_url} />
@@ -45,10 +47,9 @@ export default async function ExplorarPage() {
           </main>
 
           {/* ═══ SIDEBAR DERECHA ═══ */}
-          <aside className="hidden lg:block w-[280px] flex-shrink-0">
+          <aside className="hidden lg:block w-[320px] shrink-0">
             <div className="sticky top-12 space-y-12">
-
-              {/* Stories */}
+              {/* Stories Desktop */}
               <section>
                 <h3 className="text-[17px] font-bold text-white mb-5">Stories</h3>
                 <StoriesRow currentUserAvatar={profile?.avatar_url} />
@@ -58,13 +59,12 @@ export default async function ExplorarPage() {
               <section>
                 <div className="flex items-center justify-between mb-5">
                   <h3 className="text-[17px] font-bold text-white">Suggestions</h3>
-                  <span className="text-[11px] text-white/25 cursor-pointer hover:text-white/50 transition-colors">See all</span>
+                  <span className="text-[11px] text-white/25 cursor-pointer hover:text-white/50 transition-colors">
+                    See all
+                  </span>
                 </div>
                 <RecentFollowers />
               </section>
-
-
-
             </div>
           </aside>
 
