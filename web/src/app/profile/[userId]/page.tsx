@@ -27,6 +27,7 @@ interface ProfileData {
 export default function PublicProfilePage({ params }: { params: Promise<{ userId: string }> }) {
   const [profile, setProfile] = useState<ProfileData | null>(null);
   const [posts, setPosts] = useState<Post[]>([]);
+  const [likedPosts, setLikedPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
   const [userId, setUserId] = useState<string>('');
   const [authUserId, setAuthUserId] = useState<string | null>(null);
@@ -78,13 +79,34 @@ export default function PublicProfilePage({ params }: { params: Promise<{ userId
           setIsFollowing(!!followDoc);
         }
 
+        // Fetch user's own posts
         const { data: postsData } = await supabase
           .from('vw_posts_with_details')
           .select('*')
           .eq('user_id', userId)
           .order('created_at', { ascending: false });
 
-        setPosts(postsData || []);
+          setPosts(postsData || []);
+
+        // Fetch posts LIKED by this user
+        const { data: likedIdsData } = await supabase
+          .from('likes')
+          .select('post_id')
+          .eq('user_id', userId);
+
+        if (likedIdsData && likedIdsData.length > 0) {
+          const likedIds = likedIdsData.map(l => l.post_id);
+          const { data: likedPostsData } = await supabase
+            .from('vw_posts_with_details')
+            .select('*')
+            .in('id', likedIds)
+            .order('created_at', { ascending: false });
+          
+          setLikedPosts(likedPostsData || []);
+        } else {
+          setLikedPosts([]);
+        }
+
       } catch (err) {
         console.error(err);
       } finally {
@@ -245,52 +267,60 @@ export default function PublicProfilePage({ params }: { params: Promise<{ userId
           </div>
 
           {/* --- Grid de Posts --- */}
-          {posts.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-24 text-white/30 w-full">
-              <div className="w-16 h-16 mb-4 rounded-full border-2 border-white/10 flex items-center justify-center">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                  <rect x="3" y="3" width="18" height="18" rx="2" />
-                  <circle cx="8.5" cy="8.5" r="1.5" />
-                  <path d="M21 15l-5-5L5 21" />
-                </svg>
-              </div>
-              <p className="text-sm font-medium">Aún no hay publicaciones</p>
-            </div>
-          ) : (
-            <div className="grid grid-cols-3 gap-0.5 md:gap-1 w-full">
-              {posts.map(post => (
-                <div
-                  key={post.id}
-                  className="group relative aspect-[3/4] md:aspect-square bg-[#1a1a1a] cursor-pointer overflow-hidden rounded"
-                >
-                  {post.image_url ? (
-                    <img
-                      src={post.image_url}
-                      alt=""
-                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                    />
-                  ) : (
-                    <div className="w-full h-full flex flex-col items-center justify-center p-3 text-center"
-                      style={{ background: 'linear-gradient(135deg, rgba(246,51,154,0.05), rgba(152,16,250,0.05))' }}>
-                      <p className="text-[10px] md:text-sm font-medium text-white/80 line-clamp-4">
-                        {post.content}
-                      </p>
-                    </div>
-                  )}
+          {(() => {
+            const displayPosts = activeTab === 'grid' ? posts : likedPosts;
+            if (displayPosts.length === 0) {
+              return (
+                <div className="flex flex-col items-center justify-center py-24 text-white/30 w-full">
+                  <div className="w-16 h-16 mb-4 rounded-full border-2 border-white/10 flex items-center justify-center">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                      <rect x="3" y="3" width="18" height="18" rx="2" />
+                      <circle cx="8.5" cy="8.5" r="1.5" />
+                      <path d="M21 15l-5-5L5 21" />
+                    </svg>
+                  </div>
+                  <p className="text-sm font-medium">
+                    {activeTab === 'grid' ? 'Aún no hay publicaciones' : 'No hay likes todavía'}
+                  </p>
+                </div>
+              );
+            }
+            return (
+              <div className="grid grid-cols-3 gap-0.5 md:gap-1 w-full">
+                {displayPosts.map(post => (
+                  <div
+                    key={post.id}
+                    className="group relative aspect-[3/4] md:aspect-square bg-[#1a1a1a] cursor-pointer overflow-hidden rounded"
+                  >
+                    {post.image_url ? (
+                      <img
+                        src={post.image_url}
+                        alt=""
+                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex flex-col items-center justify-center p-3 text-center"
+                        style={{ background: 'linear-gradient(135deg, rgba(246,51,154,0.05), rgba(152,16,250,0.05))' }}>
+                        <p className="text-[10px] md:text-sm font-medium text-white/80 line-clamp-4">
+                          {post.content}
+                        </p>
+                      </div>
+                    )}
 
-                  {/* Overlay */}
-                  <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center">
-                    <div className="flex items-center gap-1.5 text-white font-bold text-sm md:text-base transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
-                      </svg>
-                      {post.likes_count}
+                    {/* Overlay */}
+                    <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center">
+                      <div className="flex items-center gap-1.5 text-white font-bold text-sm md:text-base transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                          <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+                        </svg>
+                        {post.likes_count}
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
-            </div>
-          )}
+                ))}
+              </div>
+            );
+          })()}
         </div>
       </div>
     </div>
