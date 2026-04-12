@@ -10,7 +10,7 @@ const CloseIcon = ({ className }: { className?: string }) => (
   </svg>
 );
 
-export default function CreatePost({ onPostCreated, avatarUrl }: { onPostCreated: (post: any) => void, avatarUrl?: string }) {
+export default function CreatePost({ onPostCreated, avatarUrl }: { onPostCreated?: (post: any) => void, avatarUrl?: string }) {
   const [content, setContent] = useState('');
   const [image, setImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
@@ -31,8 +31,8 @@ export default function CreatePost({ onPostCreated, avatarUrl }: { onPostCreated
     if (image) formData.append('image', image);
     const res = await createPost(formData);
     setIsSubmitting(false);
-    if (res.success && res.data) {
-      onPostCreated({ ...res.data, username: 'Tú', avatar_url: avatarUrl, likes_count: 0, comments_count: 0, hasLiked: false });
+    if (res.success) {
+      onPostCreated?.({ username: 'Tú', avatar_url: avatarUrl, likes_count: 0, comments_count: 0, hasLiked: false, created_at: new Date().toISOString(), id: 'temp-' + Date.now() });
       setContent(''); setImage(null); setImagePreview(null);
     } else {
       alert('Error al publicar: ' + (res.error || 'Intenta de nuevo'));
@@ -51,7 +51,7 @@ export default function CreatePost({ onPostCreated, avatarUrl }: { onPostCreated
           <input
             type="text"
             className="flex-1 bg-transparent text-[14px] text-white placeholder:text-white/25 focus:outline-none"
-            placeholder="Share something..."
+            placeholder="Comparte algo..."
             value={content}
             onChange={(e) => setContent(e.target.value)}
           />
@@ -89,7 +89,7 @@ export default function CreatePost({ onPostCreated, avatarUrl }: { onPostCreated
                 ? 'bg-white/5 text-white/30 cursor-not-allowed'
                 : 'bg-[var(--neon-purple)] text-white hover:opacity-90 active:scale-95'
             }`}>
-            {isSubmitting ? '...' : 'Post'}
+            {isSubmitting ? '...' : 'Publicar'}
           </button>
         </div>
       </form>

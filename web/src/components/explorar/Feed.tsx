@@ -1,10 +1,11 @@
 'use client';
-import { useState, useEffect } from 'react';
-import CreatePost from './CreatePost';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import PostCard from './PostCard';
 import { motion, Variants } from 'framer-motion';
 import { getFeed } from '@/actions/socialActions';
  
+const POSTS_PER_PAGE = 4;
+
 const tabs = ['Recientes', 'Amigos', 'Populares'] as const;
 type Tab = typeof tabs[number];
  
@@ -24,35 +25,55 @@ export default function Feed({
   currentUserId: string;
   currentUserAvatar?: string;
 }) {
-  const [posts, setPosts] = useState(initialPosts);
+  const [allPosts, setAllPosts] = useState(initialPosts);
+  const [visibleCount, setVisibleCount] = useState(POSTS_PER_PAGE);
   const [activeTab, setActiveTab] = useState<Tab>('Recientes');
   const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const loaderRef = useRef<HTMLDivElement>(null);
+
+  const visiblePosts = allPosts.slice(0, visibleCount);
+  const hasMore = visibleCount < allPosts.length;
 
   // Re-fetch posts when the tab changes
   useEffect(() => {
     let isMounted = true;
     const fetchTabPosts = async () => {
       setIsLoading(true);
+      setVisibleCount(POSTS_PER_PAGE); // Reset pagination on tab change
       const res = await getFeed(activeTab);
       if (isMounted && res.success && res.data) {
-        setPosts(res.data);
+        setAllPosts(res.data);
       }
       if (isMounted) setIsLoading(false);
     };
 
-    // Only fetch if it's not the initial mount of 'Recientes' 
-    // to avoid double loading on page load
     fetchTabPosts();
-
     return () => { isMounted = false; };
   }, [activeTab]);
 
-  const handlePostCreated = (newPost: any) => {
-    // If we are in "Recientes", show immediately. Otherwise, maybe re-fetch or let it be.
-    if (activeTab === 'Recientes') {
-      setPosts([newPost, ...posts]);
-    }
-  };
+  // Infinite scroll observer
+  const loadMore = useCallback(() => {
+    if (isLoadingMore || !hasMore) return;
+    setIsLoadingMore(true);
+    // Simulate network delay for UX (data is already in memory)
+    setTimeout(() => {
+      setVisibleCount(prev => prev + POSTS_PER_PAGE);
+      setIsLoadingMore(false);
+    }, 700);
+  }, [isLoadingMore, hasMore]);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) loadMore();
+      },
+      { threshold: 0.1 }
+    );
+    const el = loaderRef.current;
+    if (el) observer.observe(el);
+    return () => { if (el) observer.unobserve(el); };
+  }, [loadMore]);
 
   const containerVariants: Variants = {
     hidden: { opacity: 0 },
@@ -84,8 +105,6 @@ export default function Feed({
           >
             Explorar
           </h1>
-
-
         </div>
 
         {/* Tabs */}
@@ -131,14 +150,15 @@ export default function Feed({
         animate="show"
         key={activeTab}
       >
+        {/* Tab-switch loading overlay */}
         {isLoading && (
           <div className="absolute inset-0 z-10 flex justify-center items-start pt-10" style={{ background: 'rgba(24, 24, 24, 0.4)', backdropFilter: 'blur(4px)', borderRadius: 24 }}>
             <div className="w-8 h-8 rounded-full border-2 border-t-[#f6339a] border-white/10 animate-spin" />
           </div>
         )}
         
-        {posts.length > 0 ? (
-          posts.map(post => (
+        {visiblePosts.length > 0 ? (
+          visiblePosts.map(post => (
             <motion.div key={post.id} variants={itemVariants}>
               <PostCard post={post} currentUserId={currentUserId} />
             </motion.div>
@@ -175,17 +195,23 @@ export default function Feed({
         )}
       </motion.div>
 
-      {/* ── Divider with label ── */}
-      <div className="flex items-center gap-3 px-1 my-8">
-        <div className="flex-1" style={{ height: 1, background: 'rgba(255,255,255,0.05)' }} />
-        <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.18)', fontWeight: 600, letterSpacing: '0.06em' }}>
-          NUEVA PUBLICACIÓN
-        </span>
-        <div className="flex-1" style={{ height: 1, background: 'rgba(255,255,255,0.05)' }} />
-      </div>
-
-      {/* ── Create Post ── */}
-      <CreatePost onPostCreated={handlePostCreated} avatarUrl={currentUserAvatar} />
+      {/* ── Infinite Scroll Trigger + Spinner ── */}
+      {!isLoading && (
+        <div ref={loaderRef} className="flex justify-center py-8">
+          {isLoadingMore && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="flex flex-col items-center gap-3"
+            >
+              <div className="w-9 h-9 rounded-full border-2 border-t-[#f6339a] border-white/10 animate-spin" />
+              <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.2)', fontWeight: 600 }}>
+                Cargando más...
+              </p>
+            </motion.div>
+          )}
+        </div>
+      )}
     </div>
   );
 }

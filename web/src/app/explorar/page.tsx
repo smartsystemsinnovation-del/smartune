@@ -1,6 +1,7 @@
 import Feed from '@/components/explorar/Feed';
 import StoriesRow from '@/components/explorar/StoriesRow';
 import RecentFollowers from '@/components/explorar/RecentFollowers';
+import CreatePost from '@/components/explorar/CreatePost';
 import { createClient } from '@/utils/supabase/server';
 import { redirect } from 'next/navigation';
 import { getFeed } from '@/actions/socialActions';
@@ -55,15 +56,25 @@ export default async function ExplorarPage() {
                 <StoriesRow currentUserAvatar={profile?.avatar_url} />
               </section>
 
-              {/* Suggestions */}
+              {/* Sugerencias */}
               <section>
                 <div className="flex items-center justify-between mb-5">
-                  <h3 className="text-[17px] font-bold text-white">Suggestions</h3>
+                  <h3 className="text-[17px] font-bold text-white">Sugerencias</h3>
                   <span className="text-[11px] text-white/25 cursor-pointer hover:text-white/50 transition-colors">
-                    See all
+                    Ver todos
                   </span>
                 </div>
                 <RecentFollowers />
+              </section>
+
+              {/* Nueva Publicación */}
+              <section>
+                <div className="flex items-center gap-2 mb-5">
+                  <div className="flex-1" style={{ height: 1, background: 'rgba(255,255,255,0.06)' }} />
+                  <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.18)', fontWeight: 700, letterSpacing: '0.1em' }}>NUEVA PUBLICACIÓN</span>
+                  <div className="flex-1" style={{ height: 1, background: 'rgba(255,255,255,0.06)' }} />
+                </div>
+                <CreatePost avatarUrl={profile?.avatar_url} />
               </section>
             </div>
           </aside>
