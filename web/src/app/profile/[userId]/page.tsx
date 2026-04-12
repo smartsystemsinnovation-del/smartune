@@ -23,21 +23,30 @@ interface ProfileData {
   rol?: string;
 }
 
-export default function PublicProfilePage({ params }: { params: { userId: string } }) {
+export default function PublicProfilePage({ params }: { params: Promise<{ userId: string }> }) {
   const [profile, setProfile] = useState<ProfileData | null>(null);
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
   const [expandedPost, setExpandedPost] = useState<string | null>(null);
+  const [userId, setUserId] = useState<string>('');
   const supabase = createClient();
 
   useEffect(() => {
+    // Resolve params first (Next.js 15+ async params)
+    params.then(({ userId: uid }) => {
+      setUserId(uid);
+    });
+  }, [params]);
+
+  useEffect(() => {
+    if (!userId) return;
     async function fetchProfile() {
       try {
         // Fetch user profile
         const { data: profileData, error: profileError } = await supabase
           .from('usuarios')
           .select('id, nombre, avatar_url, instrumento, gustos_musicales, rol')
-          .eq('id', params.userId)
+          .eq('id', userId)
           .single();
 
         if (profileError || !profileData) {
@@ -51,7 +60,7 @@ export default function PublicProfilePage({ params }: { params: { userId: string
         const { data: postsData } = await supabase
           .from('vw_posts_with_details')
           .select('*')
-          .eq('user_id', params.userId)
+          .eq('user_id', userId)
           .order('created_at', { ascending: false });
 
         setPosts(postsData || []);
@@ -63,7 +72,7 @@ export default function PublicProfilePage({ params }: { params: { userId: string
     }
 
     fetchProfile();
-  }, [params.userId, supabase]);
+  }, [userId, supabase]);
 
   const avatarSrc = profile?.avatar_url || `${DEFAULT_AVATAR}${encodeURIComponent(profile?.nombre || 'U')}`;
 

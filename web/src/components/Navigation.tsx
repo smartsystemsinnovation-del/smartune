@@ -139,10 +139,10 @@ export default function Navigation() {
                       <p className="text-white font-bold truncate">@{getUsername()}</p>
                     </div>
                     <div className={styles.dropdownDivider} />
-                    <Link href="/profile" className={styles.dropdownItem} onClick={() => setShowDropdown(false)}>
+                    <Link href={`/profile/${user?.id}`} className={styles.dropdownItem} onClick={() => setShowDropdown(false)}>
                       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <circle cx="12" cy="12" r="10" />
-                        <path d="M12 8v8M8 12h8" />
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                        <circle cx="12" cy="7" r="4" />
                       </svg>
                       Mi Perfil
                     </Link>
