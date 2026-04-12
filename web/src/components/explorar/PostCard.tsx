@@ -26,6 +26,107 @@ const MoreIcon = ({ className }: { className?: string }) => (
   </svg>
 );
 
+const PlayIcon = ({ className }: { className?: string }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="currentColor">
+    <path d="M8 5v14l11-7z" />
+  </svg>
+);
+
+const PauseIcon = ({ className }: { className?: string }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="currentColor">
+    <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" />
+  </svg>
+);
+
+/* ── Custom Neon Audio Player ── */
+function AudioPlayer({ src }: { src: string }) {
+  const audioRef = useRef<HTMLAudioElement>(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [progress, setProgress] = useState(0);
+
+  const togglePlay = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (audioRef.current) {
+      if (isPlaying) {
+        audioRef.current.pause();
+      } else {
+        audioRef.current.play();
+      }
+      setIsPlaying(!isPlaying);
+    }
+  };
+
+  const handleTimeUpdate = () => {
+    if (audioRef.current) {
+      const current = audioRef.current.currentTime;
+      const duration = audioRef.current.duration;
+      if (duration > 0) {
+        setProgress((current / duration) * 100);
+      }
+    }
+  };
+
+  const handleEnded = () => {
+    setIsPlaying(false);
+    setProgress(0);
+  };
+
+  const handleSeek = (e: React.MouseEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (audioRef.current) {
+      const bounds = e.currentTarget.getBoundingClientRect();
+      const x = e.clientX - bounds.left;
+      const pct = Math.max(0, Math.min(1, x / bounds.width));
+      const newTime = pct * audioRef.current.duration;
+      if (isFinite(newTime)) {
+        audioRef.current.currentTime = newTime;
+        setProgress(pct * 100);
+      }
+    }
+  };
+
+  return (
+    <div 
+      className="w-full flex items-center gap-3 bg-white/[0.03] border border-[#f6339a]/30 rounded-[16px] px-4 py-3 mt-3 shadow-[0_4px_20px_rgba(246,51,154,0.1)] transition-all hover:bg-white/[0.05]"
+      onClick={(e) => e.preventDefault()}
+    >
+      <audio 
+        ref={audioRef} 
+        src={src} 
+        onTimeUpdate={handleTimeUpdate} 
+        onEnded={handleEnded} 
+        className="hidden" 
+      />
+      
+      <button 
+        onClick={togglePlay}
+        className="w-10 h-10 rounded-full bg-gradient-to-tr from-[#f6339a] to-[#9810fa] flex items-center justify-center flex-shrink-0 text-white shadow-[0_0_15px_rgba(246,51,154,0.4)] hover:scale-105 active:scale-95 transition-all"
+      >
+        {isPlaying ? <PauseIcon className="w-5 h-5" /> : <PlayIcon className="w-5 h-5 ml-1" />}
+      </button>
+
+      <div className="flex-1 flex flex-col justify-center gap-1.5 cursor-pointer py-2" onClick={handleSeek}>
+        <div className="w-full h-1.5 bg-white/10 rounded-full overflow-hidden relative">
+          <div 
+            className="absolute top-0 left-0 h-full bg-gradient-to-r from-[#f6339a] to-[#9810fa] rounded-full transition-all duration-75 ease-linear shadow-[0_0_10px_rgba(246,51,154,0.8)]"
+            style={{ width: `${progress}%` }}
+          />
+        </div>
+      </div>
+      
+      <div className="flex-shrink-0 ml-1">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-5 h-5 text-[#f6339a] opacity-80">
+           <path d="M9 18V5l12-2v13" />
+           <circle cx="6" cy="18" r="3" />
+           <circle cx="18" cy="16" r="3" />
+        </svg>
+      </div>
+    </div>
+  );
+}
+
 /* ── Componente de Lista de Comentarios (Reutilizable) ── */
 function CommentsList({ comments, newComment, setNewComment, handleAddComment, isSubmittingComment }: any) {
   return (
@@ -177,10 +278,17 @@ export default function PostCard({ post, currentUserId }: { post: any; currentUs
               </div>
             </header>
 
-            <div className="px-2 text-center mb-2">
+            <div className="px-2 text-center mb-2 w-full">
               <p className="text-[17px] md:text-[18px] leading-relaxed text-white/95 whitespace-pre-wrap break-words font-light group-hover/content:text-white transition-colors">
                 {post.content}
               </p>
+              
+              {/* Reproductor de Audio Neón */}
+              {post.audio_url && (
+                <div className="mt-4 w-full">
+                  <AudioPlayer src={post.audio_url} />
+                </div>
+              )}
             </div>
           </Link>
 

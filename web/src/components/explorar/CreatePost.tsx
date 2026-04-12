@@ -37,9 +37,11 @@ export default function CreatePost({ onPostCreated, avatarUrl }: { onPostCreated
   const [content, setContent] = useState('');
   const [image, setImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [audio, setAudio] = useState<File | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const fileInputImageRef = useRef<HTMLInputElement>(null);
+  const fileInputAudioRef = useRef<HTMLInputElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -47,13 +49,28 @@ export default function CreatePost({ onPostCreated, avatarUrl }: { onPostCreated
     if (file) {
       setImage(file);
       setImagePreview(URL.createObjectURL(file));
+      removeAudio(); // Only 1 type of media for now to keep it simple, or allow both? Let's allow both if needed, but typically it's image OR audio.
+      // Wait, let's keep them separate but allow both or remove audio.
+      // I'll leave them separate so user can attach image AND audio if they want.
+    }
+  };
+
+  const handleAudioChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setAudio(file);
     }
   };
 
   const removeImage = () => {
     setImage(null);
     setImagePreview(null);
-    if (fileInputRef.current) fileInputRef.current.value = '';
+    if (fileInputImageRef.current) fileInputImageRef.current.value = '';
+  };
+
+  const removeAudio = () => {
+    setAudio(null);
+    if (fileInputAudioRef.current) fileInputAudioRef.current.value = '';
   };
 
   const autoResizeTextarea = () => {
@@ -69,12 +86,13 @@ export default function CreatePost({ onPostCreated, avatarUrl }: { onPostCreated
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!content.trim() && !image) return;
+    if (!content.trim() && !image && !audio) return;
     setIsSubmitting(true);
 
     const formData = new FormData();
     formData.append('content', content);
     if (image) formData.append('image', image);
+    if (audio) formData.append('audio', audio);
 
     const res = await createPost(formData);
     setIsSubmitting(false);
@@ -91,12 +109,13 @@ export default function CreatePost({ onPostCreated, avatarUrl }: { onPostCreated
       });
       setContent('');
       removeImage();
+      removeAudio();
     } else {
       alert('Error al publicar: ' + (res.error || 'Intenta de nuevo'));
     }
   };
 
-  const isPostable = content.trim().length > 0 || image !== null;
+  const isPostable = content.trim().length > 0 || image !== null || audio !== null;
 
   return (
     <div className="w-full max-w-[540px] mx-auto mb-10">
@@ -118,7 +137,6 @@ export default function CreatePost({ onPostCreated, avatarUrl }: { onPostCreated
 
           <div className="flex gap-4">
             <div className="relative flex-shrink-0">
-              {/* ¡Anillo degradado eliminado aquí! */}
               <img
                 src={avatarUrl || DEFAULT_AVATAR}
                 alt="Tu avatar"
@@ -157,6 +175,30 @@ export default function CreatePost({ onPostCreated, avatarUrl }: { onPostCreated
                     </button>
                   </motion.div>
                 )}
+                
+                {audio && (
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.95, y: -5 }}
+                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                    exit={{ opacity: 0, scale: 0.95, y: -5 }}
+                    className="relative mt-2 mb-2 rounded-[12px] bg-white/[0.03] border border-[#9810fa]/30 p-3 flex items-center gap-3 shadow-[0_0_15px_rgba(152,16,250,0.1)]"
+                  >
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-[#f6339a] to-[#9810fa] flex items-center justify-center flex-shrink-0 animate-pulse">
+                      <MusicNoteIcon className="w-5 h-5 text-white" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-[13px] text-white font-semibold truncate">{audio.name}</p>
+                      <p className="text-[11px] text-white/50">{(audio.size / 1024 / 1024).toFixed(2)} MB</p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={removeAudio}
+                      className="w-7 h-7 bg-black/40 rounded-full flex items-center justify-center text-white/70 hover:text-white hover:bg-black/60 transition-colors"
+                    >
+                      <CloseIcon className="w-3.5 h-3.5" />
+                    </button>
+                  </motion.div>
+                )}
               </AnimatePresence>
             </div>
           </div>
@@ -168,21 +210,24 @@ export default function CreatePost({ onPostCreated, avatarUrl }: { onPostCreated
             <div className="flex items-center gap-1.5">
               <button
                 type="button"
-                onClick={() => fileInputRef.current?.click()}
+                onClick={() => fileInputImageRef.current?.click()}
                 className="flex items-center justify-center w-9 h-9 rounded-full text-[#f6339a] bg-[#f6339a]/10 hover:bg-[#f6339a]/20 transition-colors"
                 title="Añadir Imagen"
               >
                 <ImageIcon className="w-5 h-5" />
               </button>
-              <input type="file" accept="image/*" className="hidden" ref={fileInputRef} onChange={handleImageChange} />
+              <input type="file" accept="image/*" className="hidden" ref={fileInputImageRef} onChange={handleImageChange} />
 
-              <button type="button" className="flex items-center justify-center w-9 h-9 rounded-full text-white/40 hover:text-[#9810fa] hover:bg-[#9810fa]/15 transition-colors" title="Ritmo / Audio">
+              <button 
+                type="button" 
+                onClick={() => fileInputAudioRef.current?.click()}
+                className="flex items-center justify-center w-9 h-9 rounded-full text-[#9810fa] bg-[#9810fa]/10 hover:bg-[#9810fa]/20 transition-colors" 
+                title="Ritmo / Audio"
+              >
                 <MusicNoteIcon className="w-5 h-5" />
               </button>
+              <input type="file" accept="audio/mpeg, audio/mp3" className="hidden" ref={fileInputAudioRef} onChange={handleAudioChange} />
 
-              <button type="button" className="flex items-center justify-center w-9 h-9 rounded-full text-white/40 hover:text-yellow-400 hover:bg-yellow-400/15 transition-colors" title="Destacar con IA">
-                <SparkleIcon className="w-5 h-5" />
-              </button>
             </div>
 
             <button

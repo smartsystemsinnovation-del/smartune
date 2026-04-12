@@ -105,16 +105,18 @@ export async function createPost(formData: FormData) {
     }
 
     const content = formData.get('content') as string;
-    const file = formData.get('image') as File | null;
+    const imageFile = formData.get('image') as File | null;
+    const audioFile = formData.get('audio') as File | null;
     
     let imageUrl = null;
+    let audioUrl = null;
 
-    if (file && file.size > 0) {
-      const fileExt = file.name.split('.').pop();
+    if (imageFile && imageFile.size > 0) {
+      const fileExt = imageFile.name.split('.').pop();
       const fileName = `${userAuth.user.id}-${Date.now()}.${fileExt}`;
       const { data: uploadData, error: uploadError } = await supabase.storage
         .from('posts_images')
-        .upload(fileName, file);
+        .upload(fileName, imageFile);
 
       if (uploadError) throw uploadError;
       
@@ -125,12 +127,29 @@ export async function createPost(formData: FormData) {
       imageUrl = publicUrl;
     }
 
+    if (audioFile && audioFile.size > 0) {
+      const fileExt = audioFile.name.split('.').pop();
+      const fileName = `${userAuth.user.id}-${Date.now()}.${fileExt}`;
+      const { data: uploadData, error: uploadError } = await supabase.storage
+        .from('posts_audio')
+        .upload(fileName, audioFile);
+
+      if (uploadError) throw uploadError;
+      
+      const { data: { publicUrl } } = supabase.storage
+        .from('posts_audio')
+        .getPublicUrl(uploadData.path);
+      
+      audioUrl = publicUrl;
+    }
+
     const { error } = await supabase
       .from('posts')
       .insert({
         user_id: userAuth.user.id,
         content,
-        image_url: imageUrl
+        image_url: imageUrl,
+        audio_url: audioUrl
       });
 
     if (error) throw error;
