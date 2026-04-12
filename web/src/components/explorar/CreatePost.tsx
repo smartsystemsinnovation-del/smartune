@@ -103,12 +103,14 @@ export default function CreatePost({ onPostCreated, avatarUrl }: { onPostCreated
       {/* Contenedor de la Tarjeta */}
       <motion.div
         animate={{
-          borderColor: isFocused ? 'rgba(246, 51, 154, 0.4)' : 'rgba(255, 255, 255, 0.08)',
+          borderColor: isFocused ? 'rgba(246, 51, 154, 0.6)' : 'rgba(246, 51, 154, 0.15)',
           backgroundColor: isFocused ? '#0c0c0c' : '#0f0f0f',
-          boxShadow: isFocused ? '0 10px 40px -10px rgba(246,51,154,0.12)' : '0 10px 30px -10px rgba(0,0,0,0.3)'
+          boxShadow: isFocused 
+            ? '0 0 25px rgba(246,51,154,0.2), 0 10px 40px -10px rgba(0,0,0,0.5)' 
+            : '0 0 15px rgba(246,51,154,0.08), 0 8px 32px rgba(0,0,0,0.4)'
         }}
-        transition={{ duration: 0.3 }}
-        className="rounded-[20px] border relative overflow-hidden"
+        transition={{ duration: 0.4 }}
+        className="rounded-[28px] border relative overflow-hidden"
       >
         <div className="absolute top-0 left-0 w-full h-32 bg-gradient-to-b from-white/[0.02] to-transparent pointer-events-none" />
 

@@ -40,8 +40,8 @@ export default async function ExplorarPage() {
               <StoriesRow currentUserAvatar={profile?.avatar_url} />
             </div>
 
-            {/* Creador de Posts */}
-            <div className="mt-2">
+            {/* Creador de Posts (Sticky con sombra neón) */}
+            <div className="mt-2 sticky top-24 z-30">
               <CreatePost avatarUrl={profile?.avatar_url} />
             </div>
 
