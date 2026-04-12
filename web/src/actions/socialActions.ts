@@ -73,10 +73,20 @@ export async function getFeed(tab: 'Recientes' | 'Amigos' | 'Populares' = 'Recie
     const likedPostIds = new Set(userLikes.map(l => l.post_id));
     const followedUserIds = new Set(followingData?.map(f => f.seguido_id) || []);
 
+    // Ensure we have roles even if view is not updated in DB yet
+    const authorIds = Array.from(new Set(data.map(p => p.user_id)));
+    const { data: authorsMetadata } = await supabase
+      .from('usuarios')
+      .select('id, rol')
+      .in('id', authorIds);
+    
+    const roleMapping = new Map(authorsMetadata?.map(u => [u.id, u.rol]) || []);
+
     const posts = data.map(post => ({
       ...post,
       hasLiked: likedPostIds.has(post.id),
-      isFollowing: followedUserIds.has(post.user_id)
+      isFollowing: followedUserIds.has(post.user_id),
+      rol: post.rol || roleMapping.get(post.user_id)
     }));
 
     return { success: true, data: posts, userId: userAuth.user.id };
@@ -84,7 +94,6 @@ export async function getFeed(tab: 'Recientes' | 'Amigos' | 'Populares' = 'Recie
     return { success: false, error: error.message };
   }
 }
-
 
 export async function createPost(formData: FormData) {
   try {
@@ -98,62 +107,48 @@ export async function createPost(formData: FormData) {
     const content = formData.get('content') as string;
     const file = formData.get('image') as File | null;
     
-    if (!content && !file) {
-      return { success: false, error: 'Post cannot be empty' };
-    }
-
-    let image_url = null;
+    let imageUrl = null;
 
     if (file && file.size > 0) {
       const fileExt = file.name.split('.').pop();
-      const filePath = `${userAuth.user.id}/${Date.now()}.${fileExt}`;
-
-      const { error: uploadError } = await supabase.storage
+      const fileName = `${userAuth.user.id}-${Date.now()}.${fileExt}`;
+      const { data: uploadData, error: uploadError } = await supabase.storage
         .from('posts_images')
-        .upload(filePath, file);
+        .upload(fileName, file);
 
-      if (uploadError) {
-        return { success: false, error: uploadError.message };
-      }
-
-      const { data: publicUrlData } = supabase.storage
+      if (uploadError) throw uploadError;
+      
+      const { data: { publicUrl } } = supabase.storage
         .from('posts_images')
-        .getPublicUrl(filePath);
-        
-      image_url = publicUrlData.publicUrl;
+        .getPublicUrl(uploadData.path);
+      
+      imageUrl = publicUrl;
     }
 
-    const { data: newPost, error } = await supabase
+    const { error } = await supabase
       .from('posts')
       .insert({
         user_id: userAuth.user.id,
-        content: content || '',
-        image_url
-      })
-      .select()
-      .single();
+        content,
+        image_url: imageUrl
+      });
 
-    if (error) {
-      return { success: false, error: error.message };
-    }
-
+    if (error) throw error;
+    
     revalidatePath('/explorar');
-    return { success: true, data: newPost };
+    return { success: true };
   } catch (error: any) {
     return { success: false, error: error.message };
   }
 }
 
-export async function toggleLike(postId: string, hasLiked: boolean) {
+export async function toggleLike(postId: string, alreadyLiked: boolean) {
   try {
     const supabase = await createClient();
     const { data: userAuth } = await supabase.auth.getUser();
-    
-    if (!userAuth.user) {
-      return { success: false, error: 'Unauthorized' };
-    }
+    if (!userAuth.user) return { success: false, error: 'Unauthorized' };
 
-    if (hasLiked) {
+    if (alreadyLiked) {
       // Remove like
       const { error } = await supabase
         .from('likes')
@@ -185,7 +180,7 @@ export async function getComments(postId: string) {
         id,
         content,
         created_at,
-        usuarios ( nombre, avatar_url )
+        usuarios ( nombre, avatar_url, rol )
       `)
       .eq('post_id', postId)
       .order('created_at', { ascending: true });
@@ -201,14 +196,7 @@ export async function addComment(postId: string, content: string) {
   try {
     const supabase = await createClient();
     const { data: userAuth } = await supabase.auth.getUser();
-    
-    if (!userAuth.user) {
-      return { success: false, error: 'Unauthorized' };
-    }
-
-    if (!content.trim()) {
-      return { success: false, error: 'Comment cannot be empty' };
-    }
+    if (!userAuth.user) return { success: false, error: 'Unauthorized' };
 
     const { error } = await supabase
       .from('post_comments')
@@ -219,13 +207,14 @@ export async function addComment(postId: string, content: string) {
       });
 
     if (error) return { success: false, error: error.message };
+    revalidatePath('/explorar');
     return { success: true };
   } catch (error: any) {
     return { success: false, error: error.message };
   }
 }
 
-export async function toggleFollow(targetUserId: string, currentlyFollowing: boolean) {
+export async function toggleFollow(followedId: string, currentlyFollowing: boolean) {
   try {
     const supabase = await createClient();
     const { data: userAuth } = await supabase.auth.getUser();
@@ -235,23 +224,18 @@ export async function toggleFollow(targetUserId: string, currentlyFollowing: boo
       const { error } = await supabase
         .from('seguidores')
         .delete()
-        .match({ seguidor_id: userAuth.user.id, seguido_id: targetUserId });
-        
+        .match({ seguidor_id: userAuth.user.id, seguido_id: followedId });
       if (error) return { success: false, error: error.message };
     } else {
       const { error } = await supabase
         .from('seguidores')
-        .insert({
-          seguidor_id: userAuth.user.id,
-          seguido_id: targetUserId
-        });
-        
+        .insert({ seguidor_id: userAuth.user.id, seguido_id: followedId });
       if (error) return { success: false, error: error.message };
     }
 
-    return { success: true, isFollowing: !currentlyFollowing };
+    revalidatePath('/explorar');
+    return { success: true };
   } catch (error: any) {
     return { success: false, error: error.message };
   }
 }
-

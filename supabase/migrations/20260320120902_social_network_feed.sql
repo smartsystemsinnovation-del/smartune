@@ -92,6 +92,7 @@ SELECT
   p.user_id,
   u.nombre as username,
   u.avatar_url,
+  u.rol,
   COALESCE((SELECT count(*) FROM public.likes l WHERE l.post_id = p.id), 0) as likes_count,
   COALESCE((SELECT count(*) FROM public.post_comments c WHERE c.post_id = p.id), 0) as comments_count
 FROM public.posts p

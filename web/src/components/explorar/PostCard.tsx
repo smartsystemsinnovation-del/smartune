@@ -135,7 +135,15 @@ export default function PostCard({ post, currentUserId }: { post: any; currentUs
                 </Link>
                 {!isOwnPost && <FollowButton userId={post.user_id} initialFollowing={post.isFollowing} />}
               </div>
-              <span className="text-[11px] text-white/30 uppercase tracking-[0.1em] mt-1 font-medium">Verified Post</span>
+              {post.rol === 'profesor' ? (
+                <span className="text-[10px] text-[#FFD700] font-black uppercase tracking-[0.12em] mt-1.5 px-2 py-0.5 rounded-md bg-[#FFD700]/10 border border-[#FFD700]/20 w-fit">
+                  PROFESOR
+                </span>
+              ) : (
+                <span className="text-[10px] text-[#f6339a] font-black uppercase tracking-[0.12em] mt-1.5 px-2 py-0.5 rounded-md bg-[#f6339a]/10 border border-[#f6339a]/20 w-fit">
+                  ESTUDIANTE
+                </span>
+              )}
             </div>
           </div>
         </div>
