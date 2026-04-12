@@ -202,7 +202,6 @@ export default function PostCard({ post, currentUserId }: { post: any; currentUs
 
           {/* Acciones Inline Contenidas */}
           <div className="w-full flex justify-center gap-3 pt-4 border-t border-white/[0.03]">
-          <div className="w-full flex justify-center gap-3 pt-4 border-t border-white/[0.03]">
             <button onClick={handleLikeButton} 
               className={`flex items-center gap-2.5 px-6 py-2.5 rounded-full transition-all active:scale-95 shadow-lg ${
                 hasLiked ? 'bg-[#f6339a] text-white' : 'bg-white/10 text-white hover:bg-white/20'
