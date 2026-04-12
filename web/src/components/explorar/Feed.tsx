@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import PostCard from './PostCard';
 import { motion, Variants } from 'framer-motion';
 import { getFeed } from '@/actions/socialActions';
@@ -32,6 +32,17 @@ export default function Feed({
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const loaderRef = useRef<HTMLDivElement>(null);
 
+  // Derived values -- use refs so scroll handler always sees latest
+  const allPostsRef = useRef(allPosts);
+  const visibleCountRef = useRef(visibleCount);
+  const isLoadingMoreRef = useRef(isLoadingMore);
+  const isLoadingRef = useRef(isLoading);
+
+  allPostsRef.current = allPosts;
+  visibleCountRef.current = visibleCount;
+  isLoadingMoreRef.current = isLoadingMore;
+  isLoadingRef.current = isLoading;
+
   const visiblePosts = allPosts.slice(0, visibleCount);
   const hasMore = visibleCount < allPosts.length;
 
@@ -52,28 +63,28 @@ export default function Feed({
     return () => { isMounted = false; };
   }, [activeTab]);
 
-  // Infinite scroll observer
-  const loadMore = useCallback(() => {
-    if (isLoadingMore || !hasMore) return;
-    setIsLoadingMore(true);
-    // Simulate network delay for UX (data is already in memory)
-    setTimeout(() => {
-      setVisibleCount(prev => prev + POSTS_PER_PAGE);
-      setIsLoadingMore(false);
-    }, 700);
-  }, [isLoadingMore, hasMore]);
-
+  // Window scroll-based infinite scroll (stable: uses refs to avoid stale closures)
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting) loadMore();
-      },
-      { threshold: 0.1 }
-    );
-    const el = loaderRef.current;
-    if (el) observer.observe(el);
-    return () => { if (el) observer.unobserve(el); };
-  }, [loadMore]);
+    const handleScroll = () => {
+      if (isLoadingMoreRef.current || isLoadingRef.current) return;
+      const hasMoreNow = visibleCountRef.current < allPostsRef.current.length;
+      if (!hasMoreNow) return;
+
+      const scrolled = window.scrollY + window.innerHeight;
+      const threshold = document.documentElement.scrollHeight - 300;
+
+      if (scrolled >= threshold) {
+        setIsLoadingMore(true);
+        setTimeout(() => {
+          setVisibleCount(prev => prev + POSTS_PER_PAGE);
+          setIsLoadingMore(false);
+        }, 700);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []); // ← Empty deps: uses refs so never goes stale
 
   const containerVariants: Variants = {
     hidden: { opacity: 0 },
@@ -195,23 +206,21 @@ export default function Feed({
         )}
       </motion.div>
 
-      {/* ── Infinite Scroll Trigger + Spinner ── */}
-      {!isLoading && (
-        <div ref={loaderRef} className="flex justify-center py-8">
-          {isLoadingMore && (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="flex flex-col items-center gap-3"
-            >
-              <div className="w-9 h-9 rounded-full border-2 border-t-[#f6339a] border-white/10 animate-spin" />
-              <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.2)', fontWeight: 600 }}>
-                Cargando más...
-              </p>
-            </motion.div>
-          )}
-        </div>
-      )}
+      {/* ── Infinite Scroll Spinner (visible cuando hay más posts) ── */}
+      <div ref={loaderRef} className="flex justify-center py-10 min-h-[80px]">
+        {isLoadingMore && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="flex flex-col items-center gap-3"
+          >
+            <div className="w-9 h-9 rounded-full border-2 border-t-[#f6339a] border-white/10 animate-spin" />
+            <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.2)', fontWeight: 600 }}>
+              Cargando más...
+            </p>
+          </motion.div>
+        )}
+      </div>
     </div>
   );
 }
