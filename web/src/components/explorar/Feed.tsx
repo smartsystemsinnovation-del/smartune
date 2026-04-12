@@ -6,7 +6,14 @@ import { getFeed } from '@/actions/socialActions';
  
 const POSTS_PER_PAGE = 4;
 
-const tabs = ['Recientes', 'Amigos', 'Populares'] as const;
+const CompassIcon = () => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
+    <circle cx="12" cy="12" r="10"></circle>
+    <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon>
+  </svg>
+);
+
+const tabs = ['Para ti', 'Amigos'] as const;
 type Tab = typeof tabs[number];
  
 const EmptyIcon = () => (
@@ -27,7 +34,7 @@ export default function Feed({
 }) {
   const [allPosts, setAllPosts] = useState(initialPosts);
   const [visibleCount, setVisibleCount] = useState(POSTS_PER_PAGE);
-  const [activeTab, setActiveTab] = useState<Tab>('Recientes');
+  const [activeTab, setActiveTab] = useState<Tab>('Para ti');
   const [isLoading, setIsLoading] = useState(false);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const loaderRef = useRef<HTMLDivElement>(null);
@@ -52,7 +59,11 @@ export default function Feed({
     const fetchTabPosts = async () => {
       setIsLoading(true);
       setVisibleCount(POSTS_PER_PAGE); // Reset pagination on tab change
-      const res = await getFeed(activeTab);
+      
+      // Mapeo para el backend: 'Para ti' utiliza el filtro 'Recientes'
+      const backendTab = activeTab === 'Para ti' ? 'Recientes' : activeTab;
+      
+      const res = await getFeed(backendTab);
       if (isMounted && res.success && res.data) {
         setAllPosts(res.data);
       }
@@ -106,47 +117,35 @@ export default function Feed({
   return (
     <div className="w-full mb-24" style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
 
-      {/* ── Header ── */}
-      <div className="px-1 mb-10">
-        {/* Title row */}
-        <div className="flex items-baseline justify-between mb-16">
-          <h1
-            className="font-bold tracking-tight"
-            style={{ fontSize: 22, color: '#e8e8e8', letterSpacing: '-0.5px' }}
-          >
-            Explorar
-          </h1>
+      {/* ── HEADER EXPLORAR (Unificado con estilo TikTok/X) ── */}
+      <div className="flex flex-col gap-2 mb-8">
+        {/* Título Principal */}
+        <div className="flex items-center gap-3 px-2">
+          <div className="p-2 bg-gradient-to-tr from-[#f6339a]/20 to-[#9810fa]/20 rounded-xl text-[#f6339a]">
+            <CompassIcon />
+          </div>
+          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white">Explorar</h1>
         </div>
 
-        {/* Tabs */}
-        <div
-          className="flex items-center gap-3 p-1.5 rounded-xl"
-          style={{ background: '#1f1f1f', width: 'fit-content' }}
-        >
+        {/* Pestañas (Tabs) */}
+        <div className="flex items-center border-b border-white/10 w-full mt-4">
           {tabs.map(tab => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
-              className="relative rounded-lg transition-colors duration-150"
-              style={{
-                fontSize: 12,
-                fontWeight: 600,
-                padding: '6px 14px',
-                color: activeTab === tab ? '#e8e8e8' : 'rgba(255,255,255,0.28)',
-                background: 'transparent',
-                border: 'none',
-                cursor: 'pointer',
-              }}
+              className={`relative flex-1 py-4 text-[15px] font-bold transition-all active:scale-95 ${
+                activeTab === tab ? 'text-white' : 'text-white/40 hover:text-white/70'
+              }`}
             >
+              <span className="relative z-10">{tab}</span>
+              {/* Indicador activo (La línea rosa inferior) */}
               {activeTab === tab && (
-                <motion.span
-                  layoutId="tab-pill"
-                  className="absolute inset-0 rounded-lg"
-                  style={{ background: '#2c2c2c', zIndex: 0 }}
+                <motion.div 
+                  layoutId="activeTabLine"
+                  className="absolute bottom-0 left-1/2 -translate-x-1/2 w-14 h-1 bg-gradient-to-r from-[#f6339a] to-[#9810fa] rounded-t-full shadow-[0_0_10px_rgba(246,51,154,0.5)]"
                   transition={{ type: 'spring', stiffness: 380, damping: 30 }}
                 />
               )}
-              <span style={{ position: 'relative', zIndex: 1 }}>{tab}</span>
             </button>
           ))}
         </div>
