@@ -206,12 +206,12 @@ export default function PostCard({ post, currentUserId }: { post: any; currentUs
               <motion.div whileTap={{ scale: 0.8 }}>
                 <HeartIcon filled={hasLiked} className="w-[18px] h-[18px]" />
               </motion.div>
-              <span className="font-semibold text-[13px] tracking-wide">{likesCount > 0 ? formatCount(likesCount) : 'Like'}</span>
+              <span className="font-semibold text-[13px] tracking-wide">{formatCount(likesCount)}</span>
             </button>
 
             <button onClick={loadComments} className="flex items-center gap-2.5 px-6 py-2.5 rounded-full bg-white/[0.03] text-white/40 hover:bg-white/[0.08] hover:text-white transition-all active:scale-95">
               <CommentIcon className="w-[18px] h-[18px]" />
-              <span className="font-semibold text-[13px] tracking-wide">{Number(post.comments_count) > 0 ? formatCount(Number(post.comments_count)) : 'Comentar'}</span>
+              <span className="font-semibold text-[13px] tracking-wide">{formatCount(Number(post.comments_count) || 0)}</span>
             </button>
 
             <button className="p-3 rounded-full text-white/40 hover:text-white transition-colors ml-auto">
