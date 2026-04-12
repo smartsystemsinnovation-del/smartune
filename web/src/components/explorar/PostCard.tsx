@@ -135,7 +135,7 @@ export default function PostCard({ post, currentUserId }: { post: any; currentUs
                 </Link>
                 {!isOwnPost && <FollowButton userId={post.user_id} initialFollowing={post.isFollowing} />}
               </div>
-              {post.rol === 'profesor' ? (
+              {(post.rol || '').toLowerCase() === 'profesor' ? (
                 <span className="text-[10px] text-[#FFD700] font-black uppercase tracking-[0.12em] mt-1.5 px-2 py-0.5 rounded-md bg-[#FFD700]/10 border border-[#FFD700]/20 w-fit">
                   PROFESOR
                 </span>

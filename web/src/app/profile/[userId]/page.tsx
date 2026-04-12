@@ -89,7 +89,11 @@ export default function PublicProfilePage({ params }: { params: Promise<{ userId
           .eq('user_id', userId)
           .order('created_at', { ascending: false });
 
-          setPosts(postsData || []);
+        const mappedPosts = (postsData || []).map(p => ({
+          ...p,
+          rol: p.rol || profileData.rol
+        }));
+        setPosts(mappedPosts);
 
         // Fetch posts LIKED by this user
         const { data: likedIdsData } = await supabase
@@ -105,7 +109,15 @@ export default function PublicProfilePage({ params }: { params: Promise<{ userId
             .in('id', likedIds)
             .order('created_at', { ascending: false });
           
-          setLikedPosts(likedPostsData || []);
+          let finalLikedPosts = likedPostsData || [];
+          if (finalLikedPosts.length > 0) {
+            const authorIds = Array.from(new Set(finalLikedPosts.map(p => p.user_id)));
+            const { data: authors } = await supabase.from('usuarios').select('id, rol').in('id', authorIds);
+            const roleMap = new Map(authors?.map(a => [a.id, a.rol]) || []);
+            finalLikedPosts = finalLikedPosts.map(p => ({ ...p, rol: p.rol || roleMap.get(p.user_id) }));
+          }
+          
+          setLikedPosts(finalLikedPosts);
         } else {
           setLikedPosts([]);
         }
