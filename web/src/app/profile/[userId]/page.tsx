@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { createClient } from '@/utils/supabase/client';
 import Link from 'next/link';
+import { toggleFollow } from '@/actions/socialActions';
 
 const DEFAULT_AVATAR = 'https://ui-avatars.com/api/?background=2e1e42&color=fff&bold=true&size=150&name=';
 
@@ -28,6 +29,8 @@ export default function PublicProfilePage({ params }: { params: Promise<{ userId
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
   const [userId, setUserId] = useState<string>('');
+  const [authUserId, setAuthUserId] = useState<string | null>(null);
+  const [isFollowing, setIsFollowing] = useState(false);
   const [followersCount, setFollowersCount] = useState(0);
   const [activeTab, setActiveTab] = useState('grid');
   const supabase = createClient();
@@ -40,6 +43,10 @@ export default function PublicProfilePage({ params }: { params: Promise<{ userId
     if (!userId) return;
     async function fetchProfile() {
       try {
+        // Get auth user info
+        const { data: { user: authUser } } = await supabase.auth.getUser();
+        setAuthUserId(authUser?.id || null);
+
         const { data: profileData } = await supabase
           .from('usuarios')
           .select('id, nombre, avatar_url, instrumento, gustos_musicales, rol')
@@ -60,6 +67,17 @@ export default function PublicProfilePage({ params }: { params: Promise<{ userId
         
         setFollowersCount(fCount || 0);
 
+        // Check if authenticated user follows this profile
+        if (authUser) {
+          const { data: followDoc } = await supabase
+            .from('seguidores')
+            .select('id')
+            .match({ seguidor_id: authUser.id, seguido_id: userId })
+            .maybeSingle();
+          
+          setIsFollowing(!!followDoc);
+        }
+
         const { data: postsData } = await supabase
           .from('vw_posts_with_details')
           .select('*')
@@ -75,6 +93,23 @@ export default function PublicProfilePage({ params }: { params: Promise<{ userId
     }
     fetchProfile();
   }, [userId, supabase]);
+
+  const handleFollowToggle = async () => {
+    if (!authUserId || !userId) return;
+    
+    // Optimistic update
+    const newFollowingState = !isFollowing;
+    setIsFollowing(newFollowingState);
+    setFollowersCount(prev => newFollowingState ? prev + 1 : prev - 1);
+
+    const res = await toggleFollow(userId, isFollowing);
+    if (!res.success) {
+      // Rollback on error
+      setIsFollowing(isFollowing);
+      setFollowersCount(prev => isFollowing ? prev + 1 : prev - 1);
+      alert('Error: ' + res.error);
+    }
+  };
 
   const avatarSrc = profile?.avatar_url || `${DEFAULT_AVATAR}${encodeURIComponent(profile?.nombre || 'U')}`;
   const totalLikes = posts.reduce((sum, p) => sum + (p.likes_count || 0), 0);
@@ -151,11 +186,21 @@ export default function PublicProfilePage({ params }: { params: Promise<{ userId
               </div>
             </div>
 
-            {/* Botones de Acción (Sin botón de Mensaje) */}
+            {/* Botones de Acción */}
             <div className="flex gap-2 w-full max-w-sm mb-6">
-              <button className="flex-1 bg-gradient-to-r from-[#f6339a] to-[#9810fa] hover:brightness-110 text-white font-bold py-2.5 rounded-xl text-sm transition-all shadow-[0_0_15px_rgba(246,51,154,0.3)]">
-                Seguir
-              </button>
+              {authUserId !== userId && (
+                <button
+                  onClick={handleFollowToggle}
+                  className={`flex-1 font-bold py-2.5 rounded-xl text-sm transition-all shadow-[0_0_15px_rgba(246,51,154,0.1)] active:scale-95 ${
+                    isFollowing 
+                    ? 'bg-white/10 text-white border border-white/10 hover:bg-white/20' 
+                    : 'bg-gradient-to-r from-[#f6339a] to-[#9810fa] text-white hover:brightness-110'
+                  }`}
+                >
+                  {isFollowing ? 'Siguiendo' : 'Seguir'}
+                </button>
+              )}
+              
               <button className="bg-white/10 hover:bg-white/20 p-2.5 rounded-xl transition-all backdrop-blur-sm flex items-center justify-center">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8M16 6l-4-4-4 4M12 2v13" />
