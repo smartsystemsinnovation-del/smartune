@@ -43,6 +43,15 @@ function AudioPlayer({ src }: { src: string }) {
   const audioRef = useRef<HTMLAudioElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
+  const [duration, setDuration] = useState(0);
+  const [currentTime, setCurrentTime] = useState(0);
+
+  const formatTime = (s: number) => {
+    if (!isFinite(s)) return '0:00';
+    const m = Math.floor(s / 60);
+    const sec = Math.floor(s % 60);
+    return `${m}:${sec.toString().padStart(2, '0')}`;
+  };
 
   const togglePlay = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -60,11 +69,14 @@ function AudioPlayer({ src }: { src: string }) {
   const handleTimeUpdate = () => {
     if (audioRef.current) {
       const current = audioRef.current.currentTime;
-      const duration = audioRef.current.duration;
-      if (duration > 0) {
-        setProgress((current / duration) * 100);
-      }
+      const dur = audioRef.current.duration;
+      setCurrentTime(current);
+      if (dur > 0) setProgress((current / dur) * 100);
     }
+  };
+
+  const handleLoadedMetadata = () => {
+    if (audioRef.current) setDuration(audioRef.current.duration);
   };
 
   const handleEnded = () => {
@@ -95,7 +107,8 @@ function AudioPlayer({ src }: { src: string }) {
       <audio 
         ref={audioRef} 
         src={src} 
-        onTimeUpdate={handleTimeUpdate} 
+        onTimeUpdate={handleTimeUpdate}
+        onLoadedMetadata={handleLoadedMetadata}
         onEnded={handleEnded} 
         className="hidden" 
       />
@@ -107,12 +120,16 @@ function AudioPlayer({ src }: { src: string }) {
         {isPlaying ? <PauseIcon className="w-5 h-5" /> : <PlayIcon className="w-5 h-5 ml-1" />}
       </button>
 
-      <div className="flex-1 flex flex-col justify-center gap-1.5 cursor-pointer py-2" onClick={handleSeek}>
+      <div className="flex-1 flex flex-col justify-center gap-1.5 cursor-pointer py-1" onClick={handleSeek}>
         <div className="w-full h-1.5 bg-white/10 rounded-full overflow-hidden relative">
           <div 
             className="absolute top-0 left-0 h-full bg-gradient-to-r from-[#f6339a] to-[#9810fa] rounded-full transition-all duration-75 ease-linear shadow-[0_0_10px_rgba(246,51,154,0.8)]"
             style={{ width: `${progress}%` }}
           />
+        </div>
+        <div className="flex justify-between text-[10px] text-white/30 font-mono">
+          <span>{formatTime(currentTime)}</span>
+          <span>{formatTime(duration)}</span>
         </div>
       </div>
       
@@ -187,6 +204,7 @@ export default function PostCard({ post, currentUserId }: { post: any; currentUs
   const isOwnPost = post.user_id === currentUserId;
   const lastTapRef = useRef(0);
   const hasMedia = !!post.image_url;
+  const hasAudioOnly = !post.image_url && !!post.audio_url;
 
   const formatCount = (n: number) => {
     if (n >= 1_000_000) return (n / 1_000_000).toFixed(1) + 'M';
@@ -246,7 +264,106 @@ export default function PostCard({ post, currentUserId }: { post: any; currentUs
   const avatarSrc = post.avatar_url || `${DEFAULT_AVATAR}${encodeURIComponent(post.username || 'U')}`;
 
   /* =========================================
-     DISEÑO 1: POST DE TEXTO (MEJORADO - CENTRADO Y PREMIUM)
+     DISEÑO 1A: POST SOLO-AUDIO (TARJETA MUSICAL)
+     ========================================= */
+  if (hasAudioOnly) {
+    return (
+      <article className="w-full max-w-[540px] mx-auto mb-6 overflow-hidden shadow-lg">
+        <div className="relative rounded-[28px] border border-[#f6339a]/20 overflow-hidden bg-[#0d0d0d]">
+          {/* Fondo degradado animado */}
+          <div className="absolute inset-0 bg-gradient-to-br from-[#1a0b2e] via-[#0d0d0d] to-[#120518] opacity-90" />
+          <div className="absolute inset-0" style={{ backgroundImage: 'radial-gradient(ellipse at 20% 50%, rgba(246,51,154,0.08) 0%, transparent 60%), radial-gradient(ellipse at 80% 50%, rgba(152,16,250,0.08) 0%, transparent 60%)' }} />
+
+          <div className="relative z-10 p-6 flex flex-col items-center gap-5">
+            {/* Header del usuario */}
+            <Link href={`/profile/${post.user_id}`} className="flex flex-col items-center gap-3 group/user">
+              <div className="relative">
+                <div className="absolute inset-[-8px] bg-gradient-to-tr from-[#f6339a] to-[#9810fa] blur-2xl opacity-40 rounded-full" />
+                <img src={avatarSrc} alt="" className="relative w-16 h-16 rounded-full object-cover border-2 border-[#f6339a]/60 shadow-[0_0_25px_rgba(246,51,154,0.5)] transition-transform group-hover/user:scale-105" />
+              </div>
+              <div className="text-center">
+                <p className="font-bold text-white text-[15px] group-hover/user:text-[#f6339a] transition-colors">{post.username || 'Usuario'}</p>
+                {(post.rol || '').toLowerCase() === 'profesor' ? (
+                  <span className="text-[10px] text-[#FFD700] font-black uppercase tracking-widest px-2 py-0.5 rounded-md bg-[#FFD700]/10 border border-[#FFD700]/20">PROFESOR</span>
+                ) : (
+                  <span className="text-[10px] text-[#f6339a] font-black uppercase tracking-widest px-2 py-0.5 rounded-md bg-[#f6339a]/10 border border-[#f6339a]/20">ESTUDIANTE</span>
+                )}
+              </div>
+            </Link>
+
+            {/* Visualizador de Ondas Animado */}
+            <div className="flex items-end justify-center gap-[3px] h-12 px-2">
+              {[0.4,0.7,1,0.6,0.9,0.5,0.8,1,0.6,0.75,0.45,0.9,0.65,1,0.5,0.8,0.6,0.9,0.4,0.7].map((h, i) => (
+                <div
+                  key={i}
+                  className="w-1 rounded-full bg-gradient-to-t from-[#f6339a] to-[#9810fa]"
+                  style={{
+                    height: `${h * 100}%`,
+                    opacity: 0.4 + h * 0.6,
+                    animation: `waveBar 1.2s ease-in-out ${i * 0.06}s infinite alternate`,
+                  }}
+                />
+              ))}
+            </div>
+
+            {/* Texto del post */}
+            {post.content && (
+              <p className="text-white/80 text-[15px] text-center leading-relaxed font-light px-2">{post.content}</p>
+            )}
+
+            {/* Reproductor */}
+            <div className="w-full">
+              <AudioPlayer src={post.audio_url} />
+            </div>
+
+            {/* Etiqueta de audio */}
+            <div className="flex items-center gap-2 text-[#9810fa]/70 text-[11px] font-semibold uppercase tracking-widest">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-3.5 h-3.5">
+                <path d="M9 18V5l12-2v13" /><circle cx="6" cy="18" r="3" /><circle cx="18" cy="16" r="3" />
+              </svg>
+              Audio compartido
+            </div>
+
+            {/* Separador + acciones */}
+            <div className="w-full flex justify-center gap-4 pt-4 border-t border-white/[0.05]">
+              <button onClick={handleLikeButton} className="flex items-center gap-2.5 px-6 py-2.5 rounded-full bg-white/[0.06] text-white hover:bg-white/[0.12] transition-all active:scale-95">
+                <motion.div whileTap={{ scale: 0.8 }}>
+                  <HeartIcon filled={hasLiked} className="w-5 h-5" />
+                </motion.div>
+                <span className={`font-extrabold text-[13px] ${hasLiked ? 'text-[#f6339a]' : 'text-white'}`}>{formatCount(likesCount)}</span>
+              </button>
+              <button onClick={loadComments} className="flex items-center gap-2.5 px-6 py-2.5 rounded-full bg-white/[0.06] text-white hover:bg-white/[0.12] transition-all active:scale-95">
+                <CommentIcon className="w-5 h-5" />
+                <span className="font-extrabold text-[13px]">{formatCount(Number(post.comments_count) || 0)}</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Comentarios */}
+        <AnimatePresence>
+          {showComments && (
+            <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="border-t border-white/5 bg-black/20 overflow-hidden rounded-b-[28px]">
+              <div className="max-h-[350px]">
+                <CommentsList comments={comments} newComment={newComment} setNewComment={setNewComment} handleAddComment={handleAddComment} isSubmittingComment={isSubmittingComment} />
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* CSS de animación de ondas */}
+        <style>{`
+          @keyframes waveBar {
+            from { transform: scaleY(0.3); }
+            to   { transform: scaleY(1); }
+          }
+        `}</style>
+      </article>
+    );
+  }
+
+  /* =========================================
+     DISEÑO 1B: POST DE TEXTO
      ========================================= */
   if (!hasMedia) {
     return (
