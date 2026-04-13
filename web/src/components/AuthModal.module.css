@@ -177,24 +177,41 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 12px;
-  background: white;
-  color: #333;
+  gap: 14px;
+  background: rgba(255, 255, 255, 0.05);
+  color: white;
   padding: 14px 20px;
-  border-radius: 8px;
+  border-radius: 12px;
   font-size: 15px;
-  font-family: var(--font-inter);
-  font-weight: 600;
-  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-  border: 1px solid rgba(255,255,255,0.8);
+  font-family: inherit;
+  font-weight: 500;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   width: 100%;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
 }
 
-.googleBtn:hover {
-  background: #fdfdfd;
+.googleBtn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
   transform: translateY(-2px);
-  box-shadow: 0 6px 15px rgba(255, 255, 255, 0.1);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+}
+
+.googleIconWrapper {
+  background: white;
+  padding: 6px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.googleBtn span {
+  letter-spacing: 0.3px;
 }
 
 .successMessage {
