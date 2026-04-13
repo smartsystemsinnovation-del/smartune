@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
+// Forzamos el uso de la API key desde el entorno
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
 
 export async function POST(request: Request) {
@@ -11,14 +12,16 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'El prompt es obligatorio' }, { status: 400 });
     }
 
+    // Usamos 'gemini-1.5-flash' que es la versión más estable y rápida
     const model = genAI.getGenerativeModel({ 
       model: "gemini-1.5-flash",
-      systemInstruction: mode === 'chat' 
-        ? "Actúa como un productor musical experto y asistente creativo de SmarTune. Responde a preguntas sobre teoría musical, consejos de producción, historia de la música o ayuda técnica de forma breve y profesional en español. Mantén un tono inspirador y moderno."
-        : "Actúa como un compositor musical de IA de SmarTune. Tu tarea es generar metadatos creativos para una canción basada en la descripción del usuario. Debes responder estrictamente en formato JSON con los siguientes campos: title, artist, mood, bpm (número), y cover_style (breve descripción de la portada)."
     });
 
-    const result = await model.generateContent(prompt);
+    const systemInstruction = mode === 'chat' 
+      ? "Actúa como un productor musical experto y asistente creativo de SmarTune. Responde a preguntas sobre teoría musical, consejos de producción, historia de la música o ayuda técnica de forma breve y profesional en español. Mantén un tono inspirador y moderno."
+      : "Actúa como un compositor musical de IA de SmarTune. Genera metadatos creativos para una canción basada en la descripción del usuario. Debes responder estrictamente en formato JSON con los campos: title, artist, mood, bpm (número).";
+
+    const result = await model.generateContent(`${systemInstruction}\n\nUsuario: ${prompt}`);
     const response = await result.response;
     const text = response.text();
 
@@ -28,7 +31,6 @@ export async function POST(request: Request) {
 
     // Modo Generación: Intentar parsear el JSON
     try {
-      // Limpiar posibles bloques de código markdown que Gemini a veces añade
       const cleanJson = text.replace(/```json|```/g, '').trim();
       const aiMetadata = JSON.parse(cleanJson);
       
@@ -43,7 +45,6 @@ export async function POST(request: Request) {
         isFallback: false
       });
     } catch (parseError) {
-      console.error("Error parseando respuesta de Gemini:", text);
       return NextResponse.json({
         id: `ai-fallback-${Date.now()}`,
         title: `${prompt.substring(0, 15)}...`,
@@ -59,7 +60,7 @@ export async function POST(request: Request) {
   } catch (error: any) {
     console.error("Gemini API Error:", error);
     return NextResponse.json({ 
-      error: 'Error al procesar con Gemini', 
+      error: 'Error al conectar con Gemini. Verifica que tu API Key tenga permisos para Gemini 1.5 Flash.', 
       details: error.message 
     }, { status: 500 });
   }
