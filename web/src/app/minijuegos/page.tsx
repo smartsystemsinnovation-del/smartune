@@ -119,7 +119,7 @@ export default function ArcadeLobbyPage() {
                   <Link href="/minijuegos/smar-tiles" className="w-full sm:w-auto inline-block">
                     <motion.button
                       whileTap={{ scale: 0.96 }}
-                      className="w-full sm:w-auto px-6 py-2.5 bg-white text-black font-extrabold text-[13px] rounded-full transition-all duration-300 shadow-[0_0_15px_rgba(255,255,255,0.3)] hover:shadow-[0_0_25px_rgba(255,255,255,0.5)] flex items-center justify-center gap-2"
+                      className="w-full sm:w-auto px-6 py-2.5 bg-gradient-to-r from-[#00ffff] to-[#00bfff] text-white font-extrabold text-[13px] rounded-full transition-all duration-300 shadow-[0_0_15px_rgba(0,255,255,0.3)] hover:shadow-[0_0_25px_rgba(0,255,255,0.5)] flex items-center justify-center gap-2"
                     >
                       <PlayIcon />
                       JUGAR AHORA
