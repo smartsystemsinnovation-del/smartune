@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { fetchYouTubeSongs } from '@/utils/youtube';
 
-export const revalidate = 3600; // Cache for 1 hour to deeply save API Quota
+export const revalidate = 86400; // Cache for 24 hours to deeply save API Quota
 
 export async function GET() {
   try {
