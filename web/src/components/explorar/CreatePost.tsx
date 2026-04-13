@@ -1,6 +1,7 @@
 'use client';
 import { useState, useRef, useEffect } from 'react';
 import { createPost } from '@/actions/socialActions';
+import { createClient } from '@/utils/supabase/client';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const DEFAULT_AVATAR = 'https://ui-avatars.com/api/?background=121212&color=fff&bold=true&size=128&name=U';
@@ -89,15 +90,45 @@ export default function CreatePost({ onPostCreated, avatarUrl }: { onPostCreated
     if (!content.trim() && !image && !audio) return;
     setIsSubmitting(true);
 
-    const formData = new FormData();
-    formData.append('content', content);
-    if (image) formData.append('image', image);
-    if (audio) formData.append('audio', audio);
+    try {
+      const supabase = createClient();
+      let imageUrl: string | null = null;
+      let audioUrl: string | null = null;
 
-    const res = await createPost(formData);
-    setIsSubmitting(false);
+      // Upload image directly from client (avoid server action body limit)
+      if (image && image.size > 0) {
+        const fileExt = image.name.split('.').pop();
+        const fileName = `${Date.now()}-${Math.random().toString(36).slice(2)}.${fileExt}`;
+        const { data: uploadData, error: uploadError } = await supabase.storage
+          .from('posts_images')
+          .upload(fileName, image);
+        if (uploadError) throw new Error('Error al subir imagen: ' + uploadError.message);
+        const { data: { publicUrl } } = supabase.storage.from('posts_images').getPublicUrl(uploadData.path);
+        imageUrl = publicUrl;
+      }
 
-    if (res.success) {
+      // Upload audio directly from client (avoid server action body limit)
+      if (audio && audio.size > 0) {
+        const fileExt = audio.name.split('.').pop();
+        const fileName = `${Date.now()}-${Math.random().toString(36).slice(2)}.${fileExt}`;
+        const { data: uploadData, error: uploadError } = await supabase.storage
+          .from('posts_audio')
+          .upload(fileName, audio);
+        if (uploadError) throw new Error('Error al subir audio: ' + uploadError.message);
+        const { data: { publicUrl } } = supabase.storage.from('posts_audio').getPublicUrl(uploadData.path);
+        audioUrl = publicUrl;
+      }
+
+      // Send only URLs (not files) to the server action
+      const formData = new FormData();
+      formData.append('content', content);
+      if (imageUrl) formData.append('image_url', imageUrl);
+      if (audioUrl) formData.append('audio_url', audioUrl);
+
+      const res = await createPost(formData);
+      setIsSubmitting(false);
+
+      if (res.success) {
       onPostCreated?.({
         username: 'Tú',
         avatar_url: avatarUrl,
@@ -110,8 +141,12 @@ export default function CreatePost({ onPostCreated, avatarUrl }: { onPostCreated
       setContent('');
       removeImage();
       removeAudio();
-    } else {
-      alert('Error al publicar: ' + (res.error || 'Intenta de nuevo'));
+      } else {
+        alert('Error al publicar: ' + (res.error || 'Intenta de nuevo'));
+      }
+    } catch (err: any) {
+      setIsSubmitting(false);
+      alert('Error: ' + (err.message || 'Intenta de nuevo'));
     }
   };
 
