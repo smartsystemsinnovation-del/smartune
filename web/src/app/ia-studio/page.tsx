@@ -125,7 +125,7 @@ export default function IAStudioPage() {
             <h1 className="text-xl font-extrabold tracking-tight">SmarTune <span className="font-light opacity-50">Studio</span></h1>
             <p className="text-[10px] text-white/40 uppercase tracking-[0.2em] font-bold flex items-center gap-1.5 mt-0.5">
               <span className="w-1.5 h-1.5 rounded-full bg-[#00ffff] animate-pulse shadow-[0_0_5px_#00ffff]"></span>
-              Powered by Gemini 1.5
+              Powered by Gemini 2.5
             </p>
           </div>
         </div>
@@ -227,7 +227,7 @@ export default function IAStudioPage() {
                       {/* Cover y Animación de Vinilo/CD */}
                       <div className="relative shrink-0 w-32 h-32 sm:w-40 sm:h-40 group">
                         <div className="absolute inset-0 bg-gradient-to-tr from-[#00ffff] to-[#f6339a] rounded-xl blur-lg opacity-20 group-hover:opacity-40 transition-opacity duration-500"></div>
-                        <img src={result.coverUrl} className="relative w-full h-full object-cover rounded-xl border border-white/10 shadow-lg z-10" alt="Cover" />
+                        <img src={result?.coverUrl} className="relative w-full h-full object-cover rounded-xl border border-white/10 shadow-lg z-10" alt="Cover" />
                         {/* Pequeño disco simulado asomando */}
                         <div className="absolute top-1/2 -translate-y-1/2 -right-4 w-3/4 h-[90%] rounded-full bg-black border border-white/10 shadow-inner -z-0 group-hover:-right-8 transition-all duration-500 flex items-center justify-center">
                           <div className="w-1/3 h-1/3 rounded-full border-2 border-[#111]"></div>
@@ -373,15 +373,15 @@ export default function IAStudioPage() {
 
       </main>
 
-      {/* ── Estilos Globales Ocultos para Customización ── */}
-      <style jsx global>{`
+      {/* ── Estilos Globales para Customización ── */}
+      <style dangerouslySetInnerHTML={{ __html: `
         /* Scrollbar sutil e invisible hasta que haces hover */
         .custom-scrollbar::-webkit-scrollbar { width: 4px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
         .custom-scrollbar:hover::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); }
         
-        /* Modificando el reproductor de audio nativo para que parezca de Spotify/Apple Music */
+        /* Modificando el reproductor de audio nativo */
         .custom-audio {
           height: 44px;
         }
@@ -400,7 +400,7 @@ export default function IAStudioPage() {
         .custom-audio::-webkit-media-controls-volume-slider {
           filter: invert(100%) sepia(100%) saturate(10000%) hue-rotate(240deg) brightness(1.5);
         }
-      `}</style>
+      `}} />
     </div>
   );
 }
