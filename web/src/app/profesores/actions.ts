@@ -13,7 +13,7 @@ export async function connectWithTeacher(teacherId: string) {
 
   // Verificar si ya existe una conexión
   const { data: existingConnection } = await supabase
-    .from('student_teacher_connections')
+    .from('relaciones_profesor_alumno')
     .select('id')
     .eq('student_id', user.id)
     .eq('teacher_id', teacherId)
@@ -24,7 +24,7 @@ export async function connectWithTeacher(teacherId: string) {
   }
 
   const { error } = await supabase
-    .from('student_teacher_connections')
+    .from('relaciones_profesor_alumno')
     .insert({
       student_id: user.id,
       teacher_id: teacherId,

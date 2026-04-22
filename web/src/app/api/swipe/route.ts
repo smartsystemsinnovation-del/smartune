@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/utils/supabase/server';
+import { swipeSchema } from '@/domain/validators/userSchemas';
 
 // Temporary counters for views/discards (since they are less critical than likes)
 let interactionCounts = {
@@ -36,14 +37,20 @@ export async function GET() {
     return NextResponse.json(songs);
   } catch (error: any) {
     console.error('API ERROR /api/swipe GET:', error.message);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json({ error: 'Ocurrió un error general en el servidor.' }, { status: 500 });
   }
 }
 
 export async function POST(request: Request) {
   try {
-    const body = await request.json();
-    const { song, action } = body;
+    const rawBody = await request.json();
+    const parsed = swipeSchema.safeParse(rawBody);
+
+    if (!parsed.success) {
+      return NextResponse.json({ error: 'Input inválido', details: parsed.error.issues }, { status: 400 });
+    }
+
+    const { song, action } = parsed.data;
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
 
@@ -60,10 +67,10 @@ export async function POST(request: Request) {
         .from('favoritos')
         .upsert({
           usuario_id: user.id,
-          youtube_id: song.id,
-          titulo: song.title,
-          artista: song.artist,
-          cover_url: song.coverUrl
+          youtube_id: song!.id,
+          titulo: song!.title,
+          artista: song!.artist,
+          cover_url: song!.coverUrl
         }, { onConflict: 'usuario_id,youtube_id' });
 
       if (error) throw error;

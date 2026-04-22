@@ -42,7 +42,7 @@ export default async function TeacherClassesPage({ params }: { params: Promise<{
 
   // 2. Comprobar si están conectados
   const { data: connection } = await supabase
-    .from('student_teacher_connections')
+    .from('relaciones_profesor_alumno')
     .select('id')
     .eq('student_id', user.id)
     .eq('teacher_id', teacherId)

@@ -15,7 +15,7 @@ export async function GET() {
 
     if (error) {
       console.error('API Error Fetching Stats:', error);
-      return NextResponse.json({ error: error.message }, { status: 500 });
+      return NextResponse.json({ error: 'Ocurrió un error general en el servidor.' }, { status: 500 });
     }
 
     const studentsMap: Record<string, number> = {};

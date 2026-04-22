@@ -27,8 +27,8 @@ export async function getSpotifyAccessToken() {
 export async function fetchSpotifySongs() {
   const token = await getSpotifyAccessToken();
   
-  // REMOVING LIMIT COMPLETELY - Spotify defaults to 20
-  const query = encodeURIComponent(`hardstyle workout`);
+  const rawQuery = process.env.SPOTIFY_DEFAULT_QUERY || 'top hits global';
+  const query = encodeURIComponent(rawQuery);
   const url = `https://api.spotify.com/v1/search?q=${query}&type=track`;
 
   const response = await fetch(url, {

@@ -1,11 +1,18 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/utils/supabase/server';
 import { google } from 'googleapis';
+import { createClassSchema } from '@/domain/validators/teacherSchemas';
 
 export async function POST(req: Request) {
   try {
-    const body = await req.json();
-    const { teacherId, studentId, title, description, scheduledAt } = body;
+    const rawBody = await req.json();
+    const parsed = createClassSchema.safeParse(rawBody);
+
+    if (!parsed.success) {
+      return NextResponse.json({ error: 'Input inválido', details: parsed.error.issues }, { status: 400 });
+    }
+
+    const { teacherId, studentId, title, description, scheduledAt } = parsed.data;
 
     const supabase = await createClient();
     const { data: { session } } = await supabase.auth.getSession();
@@ -106,6 +113,6 @@ export async function POST(req: Request) {
 
   } catch (error: any) {
     console.error("Error general API Route:", error);
-    return NextResponse.json({ error: 'Intercepción de falla en el servidor', details: error.message }, { status: 500 });
+    return NextResponse.json({ error: 'Intercepción de falla en el servidor', details: 'Causa interna oculta.' }, { status: 500 });
   }
 }

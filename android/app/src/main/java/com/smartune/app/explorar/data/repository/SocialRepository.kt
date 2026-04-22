@@ -170,9 +170,9 @@ class SocialRepository {
     // ── Comments ──
     suspend fun getComments(postId: String): List<Comment> {
         return try {
-            SupabaseClient.client.postgrest["post_comments"]
+            SupabaseClient.client.postgrest["comentarios"]
                 .select(Columns.raw("*, usuarios(nombre, avatar_url)")) {
-                    filter { eq("post_id", postId) }
+                    filter { eq("target_id", postId); eq("target_type", "post") }
                     order("created_at", io.github.jan.supabase.postgrest.query.Order.ASCENDING)
                 }
                 .decodeList<Comment>()
@@ -186,8 +186,9 @@ class SocialRepository {
         syncUserProfile()
         return try {
             val userId = SupabaseClient.auth.currentSessionOrNull()?.user?.id ?: return false
-            SupabaseClient.client.postgrest["post_comments"].insert(buildJsonObject {
-                put("post_id", postId)
+            SupabaseClient.client.postgrest["comentarios"].insert(buildJsonObject {
+                put("target_id", postId)
+                put("target_type", "post")
                 put("user_id", userId)
                 put("content", content)
             })

@@ -53,6 +53,6 @@ export async function POST(req: Request) {
     return NextResponse.json({ meetLink, success: true });
   } catch (error: any) {
     console.error('Error en /api/meet/instant:', error);
-    return NextResponse.json({ error: error.message || 'Error interno del servidor' }, { status: 500 });
+    return NextResponse.json({ error: 'Ocurrió un error general en el servidor.' }, { status: 500 });
   }
 }

@@ -3,6 +3,7 @@ import { GoogleGenerativeAI } from '@google/generative-ai';
 import { createClient } from '@/utils/supabase/server';
 import { Ratelimit } from "@upstash/ratelimit";
 import { Redis } from "@upstash/redis";
+import { generateMusicSchema } from '@/domain/validators/aiSchemas';
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
 
@@ -30,11 +31,14 @@ export async function POST(request: Request) {
       }
     }
 
-    const { prompt, mode = 'generate' } = await request.json();
+    const rawBody = await request.json();
+    const parsed = generateMusicSchema.safeParse(rawBody);
 
-    if (!prompt) {
-      return NextResponse.json({ error: 'El prompt es obligatorio' }, { status: 400 });
+    if (!parsed.success) {
+      return NextResponse.json({ error: 'Input inválido', details: parsed.error.issues }, { status: 400 });
     }
+
+    const { prompt, mode } = parsed.data;
 
     // Actualizamos al modelo de última generación (Abril 2026)
     const model = genAI.getGenerativeModel({ 
@@ -84,7 +88,7 @@ export async function POST(request: Request) {
     console.error("Gemini API Error:", error);
     return NextResponse.json({ 
       error: 'Error de conexión con Gemini 2.5', 
-      details: error.message 
+      details: 'Causa interna oculta.' 
     }, { status: 500 });
   }
 }

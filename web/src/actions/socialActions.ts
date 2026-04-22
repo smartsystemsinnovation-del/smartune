@@ -160,14 +160,15 @@ export async function getComments(postId: string) {
   try {
     const supabase = await createClient();
     const { data, error } = await supabase
-      .from('post_comments')
+      .from('comentarios')
       .select(`
         id,
         content,
         created_at,
         usuarios ( nombre, avatar_url, rol )
       `)
-      .eq('post_id', postId)
+      .eq('target_id', postId)
+      .eq('target_type', 'post')
       .order('created_at', { ascending: true });
 
     if (error) return { success: false, error: error.message };
@@ -184,9 +185,10 @@ export async function addComment(postId: string, content: string) {
     if (!userAuth.user) return { success: false, error: 'Unauthorized' };
 
     const { error } = await supabase
-      .from('post_comments')
+      .from('comentarios')
       .insert({
-        post_id: postId,
+        target_id: postId,
+        target_type: 'post',
         user_id: userAuth.user.id,
         content
       });

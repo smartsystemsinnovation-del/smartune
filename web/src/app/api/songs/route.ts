@@ -30,6 +30,6 @@ export async function GET(request: Request) {
     return NextResponse.json(songs);
   } catch (error: any) {
     console.error('CRITICAL API ERROR /api/songs:', error.message);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json({ error: 'Ocurrió un error general en el servidor.' }, { status: 500 });
   }
 }

@@ -3,6 +3,7 @@ import { GoogleGenerativeAI } from '@google/generative-ai';
 import { createClient } from '@/utils/supabase/server';
 import { Ratelimit } from "@upstash/ratelimit";
 import { Redis } from "@upstash/redis";
+import { validateCertificateSchema } from '@/domain/validators/aiSchemas';
 
 // Initialize the Gemini AI SDK
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
@@ -31,11 +32,14 @@ export async function POST(request: Request) {
       }
     }
 
-    const { documentBase64, mimeType } = await request.json();
+    const rawBody = await request.json();
+    const parsed = validateCertificateSchema.safeParse(rawBody);
 
-    if (!documentBase64 || !mimeType) {
-      return NextResponse.json({ error: 'Missing documentBase64 or mimeType' }, { status: 400 });
+    if (!parsed.success) {
+      return NextResponse.json({ error: 'Input inválido', details: parsed.error.issues }, { status: 400 });
     }
+
+    const { documentBase64, mimeType } = parsed.data;
 
     if (!process.env.GEMINI_API_KEY) {
       console.error('GEMINI_API_KEY is not defined');
@@ -78,6 +82,6 @@ export async function POST(request: Request) {
     
   } catch (error: any) {
     console.error('Error in AI validation:', error);
-    return NextResponse.json({ error: error.message || 'Internal Server Error' }, { status: 500 });
+    return NextResponse.json({ error: 'Ocurrió un error general en el servidor.' }, { status: 500 });
   }
 }

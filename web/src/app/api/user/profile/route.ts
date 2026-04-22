@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/utils/supabase/server';
+import { userProfileUpdateSchema } from '@/domain/validators/userSchemas';
 
 export async function GET() {
   try {
@@ -21,14 +22,20 @@ export async function GET() {
     return NextResponse.json(data);
   } catch (error: any) {
     console.error('API ERROR /api/user/profile GET:', error.message);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json({ error: 'Ocurrió un error general en el servidor.' }, { status: 500 });
   }
 }
 
 export async function PUT(request: Request) {
   try {
-    const body = await request.json();
-    const { nombre, avatar_url, instrumento, gustos_musicales } = body;
+    const rawBody = await request.json();
+    const parsed = userProfileUpdateSchema.safeParse(rawBody);
+
+    if (!parsed.success) {
+      return NextResponse.json({ error: 'Input inválido', details: parsed.error.issues }, { status: 400 });
+    }
+
+    const { nombre, avatar_url, instrumento, gustos_musicales } = parsed.data;
     
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
@@ -52,6 +59,6 @@ export async function PUT(request: Request) {
     return NextResponse.json({ success: true });
   } catch (error: any) {
     console.error('API ERROR /api/user/profile PUT:', error.message);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json({ error: 'Ocurrió un error general en el servidor.' }, { status: 500 });
   }
 }

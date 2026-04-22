@@ -65,7 +65,7 @@ export async function GET() {
     return NextResponse.json({ success: true, data: grouped });
   } catch (error: any) {
     console.error('Stories GET error:', error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json({ error: 'Ocurrió un error general en el servidor.' }, { status: 500 });
   }
 }
 
@@ -131,6 +131,6 @@ export async function POST(request: Request) {
     return NextResponse.json({ success: true, media_url: publicUrl });
   } catch (error: any) {
     console.error('Stories POST error:', error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json({ error: 'Ocurrió un error general en el servidor.' }, { status: 500 });
   }
 }
