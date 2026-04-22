@@ -11,3 +11,8 @@ dist/
 *.apk
 *.aab
 *.hprof
+local.properties
+
+# Residuos de desarrollo (Fase 1.10)
+build_out*.txt
+out*.txt

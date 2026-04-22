@@ -1,10 +1,35 @@
 import { NextResponse } from 'next/server';
 import { GoogleGenerativeAI } from '@google/generative-ai';
+import { createClient } from '@/utils/supabase/server';
+import { Ratelimit } from "@upstash/ratelimit";
+import { Redis } from "@upstash/redis";
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
 
+// Inicializar limitador condicionalmente (hasta tener variables de entorno en Vercel)
+const ratelimit = process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN
+  ? new Ratelimit({
+      redis: Redis.fromEnv(),
+      limiter: Ratelimit.slidingWindow(5, "10 s"),
+    })
+  : null;
+
 export async function POST(request: Request) {
   try {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    if (ratelimit) {
+      const { success } = await ratelimit.limit(user.id);
+      if (!success) {
+        return NextResponse.json({ error: 'Rate limit exceeded. Please try again later.' }, { status: 429 });
+      }
+    }
+
     const { prompt, mode = 'generate' } = await request.json();
 
     if (!prompt) {

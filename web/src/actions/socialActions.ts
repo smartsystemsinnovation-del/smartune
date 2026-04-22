@@ -76,7 +76,7 @@ export async function getFeed(tab: 'Recientes' | 'Amigos' | 'Populares' = 'Recie
     // Ensure we have roles even if view is not updated in DB yet
     const authorIds = Array.from(new Set(data.map(p => p.user_id)));
     const { data: authorsMetadata } = await supabase
-      .from('usuarios')
+      .from('perfiles_publicos')
       .select('id, rol')
       .in('id', authorIds);
     

@@ -13,8 +13,8 @@ export default async function ProfesoresPage() {
 
   if (isAuthenticated) {
     const { data: perfiles_profesores } = await supabase
-      .from('usuarios')
-      .select('id, nombre, correo, avatar_url, instrumento')
+      .from('perfiles_publicos')
+      .select('id, nombre, avatar_url, instrumento')
       .eq('rol', 'profesor');
     
     if (perfiles_profesores) teachers = perfiles_profesores;

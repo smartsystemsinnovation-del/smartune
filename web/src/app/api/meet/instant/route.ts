@@ -4,10 +4,17 @@ import { createClient } from '@/utils/supabase/server';
 export async function POST(req: Request) {
   try {
     const supabase = await createClient();
-    const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-
-    if (sessionError || !session) {
+    
+    // Verificación segura (Activa contra BD)
+    const { data: { user }, error: userError } = await supabase.auth.getUser();
+    if (userError || !user) {
       return NextResponse.json({ error: 'No autorizado' }, { status: 401 });
+    }
+
+    // Segunda llamada para extraer el token (ahora protegido)
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) {
+      return NextResponse.json({ error: 'No autorizado (Sin sesión)' }, { status: 401 });
     }
 
     const { targetUserId } = await req.json();

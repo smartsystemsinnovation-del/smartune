@@ -52,7 +52,7 @@ export default function PublicProfilePage({ params }: { params: Promise<{ userId
         setAuthUserId(authUser?.id || null);
 
         const { data: profileData } = await supabase
-          .from('usuarios')
+          .from('perfiles_publicos')
           .select('id, nombre, avatar_url, instrumento, gustos_musicales, rol')
           .eq('id', userId)
           .single();
@@ -112,7 +112,7 @@ export default function PublicProfilePage({ params }: { params: Promise<{ userId
           let finalLikedPosts = likedPostsData || [];
           if (finalLikedPosts.length > 0) {
             const authorIds = Array.from(new Set(finalLikedPosts.map((p: any) => p.user_id)));
-            const { data: authors } = await supabase.from('usuarios').select('id, rol').in('id', authorIds);
+            const { data: authors } = await supabase.from('perfiles_publicos').select('id, rol').in('id', authorIds);
             const roleMap = new Map(authors?.map((a: any) => [a.id, a.rol]) || []);
             finalLikedPosts = finalLikedPosts.map((p: any) => ({ ...p, rol: p.rol || roleMap.get(p.user_id) }));
           }

@@ -9,7 +9,7 @@ interface TeacherCardProps {
   teacher: {
     id: string;
     nombre: string;
-    correo: string;
+    correo?: string;
     avatar_url?: string;
     instrumento?: string;
   };

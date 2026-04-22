@@ -26,8 +26,8 @@ export default async function TeacherClassesPage({ params }: { params: Promise<{
 
   // 1. Obtener datos del profesor
   const { data: teacher, error: teacherError } = await supabase
-    .from('usuarios')
-    .select('nombre, correo, avatar_url, instrumento')
+    .from('perfiles_publicos')
+    .select('nombre, avatar_url, instrumento')
     .eq('id', teacherId)
     .single();
 

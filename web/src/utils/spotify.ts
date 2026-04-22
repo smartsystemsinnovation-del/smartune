@@ -31,8 +31,6 @@ export async function fetchSpotifySongs() {
   const query = encodeURIComponent(`hardstyle workout`);
   const url = `https://api.spotify.com/v1/search?q=${query}&type=track`;
 
-  console.log('DEBUG: EXTREME MINIMAL URL:', url);
-
   const response = await fetch(url, {
     headers: {
       Authorization: `Bearer ${token}`,
@@ -42,7 +40,7 @@ export async function fetchSpotifySongs() {
 
   if (!response.ok) {
     const errorBody = await response.text();
-    console.error(`DEBUG: Spotify API FAILED [${response.status}]`, errorBody);
+    // Eliminar log de debug (Fase 1.8)
     throw new Error(`Spotify API error: ${response.status}`);
   }
 
@@ -59,7 +57,7 @@ export async function fetchSpotifySongs() {
       previewUrl: track.preview_url,
     }));
 
-  console.log(`DEBUG: SUCCESS. Found ${tracks.length} tracks with previews.`);
+  // Eliminar log de debug (Fase 1.8)
   
   return tracks;
 }

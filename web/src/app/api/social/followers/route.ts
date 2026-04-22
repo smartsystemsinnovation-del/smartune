@@ -12,7 +12,7 @@ export async function GET() {
 
     // Attempt to fetch random suggested users (not the current user)
     const { data, error } = await supabase
-      .from('usuarios')
+      .from('perfiles_publicos')
       .select('id, nombre, avatar_url')
       .neq('id', user.id)
       .limit(4);

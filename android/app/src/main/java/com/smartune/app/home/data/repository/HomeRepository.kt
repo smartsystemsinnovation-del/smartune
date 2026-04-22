@@ -106,7 +106,7 @@ class HomeRepository {
         return withContext(Dispatchers.IO) {
             try {
                 // Fetch user data to aggregate visually
-                val usuarios = SupabaseClient.client.from("usuarios")
+                val usuarios = SupabaseClient.client.from("perfiles_publicos")
                     .select(columns = Columns.list("rol, instrumento"))
                     .decodeList<UsuarioStat>()
                 

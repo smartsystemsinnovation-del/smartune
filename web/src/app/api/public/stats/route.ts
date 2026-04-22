@@ -10,7 +10,7 @@ export async function GET() {
     // To aggregate safely without exposing personal data via RPC or raw query,
     // we fetch only rol and instrumento fields which are safe to count.
     const { data: users, error } = await supabase
-      .from('usuarios')
+      .from('perfiles_publicos')
       .select('rol, instrumento');
 
     if (error) {
