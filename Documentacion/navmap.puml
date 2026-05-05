@@ -1,0 +1,214 @@
+@startuml SmarTune_NavMap
+!pragma layout smetana
+skinparam defaultFontName "Arial"
+skinparam defaultFontSize 11
+skinparam backgroundColor #0D0D10
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam ArrowThickness 1.8
+skinparam ArrowColor #5555AA
+skinparam TitleFontSize 20
+skinparam TitleFontColor #F6339A
+skinparam TitleBorderColor #F6339A
+skinparam TitleBackgroundColor #1a1020
+
+skinparam rectangle {
+  BackgroundColor #13131C
+  BorderColor #2A2A44
+  FontColor #E2E2E7
+  FontStyle bold
+  RoundCorner 10
+}
+
+skinparam card {
+  BackgroundColor #1A1A28
+  BorderColor #323248
+  FontColor #C8C8D8
+  RoundCorner 8
+}
+
+skinparam component {
+  BackgroundColor #111120
+  BorderColor #252540
+  FontColor #9090B0
+  RoundCorner 6
+}
+
+skinparam database {
+  BackgroundColor #121820
+  BorderColor #1A3040
+  FontColor #80B0C0
+}
+
+skinparam cloud {
+  BackgroundColor #0E1A18
+  BorderColor #1A4038
+  FontColor #00FFAA
+}
+
+skinparam note {
+  BackgroundColor #1A1A1A
+  BorderColor #333333
+  FontColor #888888
+  FontSize 9
+}
+
+skinparam sequence {
+  ArrowColor #4444AA
+}
+
+title SmarTune -- Navigation Map\n<size:12><color:#A1A1AA>smar-tune.vercel.app | Next.js 15 + Supabase + Google OAuth</color></size>
+
+' ============================================================
+' LAYER 0: INTERNET ENTRY
+' ============================================================
+cloud "Internet / DNS\nsmar-tune.vercel.app" as ENTRY
+
+rectangle "Next.js Middleware\n<color:#9090B0><size:9>Supabase SSR Session Guard</size></color>" as MW
+
+ENTRY --> MW
+
+' ============================================================
+' LAYER 1: PUBLIC ROUTES (no auth required)
+' ============================================================
+rectangle "PUBLIC ROUTES\n<color:#9090B0><size:9>Acceso sin sesion activa</size></color>" as PUB {
+  card "/" as HOME #16162A
+  card "/explorar\n<size:9>Feed publico limitado</size>" as EXP
+  card "/minijuegos\n<size:9>Juegos accesibles</size>" as MINI
+  card "/premium\n<size:9>Planes y precios</size>" as PREM
+  card "/profesores\n<size:9>Directorio publico</size>" as PROFDIR
+  card "/novedades\n<size:9>Feed restringido</size>" as NOV
+  card "/favoritos\n<size:9>Gatekeeper parcial</size>" as FAV
+  card "/onboarding\n<size:9>Primer setup</size>" as ONBOARD
+  card "/update-password\n<size:9>Reset de password</size>" as UPDPW
+}
+
+MW --> PUB
+
+' ============================================================
+' AUTH GATE
+' ============================================================
+database "Supabase Auth\nGoogle OAuth 2.0\n<size:9>tabla: usuarios { id, rol }</size>" as SUPA #0E1830
+
+rectangle "Auth Modal\nGoogle Sign-In\n<color:#F6339A>?login=true&redirectTo=...</color>" as AUTHMODAL #1A1018
+
+HOME --> AUTHMODAL : Click Login
+MW --> SUPA : getUser()
+AUTHMODAL --> SUPA : OAuth callback\n/auth/callback
+
+' ============================================================
+' LAYER 2A: AUTHENTICATED - ESTUDIANTE
+' ============================================================
+rectangle "ROL: ESTUDIANTE\n<color:#4285F4><size:9>lagsuzyt@gmail.com | usuarios.rol = 'estudiante'</size></color>" as STUZONE #0D1020 {
+
+  rectangle "Dashboard & Aprendizaje" as SDASH_GRP #10142A {
+    card "/dashboard\n<size:9>Progreso, Ebbinghaus</size>" as SDASH
+    card "/practica/[id]\n<size:9>Sesion de practica</size>" as SPRAC
+  }
+
+  rectangle "Descubrimiento" as SDISC_GRP #10142A {
+    card "/explorar\n<size:9>Feed social completo</size>" as SEXP
+    card "/favoritos\n<size:9>MusicSwipe desbloqueado</size>" as SFAV
+    card "/favoritos/playlist\n<size:9>Playlist auto-generada</size>" as SFAVPL
+    card "/playlist\n<size:9>Mis playlists</size>" as SPL
+    card "/playlist/crear\n<size:9>Crear nueva playlist</size>" as SPLCR
+    card "/novedades\n<size:9>Feed desbloqueado</size>" as SNOV
+  }
+
+  rectangle "Herramientas" as STOOL_GRP #10142A {
+    card "/ia-studio\n<size:9>IA musical personal</size>" as SIA
+    card "/minijuegos\n<size:9>SmarTiles y mas</size>" as SMINI
+    card "/minijuegos/smar-tiles" as STILES
+  }
+
+  rectangle "Perfil & Comunidad" as SCOMM_GRP #10142A {
+    card "/profile\n<size:9>Mi perfil</size>" as SPROF
+    card "/profile/[userId]\n<size:9>Perfil publico</size>" as SPROFID
+    card "/profesores\n<size:9>Buscar profesor</size>" as SPROFDIR
+    card "/profesores/[id]\n<size:9>Perfil del profesor</size>" as SPROFDET
+    card "/hazte-profesor\n<size:9>Solicitar ser profesor</size>" as SHAZTE
+    card "/premium\n<size:9>Upgrade plan</size>" as SPREM
+  }
+}
+
+' ============================================================
+' LAYER 2B: AUTHENTICATED - PROFESOR
+' ============================================================
+rectangle "ROL: PROFESOR\n<color:#00FFAA><size:9>gutierrez.zamora.luis1@gmail.com | usuarios.rol = 'profesor'</size></color>" as TEAZONE #0D1A0D {
+
+  rectangle "Panel Docente" as TDASH_GRP #101A10 {
+    card "/teacher/dashboard\n<size:9>Metricas, alumnos, clases</size>" as TDASH
+    card "/teacher/clases/crear\n<size:9>Nueva clase (Google Cal)</size>" as TCREAR
+  }
+
+  rectangle "Herramientas Docente" as TTOOL_GRP #101A10 {
+    card "/ia-studio\n<size:9>IA + planes de clase</size>" as TIA
+    card "/minijuegos" as TMINI
+  }
+
+  rectangle "Comunidad" as TCOMM_GRP #101A10 {
+    card "/explorar\n<size:9>Feed + moderacion</size>" as TEXP
+    card "/novedades" as TNOV
+    card "/profile\n<size:9>Perfil docente publico</size>" as TPROF
+    card "/premium\n<size:9>Plan Profesor</size>" as TPREM
+    card "/profesores/[id]\n<size:9>Mi tarjeta publica</size>" as TPROFCARD
+  }
+}
+
+' ============================================================
+' LAYER 3: BACKEND API ROUTES
+' ============================================================
+rectangle "API Routes\n<color:#9090B0><size:9>/api/* — Next.js Route Handlers</size></color>" as APIZONE #111118 {
+  component "/api/public/stats" as ASTATS
+  component "/api/public/releases" as AREL
+  component "/api/social/trending" as ATREND
+  component "/api/social/stories" as ASTORIES
+  component "/api/social/followers" as AFOLL
+  component "/api/songs" as ASONGS
+  component "/api/swipe" as ASWIPE
+  component "/api/user/profile" as AUPROF
+  component "/api/create-class" as ACLASS
+  component "/api/meet/instant" as AMEET
+  component "/api/generate-music" as AGEN
+  component "/api/validate-certificate" as AVCERT
+}
+
+' ============================================================
+' CONNECTIONS: Auth -> Roles
+' ============================================================
+SUPA --> STUZONE : rol = estudiante
+SUPA --> TEAZONE : rol = profesor
+MW -[#F6339A,dashed]-> AUTHMODAL : 401 redirect\n(protected routes)
+MW -[#00FFAA,dashed]-> TEAZONE : /teacher/* role check
+
+' ============================================================
+' CONNECTIONS: Student internal
+' ============================================================
+SFAV --> SFAVPL
+SMINI --> STILES
+SPROFDIR --> SPROFDET
+SPROF --> SPROFID
+
+' ============================================================
+' CONNECTIONS: API usage
+' ============================================================
+STUZONE -[#3A3A6A,dotted]-> APIZONE : API calls
+TEAZONE -[#1A4A2A,dotted]-> APIZONE : API calls
+TDASH --> ACLASS
+TDASH --> AMEET
+
+note right of SUPA
+  tabla: usuarios
+  - id (UUID)
+  - rol: 'estudiante' | 'profesor'
+  - instrumento
+  - nivel
+end note
+
+note bottom of AUTHMODAL
+  Redirect flow:
+  /?login=true
+  &redirectTo=/dashboard
+end note
+
+@enduml

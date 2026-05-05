@@ -3,7 +3,7 @@ import StoriesRow from '@/components/explorar/StoriesRow';
 import RecentFollowers from '@/components/explorar/RecentFollowers';
 import CreatePost from '@/components/explorar/CreatePost';
 import { createClient } from '@/utils/supabase/server';
-import { redirect } from 'next/navigation';
+import AuthGatekeeper from '@/components/AuthGatekeeper';
 import { getFeed } from '@/actions/socialActions';
 
 export default async function ExplorarPage() {
@@ -11,7 +11,32 @@ export default async function ExplorarPage() {
   const { data: { user }, error: authError } = await supabase.auth.getUser();
 
   if (authError || !user) {
-    redirect('/login?redirectTo=/explorar');
+    return (
+      <div className="min-h-screen bg-[#0a0a0a] text-white flex items-center justify-center p-6">
+        <AuthGatekeeper 
+          iconNode={
+            <div style={{ width: 80, height: 80, borderRadius: '50%', border: '2px solid var(--neon-pink)', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--neon-pink)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                <circle cx="9" cy="7" r="4"></circle>
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+              </svg>
+            </div>
+          }
+          titlePath1="Crea una cuenta para explorar"
+          titleHighlight="SmarTune Social"
+          subtitle="Únete a la comunidad musical donde podrás compartir tu progreso, descubrir nuevos talentos y conectar con músicos de todo el mundo."
+          cardIcon={<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--neon-pink)" strokeWidth="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 1 1-7.6-14.7 8.38 8.38 0 0 1 3.8.9L21 2l-1.1 4.5V11.5z"></path></svg>}
+          cardTitle="Beneficios de SmarTune Social:"
+          benefits={[
+            { text: "Comparte tus grabaciones y recibe apoyo de la comunidad" },
+            { text: "Sigue a tus artistas y profesores favoritos" },
+            { text: "Mantente al tanto de las últimas tendencias musicales" }
+          ]}
+        />
+      </div>
+    );
   }
 
   const { data: profile } = await supabase

@@ -1,0 +1,5 @@
+# SmarTune Context: 48-Hour Sprint
+- **Stack:** Next.js (Web), Kotlin/Jetpack Compose (Android), Supabase (DB/Auth).
+- **Core Truth:** La tabla 'profiles' y 'user_playlists' en Supabase manda.
+- **Visuals:** Seguir estrictamente el sistema de diseño en DESIGN.md (Neon Nocturne). No usar colores fuera de la paleta.
+- **Workflow:** Antes de escribir en Android, lee la implementación correspondiente en /web para asegurar paridad funcional.
