@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { fetchYouTubeSongs } from '@/utils/youtube';
 
-export const revalidate = 3600; // Cache for 1 hour to deeply save API Quota
+export const revalidate = 86400; // Cache for 24 hours to deeply save API Quota
 
 export async function GET() {
   try {
@@ -21,6 +21,7 @@ export async function GET() {
     return NextResponse.json(pureSongs.slice(0, 10)); // Top 10 pure new releases
   } catch (error: any) {
     console.error('API ERROR /api/public/releases:', error.message);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    // Devuelve un array vacío en lugar de un error 500 para que el sitio no crashee
+    return NextResponse.json([]); 
   }
 }

@@ -89,7 +89,7 @@ export default function PublicProfilePage({ params }: { params: Promise<{ userId
           .eq('user_id', userId)
           .order('created_at', { ascending: false });
 
-        const mappedPosts = (postsData || []).map(p => ({
+        const mappedPosts = (postsData || []).map((p: any) => ({
           ...p,
           rol: p.rol || profileData.rol
         }));
@@ -111,10 +111,10 @@ export default function PublicProfilePage({ params }: { params: Promise<{ userId
           
           let finalLikedPosts = likedPostsData || [];
           if (finalLikedPosts.length > 0) {
-            const authorIds = Array.from(new Set(finalLikedPosts.map(p => p.user_id)));
+            const authorIds = Array.from(new Set(finalLikedPosts.map((p: any) => p.user_id)));
             const { data: authors } = await supabase.from('usuarios').select('id, rol').in('id', authorIds);
-            const roleMap = new Map(authors?.map(a => [a.id, a.rol]) || []);
-            finalLikedPosts = finalLikedPosts.map(p => ({ ...p, rol: p.rol || roleMap.get(p.user_id) }));
+            const roleMap = new Map(authors?.map((a: any) => [a.id, a.rol]) || []);
+            finalLikedPosts = finalLikedPosts.map((p: any) => ({ ...p, rol: p.rol || roleMap.get(p.user_id) }));
           }
           
           setLikedPosts(finalLikedPosts);

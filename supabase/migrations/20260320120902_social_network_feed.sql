@@ -14,6 +14,9 @@ CREATE TABLE IF NOT EXISTS public.posts (
 -- Ensure image_url exists if the table was created previously without it
 ALTER TABLE public.posts ADD COLUMN IF NOT EXISTS image_url text;
 
+-- Ensure audio_url exists
+ALTER TABLE public.posts ADD COLUMN IF NOT EXISTS audio_url text;
+
 -- 2. Create likes table if not exists 
 CREATE TABLE IF NOT EXISTS public.likes (
   id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
@@ -88,6 +91,7 @@ SELECT
   p.id,
   p.content,
   p.image_url,
+  p.audio_url,
   p.created_at,
   p.user_id,
   u.nombre as username,
