@@ -7,6 +7,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.smartune.app.core.supabase.SupabaseClient
 import com.smartune.app.musicswipe.data.MusicSwipeSong
+import io.github.jan.supabase.postgrest.from
+import io.github.jan.supabase.postgrest.query.Columns
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.engine.android.*
@@ -14,17 +16,17 @@ import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.request.*
 import io.ktor.serialization.kotlinx.json.*
 import kotlinx.coroutines.launch
-import kotlinx.serialization.json.Json
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import io.github.jan.supabase.postgrest.from
+import kotlinx.serialization.json.Json
 
 @Serializable
 data class SupabaseFavorito(
-    val usuario_id: String,
-    val youtube_id: String,
-    val titulo: String,
-    val artista: String,
-    val cover_url: String?
+    @SerialName("usuario_id") val usuario_id: String,
+    @SerialName("youtube_id") val youtube_id: String,
+    @SerialName("titulo") val titulo: String,
+    @SerialName("artista") val artista: String,
+    @SerialName("cover_url") val cover_url: String?
 )
 
 class MusicSwipeViewModel : ViewModel() {
@@ -42,6 +44,7 @@ class MusicSwipeViewModel : ViewModel() {
     var songs by mutableStateOf<List<MusicSwipeSong>>(emptyList())
     var isLoading by mutableStateOf(true)
     var error by mutableStateOf<String?>(null)
+    var likeCount by mutableStateOf(0)
 
     init {
         fetchSongs()
@@ -52,7 +55,6 @@ class MusicSwipeViewModel : ViewModel() {
             isLoading = true
             error = null
             try {
-                // Fetch directly from the Next.js API, which returns Array<Song>
                 val fetchedSongs: List<MusicSwipeSong> = client.get("$BASE_URL/api/songs").body()
                 songs = fetchedSongs
             } catch (e: Exception) {
@@ -70,6 +72,7 @@ class MusicSwipeViewModel : ViewModel() {
 
         if (isLike) {
             saveToFavorites(currentSong)
+            likeCount++
         }
 
         if (songs.size <= 3) {
@@ -81,10 +84,11 @@ class MusicSwipeViewModel : ViewModel() {
         viewModelScope.launch {
             try {
                 val newSongs: List<MusicSwipeSong> = client.get("$BASE_URL/api/songs").body()
-                val uniqueNew = newSongs.filter { newSong -> songs.none { it.id == newSong.id } }
+                val currentIds = songs.map { it.id }.toSet()
+                val uniqueNew = newSongs.filter { it.id !in currentIds }
                 songs = songs + uniqueNew
             } catch (e: Exception) {
-                // Silently fail if pagination fails
+                // Silently fail
             }
         }
     }
@@ -92,19 +96,25 @@ class MusicSwipeViewModel : ViewModel() {
     private fun saveToFavorites(song: MusicSwipeSong) {
         viewModelScope.launch {
             try {
-                val userId = SupabaseClient.auth.currentSessionOrNull()?.user?.id ?: return@launch
-                
+                val userId = SupabaseClient.auth.currentSessionOrNull()?.user?.id
+                if (userId == null) {
+                    error = "Debes iniciar sesión para guardar favoritos"
+                    return@launch
+                }
+
                 SupabaseClient.client.from("favoritos").upsert(
-                    SupabaseFavorito(
+                    value = SupabaseFavorito(
                         usuario_id = userId,
                         youtube_id = song.id,
                         titulo = song.title,
                         artista = song.artist,
                         cover_url = song.coverUrl
-                    )
+                    ),
+                    onConflict = "usuario_id,youtube_id"
                 )
             } catch (e: Exception) {
                 e.printStackTrace()
+                error = "No se pudo guardar en favoritos: ${e.message}"
             }
         }
     }
