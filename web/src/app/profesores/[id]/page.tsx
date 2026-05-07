@@ -3,6 +3,8 @@ import { redirect } from 'next/navigation';
 import { Video, Calendar, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import LocalTime from '@/components/LocalTime';
+import ConnectTeacherButton from '@/components/teacher/ConnectTeacherButton';
+import DeleteClassButton from '@/components/teacher/DeleteClassButton';
 
 export default async function TeacherClassesPage({ params }: { params: Promise<{ id: string }> }) {
   const supabase = await createClient();
@@ -48,101 +50,62 @@ export default async function TeacherClassesPage({ params }: { params: Promise<{
     .eq('teacher_id', teacherId)
     .maybeSingle();
 
-  if (!connection) {
-    return (
-      <div style={{ padding: '80px 20px', color: 'white', maxWidth: '800px', margin: '0 auto', textAlign: 'center' }}>
-        <Link href="/profesores" style={{ color: 'rgba(255,255,255,0.6)', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '8px', marginBottom: '24px' }}>
-          <ArrowLeft size={16} /> Volver a Profesores
-        </Link>
-        <div style={{ background: 'rgba(255, 0, 122, 0.1)', padding: '40px', borderRadius: '16px', border: '1px solid var(--neon-pink)' }}>
-          <h2 style={{ margin: '0 0 16px 0', color: 'var(--neon-pink)' }}>Aún no están conectados</h2>
-          <p style={{ color: 'rgba(255,255,255,0.8)', fontSize: '18px' }}>Debes pedirle a este profesor que acepte la conexión para ver las clases programadas aquí.</p>
-        </div>
-      </div>
-    );
-  }
-
-  // 3. Traer clases agendadas
-  const { data: classes, error: classesError } = await supabase
+  // 3. Obtener clases agendadas
+  const { data: classes } = await supabase
     .from('classes')
     .select('*')
-    .eq('teacher_id', teacherId)
     .eq('student_id', user.id)
+    .eq('teacher_id', teacherId)
     .order('scheduled_at', { ascending: true });
 
   return (
-    <div style={{ minHeight: '100vh', background: '#121212', color: 'white', padding: '40px 20px', fontFamily: 'var(--font-inter)' }}>
-      <div style={{ maxWidth: '900px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '40px' }}>
+    <div style={{ minHeight: '100vh', background: '#0a0a0a', color: 'white', padding: '80px 20px', fontFamily: 'var(--font-inter)' }}>
+      <div style={{ maxWidth: '900px', margin: '0 auto' }}>
         
-        {/* Header / Botón Volver */}
-        <Link href="/profesores" style={{ color: 'var(--neon-cyan)', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '8px', fontSize: '15px', fontWeight: 600, width: 'fit-content' }}>
-          <ArrowLeft size={16} /> Volver al Directorio de Profesores
+        <Link href="/profesores" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', color: 'rgba(255,255,255,0.5)', textDecoration: 'none', marginBottom: '40px', fontSize: '15px', transition: '0.3s' }}>
+          <ArrowLeft size={18} /> Volver al Directorio
         </Link>
-        
-        {/* Tarjeta del Profesor */}
-        <div style={{ 
-          background: 'rgba(255, 255, 255, 0.03)', 
-          border: '1px solid rgba(0, 255, 170, 0.2)', 
-          borderRadius: '24px', 
-          padding: '40px',
-          display: 'flex',
-          gap: '32px',
-          alignItems: 'center',
-          boxShadow: '0 10px 30px rgba(0, 0, 0, 0.5)'
-        }}>
-          <div style={{
-            width: '120px',
-            height: '120px',
-            borderRadius: '50%',
-            background: teacher.avatar_url ? `url(${teacher.avatar_url}) center/cover` : 'var(--neon-cyan)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            flexShrink: 0,
-            border: '4px solid rgba(0, 255, 170, 0.3)'
-          }}>
-            {!teacher.avatar_url && (
-              <span style={{ fontSize: '48px', fontWeight: 'bold', color: 'black' }}>
-                {teacher.nombre.charAt(0).toUpperCase()}
-              </span>
-            )}
-          </div>
-          <div>
-            <h1 style={{ margin: 0, fontSize: '32px', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '16px' }}>
-              {teacher.nombre} 
-              <span style={{ fontSize: '12px', background: 'rgba(0,255,170,0.1)', color: 'var(--neon-cyan)', padding: '6px 16px', borderRadius: '100px', fontWeight: 700, border: '1px solid var(--neon-cyan)', letterSpacing: '0.5px' }}>CONECCION ACTIVA</span>
-            </h1>
-            <p style={{ fontSize: '18px', color: 'rgba(255, 255, 255, 0.7)', margin: '12px 0 0 0' }}>
-              {teacher.instrumento || 'Profesor de Música Integral'}
-            </p>
-            <p style={{ marginTop: '16px', fontSize: '15px', color: 'rgba(255, 255, 255, 0.5)', lineHeight: 1.6 }}>
-              En este portal puedes ver todas las clases o videollamadas que este profesor ha programado contigo. Usa aquí tus enlaces de Google Meet a tiempo.
-            </p>
-          </div>
-        </div>
 
-        {/* Lista de Clases */}
-        <div>
-          <h2 style={{ fontSize: '24px', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '20px', marginBottom: '32px', color: 'white' }}>
-            Tus Próximas Clases Magistrales
+        <div style={{ background: 'rgba(255, 255, 255, 0.02)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '32px', padding: '50px', boxShadow: '0 20px 60px rgba(0,0,0,0.5)' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '30px', marginBottom: '50px' }}>
+            <div style={{ display: 'flex', gap: '24px', alignItems: 'center' }}>
+              <div style={{ width: '80px', height: '80px', borderRadius: '24px', overflow: 'hidden', border: '2px solid var(--neon-cyan)', boxShadow: '0 0 20px rgba(0,255,170,0.2)' }}>
+                <img 
+                  src={teacher.avatar_url || `https://ui-avatars.com/api/?name=${teacher.nombre}&background=00ffaa&color=000`} 
+                  alt={teacher.nombre} 
+                  style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
+                />
+              </div>
+              <div>
+                <h1 style={{ margin: 0, fontSize: '32px', fontWeight: 800 }}>{teacher.nombre}</h1>
+                <p style={{ margin: '4px 0 0 0', color: 'var(--neon-cyan)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '1px', fontSize: '13px' }}>
+                  Profesor de {teacher.instrumento || 'Música'}
+                </p>
+              </div>
+            </div>
+            <ConnectTeacherButton 
+              teacherId={teacherId} 
+              studentId={user.id} 
+              hasConnection={!!connection} 
+            />
+          </div>
+
+          <h2 style={{ fontSize: '22px', margin: '0 0 30px 0', display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <Calendar size={22} color="var(--neon-pink)" /> Mis Clases Programadas
           </h2>
 
           {!classes || classes.length === 0 ? (
-            <div style={{ textAlign: 'center', padding: '80px 20px', background: 'rgba(255, 255, 255, 0.02)', borderRadius: '20px', border: '1px dashed rgba(255,255,255,0.1)' }}>
-              <Calendar size={56} color="rgba(255,255,255,0.2)" style={{ margin: '0 auto 24px' }} />
-              <h3 style={{ color: 'rgba(255,255,255,0.8)', margin: '0 0 12px 0', fontSize: '20px' }}>El profesor aún no ha agendado ninguna clase contigo.</h3>
-              <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '15px', margin: 0, maxWidth: '500px', marginInline: 'auto', lineHeight: 1.5 }}>
-                Cuando el profesor programe una sesión desde su panel, aparecerá aquí con la fecha exacta y el enlace a Google Meet.
-              </p>
+            <div style={{ textAlign: 'center', padding: '60px 20px', background: 'rgba(255,255,255,0.01)', borderRadius: '20px', border: '1px dashed rgba(255,255,255,0.1)' }}>
+              <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '16px' }}>No tienes clases agendadas con este profesor.</p>
             </div>
           ) : (
-            <div style={{ display: 'grid', gap: '24px' }}>
+            <div style={{ display: 'grid', gap: '20px' }}>
               {classes.map(cls => {
                 return (
                   <div key={cls.id} style={{
-                    background: 'rgba(0, 0, 0, 0.4)',
-                    border: '1px solid rgba(255, 0, 122, 0.3)',
-                    borderRadius: '20px',
+                    background: 'rgba(255, 255, 255, 0.02)',
+                    border: '1px solid rgba(255, 255, 255, 0.05)',
+                    borderRadius: '24px',
                     padding: '32px',
                     display: 'flex',
                     flexDirection: 'column',
@@ -151,6 +114,11 @@ export default async function TeacherClassesPage({ params }: { params: Promise<{
                   }}>
                     <div>
                       <h3 style={{ margin: 0, fontSize: '24px', fontWeight: 600, color: 'white' }}>{cls.title}</h3>
+                      {cls.instrument && (
+                        <p style={{ margin: '8px 0 0 0', fontSize: '14px', color: 'var(--neon-cyan)', fontWeight: 600 }}>
+                          Instrumento: {cls.instrument}
+                        </p>
+                      )}
                       {cls.description && <p style={{ margin: '12px 0 0 0', fontSize: '15px', color: 'rgba(255,255,255,0.6)', lineHeight: 1.5 }}>{cls.description}</p>}
                     </div>
                     
@@ -158,7 +126,7 @@ export default async function TeacherClassesPage({ params }: { params: Promise<{
                       <LocalTime dateIso={cls.scheduled_at} />
                     </div>
 
-                    <div style={{ marginTop: '8px' }}>
+                    <div style={{ marginTop: '8px', display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
                        {cls.meet_link ? (
                          <a href={cls.meet_link} target="_blank" rel="noopener noreferrer" style={{
                            display: 'inline-flex',
@@ -182,6 +150,8 @@ export default async function TeacherClassesPage({ params }: { params: Promise<{
                             <Video size={20} /> Enlace pendiente
                          </div>
                        )}
+                       
+                       <DeleteClassButton classId={cls.id} />
                     </div>
                   </div>
                 );

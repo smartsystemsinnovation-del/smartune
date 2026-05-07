@@ -1,10 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Calendar, Clock, Users, Video } from 'lucide-react';
+import { Calendar, Clock, Video, Search, Loader2 } from 'lucide-react';
 
-export default function CreateClassForm({ students, teacherId }: { students: any[], teacherId: string }) {
+export default function CreateClassForm({ teacherId }: { students?: any[], teacherId: string }) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -12,11 +12,64 @@ export default function CreateClassForm({ students, teacherId }: { students: any
 
   const [formData, setFormData] = useState({
     title: '',
+    instrument: '',
     description: '',
     studentId: '',
     date: '',
     time: ''
   });
+
+  // Autocomplete State
+  const [searchQuery, setSearchQuery] = useState('');
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [searchResults, setSearchResults] = useState<any[]>([]);
+  const [isSearching, setIsSearching] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // Close dropdown on click outside
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setShowSuggestions(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  // Debounced search
+  useEffect(() => {
+    if (searchQuery.length < 2) {
+      setSearchResults([]);
+      return;
+    }
+
+    // Si ya seleccionamos a alguien y el input muestra su nombre, no buscamos de nuevo
+    if (formData.studentId && searchQuery.includes('(')) return;
+
+    const delayDebounceFn = setTimeout(async () => {
+      setIsSearching(true);
+      try {
+        const res = await fetch(`/api/search-users?q=${encodeURIComponent(searchQuery)}`);
+        if (res.ok) {
+          const data = await res.json();
+          setSearchResults(data.users || []);
+        }
+      } catch (err) {
+        console.error("Error buscando usuarios:", err);
+      } finally {
+        setIsSearching(false);
+      }
+    }, 400);
+
+    return () => clearTimeout(delayDebounceFn);
+  }, [searchQuery, formData.studentId]);
+
+  const handleStudentSelect = (student: any) => {
+    setFormData({ ...formData, studentId: student.id });
+    setSearchQuery(`${student.nombre} (${student.correo})`);
+    setShowSuggestions(false);
+  };
 
   // Calcular la fecha mínima "Hoy a las 00:00" en el huso horario local del usuario
   const getMinDateTime = () => {
@@ -37,6 +90,7 @@ export default function CreateClassForm({ students, teacherId }: { students: any
     setError('');
     
     try {
+      if (!formData.studentId) throw new Error("Debes buscar y seleccionar un alumno de la lista");
       if (!formData.date || !formData.time) throw new Error("Debes elegir una fecha y hora");
       const scheduledAt = new Date(`${formData.date}T${formData.time}:00`).toISOString();
 
@@ -47,6 +101,7 @@ export default function CreateClassForm({ students, teacherId }: { students: any
           teacherId,
           studentId: formData.studentId,
           title: formData.title,
+          instrument: formData.instrument,
           description: formData.description,
           scheduledAt
         })
@@ -115,24 +170,82 @@ export default function CreateClassForm({ students, teacherId }: { students: any
       </div>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-        <label style={{ fontSize: '14px', color: 'rgba(255, 255, 255, 0.6)', fontWeight: 600 }}>Seleccionar Alumno *</label>
-        <select 
-          name="studentId" 
-          value={formData.studentId} 
+        <label style={{ fontSize: '14px', color: 'rgba(255, 255, 255, 0.6)', fontWeight: 600 }}>Instrumento *</label>
+        <input 
+          type="text" 
+          name="instrument" 
+          value={formData.instrument} 
           onChange={handleChange}
           required
+          placeholder="Ej. Guitarra, Piano, Canto..."
           style={{ width: '100%', padding: '14px', background: 'rgba(0, 0, 0, 0.3)', border: '1px solid rgba(255, 255, 255, 0.1)', color: 'white', borderRadius: '8px', fontSize: '16px' }} 
-        >
-          <option value="" disabled>Elige a un estudiante de tu red...</option>
-          {students.map(student => (
-            <option key={student.student_id} value={student.student_id}>
-              {student.student_name} ({student.student_email})
-            </option>
-          ))}
-        </select>
-        {students.length === 0 && (
-          <span style={{ fontSize: '12px', color: 'var(--neon-pink)' }}><Users size={12} style={{marginRight: 4, display: 'inline-block'}} />Aún no tienes alumnos conectados.</span>
-        )}
+        />
+      </div>
+
+      {/* Autocomplete Alumno */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }} ref={dropdownRef}>
+        <label style={{ fontSize: '14px', color: 'rgba(255, 255, 255, 0.6)', fontWeight: 600 }}>Buscar Alumno (Nombre o Correo) *</label>
+        <div style={{ position: 'relative' }}>
+          <Search size={18} color="rgba(255,255,255,0.4)" style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)' }} />
+          <input 
+            type="text"
+            value={searchQuery}
+            onChange={(e) => {
+              setSearchQuery(e.target.value);
+              setFormData({ ...formData, studentId: '' }); // Reset ID if user types something new
+              setShowSuggestions(true);
+            }}
+            onFocus={() => setShowSuggestions(true)}
+            placeholder="Escribe para buscar cualquier estudiante..."
+            required={!formData.studentId}
+            style={{ width: '100%', padding: '14px 14px 14px 44px', background: 'rgba(0, 0, 0, 0.3)', border: '1px solid rgba(255, 255, 255, 0.1)', color: 'white', borderRadius: '8px', fontSize: '16px' }}
+          />
+          {showSuggestions && searchQuery.length >= 2 && (
+            <div style={{
+              position: 'absolute',
+              top: '100%',
+              left: 0,
+              right: 0,
+              marginTop: '4px',
+              background: '#1A1A1A',
+              border: '1px solid rgba(255, 255, 255, 0.1)',
+              borderRadius: '8px',
+              maxHeight: '200px',
+              overflowY: 'auto',
+              zIndex: 10,
+              boxShadow: '0 10px 30px rgba(0,0,0,0.5)'
+            }}>
+              {isSearching ? (
+                <div style={{ padding: '12px 16px', color: 'rgba(255,255,255,0.5)', fontSize: '14px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <Loader2 size={16} className="lucide-spin" style={{ animation: 'spin 1s linear infinite' }} /> Buscando...
+                </div>
+              ) : searchResults.length > 0 ? (
+                searchResults.map(student => (
+                  <div 
+                    key={student.id}
+                    onClick={() => handleStudentSelect(student)}
+                    style={{
+                      padding: '12px 16px',
+                      cursor: 'pointer',
+                      borderBottom: '1px solid rgba(255, 255, 255, 0.05)',
+                      display: 'flex',
+                      flexDirection: 'column'
+                    }}
+                    onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(255, 255, 255, 0.05)'}
+                    onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+                  >
+                    <span style={{ color: 'white', fontWeight: 600 }}>{student.nombre}</span>
+                    <span style={{ color: 'rgba(255,255,255,0.5)', fontSize: '13px' }}>{student.correo}</span>
+                  </div>
+                ))
+              ) : (
+                <div style={{ padding: '12px 16px', color: 'rgba(255,255,255,0.5)', fontSize: '14px' }}>
+                  No se encontraron alumnos con ese nombre o correo
+                </div>
+              )}
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Date & Time Premium Cards */}
@@ -224,7 +337,7 @@ export default function CreateClassForm({ students, teacherId }: { students: any
 
       <button 
         type="submit" 
-        disabled={loading || students.length === 0}
+        disabled={loading || !formData.studentId}
         style={{
           marginTop: '16px',
           padding: '16px',
@@ -234,8 +347,8 @@ export default function CreateClassForm({ students, teacherId }: { students: any
           borderRadius: '8px',
           fontSize: '16px',
           fontWeight: 600,
-          cursor: loading || students.length === 0 ? 'not-allowed' : 'pointer',
-          opacity: loading || students.length === 0 ? 0.7 : 1,
+          cursor: loading || !formData.studentId ? 'not-allowed' : 'pointer',
+          opacity: loading || !formData.studentId ? 0.7 : 1,
           display: 'flex',
           justifyContent: 'center',
           alignItems: 'center',
@@ -246,6 +359,12 @@ export default function CreateClassForm({ students, teacherId }: { students: any
         {loading ? 'Generando Enlace con Google...' : <><Video size={20} /> Crear Clase Online</>}
       </button>
 
+      <style>{`
+        @keyframes spin {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
+      `}</style>
     </form>
   );
 }

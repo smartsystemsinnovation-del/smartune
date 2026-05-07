@@ -11,6 +11,8 @@ import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.jsonPrimitive
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonArray
 
 class SocialRepository {
 
@@ -427,35 +429,156 @@ class SocialRepository {
     suspend fun getMisClases(): List<ClaseAgendada> {
         return try {
             val userId = SupabaseClient.auth.currentSessionOrNull()?.user?.id ?: return emptyList()
-            SupabaseClient.client.postgrest["clases"]
+            // Fetch raw JSON from classes table, then parse manually to avoid complex relation models
+            val rawArray = SupabaseClient.client.postgrest["classes"]
+                .select(Columns.raw("*, teacher:usuarios!classes_teacher_id_fkey(nombre), student:usuarios!classes_student_id_fkey(nombre)")) {
+                    filter {
+                        or {
+                            eq("student_id", userId)
+                            eq("teacher_id", userId)
+                        }
+                    }
+                    order("scheduled_at", io.github.jan.supabase.postgrest.query.Order.ASCENDING)
+                }
+                .decodeList<JsonObject>()
+            
+            rawArray.map { obj ->
+                val id = obj["id"]?.jsonPrimitive?.content.orEmpty()
+                val titulo = obj["title"]?.jsonPrimitive?.content.orEmpty()
+                val teacherName = try { obj["teacher"]?.let { if (it is kotlinx.serialization.json.JsonArray) it[0].jsonObject["nombre"]?.jsonPrimitive?.content else it.jsonObject["nombre"]?.jsonPrimitive?.content } } catch(e:Exception){null} ?: "Profesor"
+                val studentName = try { obj["student"]?.let { if (it is kotlinx.serialization.json.JsonArray) it[0].jsonObject["nombre"]?.jsonPrimitive?.content else it.jsonObject["nombre"]?.jsonPrimitive?.content } } catch(e:Exception){null} ?: "Alumno"
+                val meetLink = obj["meet_link"]?.jsonPrimitive?.content
+                val fecha = obj["scheduled_at"]?.jsonPrimitive?.content.orEmpty()
+                val estado = obj["status"]?.jsonPrimitive?.content.orEmpty()
+                
+                ClaseAgendada(
+                    id = id,
+                    titulo = titulo,
+                    profesorNombre = teacherName,
+                    alumnoNombre = studentName,
+                    meetLink = meetLink,
+                    fechaInicio = fecha,
+                    fechaFin = fecha,
+                    estado = estado
+                )
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            emptyList()
+        }
+    }
+
+    suspend fun searchUsers(query: String): List<UserProfile> {
+        if (query.length < 2) return emptyList()
+        return try {
+            SupabaseClient.client.postgrest["usuarios"]
                 .select {
                     filter {
                         or {
-                            eq("alumno_id", userId)
-                            eq("profesor_id", userId)
+                            ilike("nombre", "%$query%")
+                            ilike("correo", "%$query%")
                         }
+                        eq("rol", "estudiante")
                     }
-                    order("fecha_inicio", io.github.jan.supabase.postgrest.query.Order.ASCENDING)
+                    limit(10)
                 }
-                .decodeList<ClaseAgendada>()
+                .decodeList<UserProfile>()
         } catch (e: Exception) {
             emptyList()
         }
     }
 
-    suspend fun crearClase(titulo: String, alumnoId: String, fechaInicio: String, fechaFin: String): Boolean {
-        return try {
-            val userId = SupabaseClient.auth.currentSessionOrNull()?.user?.id ?: return false
-            SupabaseClient.client.postgrest["clases"].insert(buildJsonObject {
-                put("titulo", titulo)
-                put("profesor_id", userId)
-                put("alumno_id", alumnoId)
-                put("fecha_inicio", fechaInicio)
-                put("fecha_fin", fechaFin)
-            })
-            true
-        } catch (e: Exception) {
-            false
+    suspend fun crearClase(titulo: String, instrumento: String, alumnoId: String, fechaInicio: String, fechaFin: String): String? {
+        return kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) {
+            try {
+                val session = SupabaseClient.auth.currentSessionOrNull()
+                val userId = session?.user?.id ?: return@withContext "Sesión no encontrada"
+                
+                var meetLink = ""
+                val providerToken = session.providerToken
+
+                // 1. Generar Meet Link en Google Calendar si tenemos el token
+                var googleError = ""
+                if (!providerToken.isNullOrEmpty()) {
+                    try {
+                        val url = java.net.URL("https://www.googleapis.com/calendar/v3/calendars/primary/events?conferenceDataVersion=1")
+                        val connection = url.openConnection() as java.net.HttpURLConnection
+                        connection.connectTimeout = 5000
+                        connection.readTimeout = 5000
+                        connection.requestMethod = "POST"
+                        connection.setRequestProperty("Authorization", "Bearer $providerToken")
+                        connection.setRequestProperty("Content-Type", "application/json")
+                        
+                        val startDt = java.time.OffsetDateTime.parse(fechaInicio)
+                        val endDt = startDt.plusHours(1)
+                        
+                        val jsonPayload = buildJsonObject {
+                            put("summary", titulo)
+                            put("description", "")
+                            put("start", buildJsonObject { 
+                                put("dateTime", fechaInicio)
+                                put("timeZone", "UTC") 
+                            })
+                            put("end", buildJsonObject { 
+                                put("dateTime", endDt.format(java.time.format.DateTimeFormatter.ISO_OFFSET_DATE_TIME))
+                                put("timeZone", "UTC") 
+                            })
+                            put("conferenceData", buildJsonObject {
+                                put("createRequest", buildJsonObject {
+                                    put("requestId", java.util.UUID.randomUUID().toString())
+                                    put("conferenceSolutionKey", buildJsonObject { put("type", "hangoutsMeet") })
+                                })
+                            })
+                        }.toString()
+                        
+                        connection.doOutput = true
+                        connection.outputStream.write(jsonPayload.toByteArray(Charsets.UTF_8))
+                        
+                        if (connection.responseCode in 200..299) {
+                            val response = connection.inputStream.bufferedReader().use { it.readText() }
+                            val jsonElement = kotlinx.serialization.json.Json { ignoreUnknownKeys = true }.parseToJsonElement(response)
+                            meetLink = jsonElement.jsonObject["hangoutLink"]?.jsonPrimitive?.content ?: ""
+                        } else {
+                            googleError = connection.errorStream?.bufferedReader()?.use { it.readText() } ?: "Error ${connection.responseCode}"
+                        }
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                        googleError = e.message ?: "Error de red Google"
+                    }
+                } else {
+                    googleError = "Falta providerToken (Inicia sesión con Google)"
+                }
+
+                // 2. Insertar en base de datos Supabase
+                SupabaseClient.client.postgrest["classes"].insert(buildJsonObject {
+                    put("title", titulo)
+                    put("instrument", instrumento)
+                    put("teacher_id", userId)
+                    put("student_id", alumnoId)
+                    put("scheduled_at", fechaInicio)
+                    if (meetLink.isNotEmpty()) put("meet_link", meetLink)
+                    put("status", "scheduled")
+                    put("description", "")
+                })
+
+                // 3. Intentar crear conexión automática por si no existe
+                try {
+                    SupabaseClient.client.postgrest["student_teacher_connections"].insert(buildJsonObject {
+                        put("teacher_id", userId)
+                        put("student_id", alumnoId)
+                        put("status", "accepted")
+                    })
+                } catch (e: Exception) {}
+
+                if (meetLink.isEmpty()) {
+                    return@withContext "Clase guardada, PERO sin Meet: $googleError. Cierra sesión y vuelve a entrar con Google."
+                }
+
+                null // Éxito
+            } catch (e: Exception) {
+                e.printStackTrace()
+                "Error general: ${e.message}"
+            }
         }
     }
 
@@ -471,6 +594,18 @@ class SocialRepository {
             })
             true
         } catch (e: Exception) {
+            false
+        }
+    suspend fun borrarClase(claseId: String): Boolean {
+        return try {
+            SupabaseClient.client.postgrest["classes"].delete {
+                filter {
+                    eq("id", claseId)
+                }
+            }
+            true
+        } catch (e: Exception) {
+            e.printStackTrace()
             false
         }
     }

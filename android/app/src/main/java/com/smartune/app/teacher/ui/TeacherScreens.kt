@@ -32,9 +32,11 @@ fun TeacherDashboardScreen(navController: NavController) {
     val repo = remember { SocialRepository() }
     var clases by remember { mutableStateOf<List<ClaseAgendada>>(emptyList()) }
     var isLoading by remember { mutableStateOf(true) }
+    var refreshTrigger by remember { mutableIntStateOf(0) }
     val context = LocalContext.current
 
-    LaunchedEffect(Unit) {
+    LaunchedEffect(refreshTrigger) {
+        isLoading = true
         clases = repo.getMisClases()
         isLoading = false
     }
@@ -103,10 +105,26 @@ fun TeacherDashboardScreen(navController: NavController) {
                     colors = CardDefaults.cardColors(containerColor = BgCard)
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(Icons.Default.VideoCall, contentDescription = null, tint = NeonCyan, modifier = Modifier.size(20.dp))
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Text(clase.titulo, fontWeight = FontWeight.Bold, color = TextPrimary, fontSize = 15.sp)
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Icon(Icons.Default.VideoCall, contentDescription = null, tint = NeonCyan, modifier = Modifier.size(20.dp))
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Text(clase.titulo, fontWeight = FontWeight.Bold, color = TextPrimary, fontSize = 15.sp)
+                            }
+                            IconButton(onClick = {
+                                scope.launch {
+                                    val ok = repo.borrarClase(clase.id)
+                                    if (ok) {
+                                        refreshTrigger++
+                                    }
+                                }
+                            }) {
+                                Icon(Icons.Default.Delete, contentDescription = "Borrar", tint = NeonPink, modifier = Modifier.size(20.dp))
+                            }
                         }
                         Spacer(modifier = Modifier.height(8.dp))
                         Text("Alumno: ${clase.alumnoNombre}", color = TextSecondary, fontSize = 13.sp)
@@ -116,8 +134,17 @@ fun TeacherDashboardScreen(navController: NavController) {
                             Spacer(modifier = Modifier.height(12.dp))
                             Button(
                                 onClick = {
-                                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(link))
-                                    context.startActivity(intent)
+                                    try {
+                                        var finalLink = link
+                                        if (!finalLink.startsWith("http://") && !finalLink.startsWith("https://")) {
+                                            finalLink = "https://$finalLink"
+                                        }
+                                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(finalLink))
+                                        context.startActivity(intent)
+                                    } catch (e: Exception) {
+                                        e.printStackTrace()
+                                        android.widget.Toast.makeText(context, "No se encontró una app para abrir el enlace", android.widget.Toast.LENGTH_SHORT).show()
+                                    }
                                 },
                                 shape = RoundedCornerShape(20.dp),
                                 colors = ButtonDefaults.buttonColors(containerColor = NeonCyan),
@@ -136,13 +163,39 @@ fun TeacherDashboardScreen(navController: NavController) {
 }
 
 // ── Create Class Screen ──
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CrearClaseScreen(navController: NavController) {
     val scope = rememberCoroutineScope()
     val repo = remember { SocialRepository() }
+    
     var titulo by remember { mutableStateOf("") }
-    var alumnoId by remember { mutableStateOf("") }
+    var instrumento by remember { mutableStateOf("") }
     var isCreating by remember { mutableStateOf(false) }
+
+    // Date & Time State
+    var date by remember { mutableStateOf("") }
+    var time by remember { mutableStateOf("") }
+    var errorMessage by remember { mutableStateOf("") }
+
+    // Autocomplete State
+    var searchQuery by remember { mutableStateOf("") }
+    var selectedAlumnoId by remember { mutableStateOf("") }
+    var searchResults by remember { mutableStateOf<List<com.smartune.app.explorar.data.models.UserProfile>>(emptyList()) }
+    var isSearching by remember { mutableStateOf(false) }
+    var expanded by remember { mutableStateOf(false) }
+
+    // Search effect
+    LaunchedEffect(searchQuery) {
+        if (searchQuery.length >= 2 && !searchQuery.contains("(")) {
+            isSearching = true
+            expanded = true
+            searchResults = repo.searchUsers(searchQuery)
+            isSearching = false
+        } else {
+            expanded = false
+        }
+    }
 
     LazyColumn(
         modifier = Modifier.fillMaxSize().background(BgMain),
@@ -154,7 +207,7 @@ fun CrearClaseScreen(navController: NavController) {
                 IconButton(onClick = { navController.popBackStack() }) {
                     Icon(Icons.Default.ArrowBack, contentDescription = null, tint = TextPrimary)
                 }
-                Text("Crear Clase", fontWeight = FontWeight.Bold, fontSize = 22.sp, color = TextPrimary)
+                Text("Crear Clase Magistral", fontWeight = FontWeight.Bold, fontSize = 22.sp, color = TextPrimary)
             }
         }
 
@@ -172,9 +225,9 @@ fun CrearClaseScreen(navController: NavController) {
 
         item {
             OutlinedTextField(
-                value = alumnoId,
-                onValueChange = { alumnoId = it },
-                label = { Text("ID del alumno") },
+                value = instrumento,
+                onValueChange = { instrumento = it },
+                label = { Text("Instrumento (Ej. Guitarra, Piano)") },
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(12.dp),
                 colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = NeonPink, unfocusedBorderColor = TextTertiary, focusedTextColor = TextPrimary, unfocusedTextColor = TextPrimary, cursorColor = NeonPink, focusedContainerColor = BgCard, unfocusedContainerColor = BgCard),
@@ -183,24 +236,145 @@ fun CrearClaseScreen(navController: NavController) {
         }
 
         item {
+            ExposedDropdownMenuBox(
+                expanded = expanded,
+                onExpandedChange = { expanded = !expanded }
+            ) {
+                OutlinedTextField(
+                    value = searchQuery,
+                    onValueChange = {
+                        searchQuery = it
+                        selectedAlumnoId = "" // Reset selected if they type something new
+                    },
+                    label = { Text("Buscar Alumno (Nombre o Correo)") },
+                    modifier = Modifier.fillMaxWidth().menuAnchor(),
+                    shape = RoundedCornerShape(12.dp),
+                    colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = NeonPink, unfocusedBorderColor = TextTertiary, focusedTextColor = TextPrimary, unfocusedTextColor = TextPrimary, cursorColor = NeonPink, focusedContainerColor = BgCard, unfocusedContainerColor = BgCard),
+                    singleLine = true,
+                    trailingIcon = {
+                        if (isSearching) {
+                            CircularProgressIndicator(color = NeonPink, modifier = Modifier.size(20.dp), strokeWidth = 2.dp)
+                        } else {
+                            Icon(Icons.Default.Search, contentDescription = "Buscar", tint = TextTertiary)
+                        }
+                    }
+                )
+                
+                ExposedDropdownMenu(
+                    expanded = expanded,
+                    onDismissRequest = { expanded = false },
+                    modifier = Modifier.background(BgCard)
+                ) {
+                    if (searchResults.isEmpty() && !isSearching) {
+                        DropdownMenuItem(
+                            text = { Text("No se encontraron resultados", color = TextTertiary) },
+                            onClick = { expanded = false }
+                        )
+                    } else {
+                        searchResults.forEach { user ->
+                            DropdownMenuItem(
+                                text = { 
+                                    Column {
+                                        Text(user.nombre, color = TextPrimary, fontWeight = FontWeight.Bold)
+                                        Text(user.email, color = TextSecondary, fontSize = 12.sp)
+                                    }
+                                },
+                                onClick = {
+                                    searchQuery = "${user.nombre} (${user.email})"
+                                    selectedAlumnoId = user.id
+                                    expanded = false
+                                }
+                            )
+                        }
+                    }
+                }
+            }
+        }
+
+        item {
+            val context = LocalContext.current
+            val calendar = java.util.Calendar.getInstance()
+            
+            val datePickerDialog = android.app.DatePickerDialog(
+                context,
+                { _, year, month, dayOfMonth ->
+                    date = String.format("%04d-%02d-%02d", year, month + 1, dayOfMonth)
+                },
+                calendar.get(java.util.Calendar.YEAR),
+                calendar.get(java.util.Calendar.MONTH),
+                calendar.get(java.util.Calendar.DAY_OF_MONTH)
+            )
+
+            val timePickerDialog = android.app.TimePickerDialog(
+                context,
+                { _, hourOfDay, minute ->
+                    time = String.format("%02d:%02d", hourOfDay, minute)
+                },
+                calendar.get(java.util.Calendar.HOUR_OF_DAY),
+                calendar.get(java.util.Calendar.MINUTE),
+                true // 24-hour format
+            )
+
+            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                Box(modifier = Modifier.weight(1f).clickable { datePickerDialog.show() }) {
+                    OutlinedTextField(
+                        value = date,
+                        onValueChange = {},
+                        readOnly = true,
+                        label = { Text("Fecha") },
+                        modifier = Modifier.fillMaxWidth(),
+                        enabled = false,
+                        shape = RoundedCornerShape(12.dp),
+                        colors = OutlinedTextFieldDefaults.colors(disabledBorderColor = TextTertiary, disabledTextColor = TextPrimary, disabledLabelColor = TextTertiary, disabledContainerColor = BgCard),
+                        trailingIcon = { Icon(Icons.Default.CalendarToday, contentDescription = null, tint = NeonPink) }
+                    )
+                }
+                Box(modifier = Modifier.weight(1f).clickable { timePickerDialog.show() }) {
+                    OutlinedTextField(
+                        value = time,
+                        onValueChange = {},
+                        readOnly = true,
+                        label = { Text("Hora") },
+                        modifier = Modifier.fillMaxWidth(),
+                        enabled = false,
+                        shape = RoundedCornerShape(12.dp),
+                        colors = OutlinedTextFieldDefaults.colors(disabledBorderColor = TextTertiary, disabledTextColor = TextPrimary, disabledLabelColor = TextTertiary, disabledContainerColor = BgCard),
+                        trailingIcon = { Icon(Icons.Default.Schedule, contentDescription = null, tint = NeonPink) }
+                    )
+                }
+            }
+        }
+
+        if (errorMessage.isNotEmpty()) {
+            item {
+                Text(text = "Error: $errorMessage", color = NeonPink, fontSize = 14.sp, fontWeight = FontWeight.Bold)
+            }
+        }
+
+        item {
+            Spacer(modifier = Modifier.height(16.dp))
             Button(
                 onClick = {
                     scope.launch {
                         isCreating = true
-                        val fechaInicio = java.time.OffsetDateTime.now().plusDays(1).toString()
-                        val fechaFin = java.time.OffsetDateTime.now().plusDays(1).plusHours(1).toString()
-                        repo.crearClase(titulo, alumnoId, fechaInicio, fechaFin)
+                        errorMessage = ""
+                        val fechaInicio = "${date}T${time}:00Z"
+                        val result = repo.crearClase(titulo, instrumento, selectedAlumnoId, fechaInicio, "")
                         isCreating = false
-                        navController.popBackStack()
+                        if (result == null) {
+                            navController.popBackStack()
+                        } else {
+                            errorMessage = result
+                        }
                     }
                 },
-                enabled = titulo.isNotBlank() && alumnoId.isNotBlank() && !isCreating,
+                enabled = titulo.isNotBlank() && instrumento.isNotBlank() && selectedAlumnoId.isNotBlank() && date.length == 10 && time.length == 5 && !isCreating,
                 modifier = Modifier.fillMaxWidth().height(52.dp),
                 shape = RoundedCornerShape(12.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = NeonPink)
             ) {
                 if (isCreating) CircularProgressIndicator(color = TextPrimary, modifier = Modifier.size(20.dp), strokeWidth = 2.dp)
-                else Text("Crear y generar Meet", fontWeight = FontWeight.Bold, fontSize = 15.sp)
+                else Text("Agendar Clase", fontWeight = FontWeight.Bold, fontSize = 15.sp)
             }
         }
     }

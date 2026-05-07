@@ -5,12 +5,25 @@ import { google } from 'googleapis';
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const { teacherId, studentId, title, description, scheduledAt } = body;
+    const { teacherId, studentId, title, instrument, description, scheduledAt } = body;
 
     const supabase = await createClient();
-    const { data: { session } } = await supabase.auth.getSession();
+    let { data: { session } } = await supabase.auth.getSession();
+    
+    let sessionUser = session?.user;
+    let providerToken = session?.provider_token || body.providerToken;
 
-    if (!session || session.user.id !== teacherId) {
+    // Fallback para Mobile: extraer sesión manual desde Bearer token si no hay cookies
+    if (!sessionUser) {
+      const authHeader = req.headers.get('Authorization');
+      if (authHeader && authHeader.startsWith('Bearer ')) {
+        const token = authHeader.replace('Bearer ', '');
+        const { data: { user } } = await supabase.auth.getUser(token);
+        sessionUser = user;
+      }
+    }
+
+    if (!sessionUser || sessionUser.id !== teacherId) {
       return NextResponse.json({ error: 'No autorizado' }, { status: 401 });
     }
 
@@ -20,8 +33,6 @@ export async function POST(req: Request) {
       .select('correo')
       .eq('id', studentId)
       .single();
-
-    const providerToken = session.provider_token;
 
     let meetLink = '';
     
@@ -82,13 +93,27 @@ export async function POST(req: Request) {
       }, { status: 500 });
     }
 
-    // 2. Transacción de Base de Datos
+    // 2. Establecer la conexión automáticamente si no existe (al ser el profesor quien lo busca globalmente)
+    const { error: connError } = await supabase
+      .from('student_teacher_connections')
+      .insert({
+        teacher_id: teacherId,
+        student_id: studentId,
+        status: 'accepted'
+      });
+      // El error de llave duplicada se ignora porque la conexión ya existe
+    if (connError && connError.code !== '23505') {
+       console.warn("Error creando conexión automática:", connError);
+    }
+
+    // 3. Transacción de Base de Datos para la clase
     const { data: clase, error: insertError } = await supabase
       .from('classes')
       .insert({
         teacher_id: teacherId,
         student_id: studentId,
         title,
+        instrument,
         description,
         scheduled_at: scheduledAt,
         meet_link: meetLink,

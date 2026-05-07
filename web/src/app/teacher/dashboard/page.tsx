@@ -4,6 +4,7 @@ import { Video, Calendar, PlusCircle } from 'lucide-react';
 import Link from 'next/link';
 import LocalTime from '@/components/LocalTime';
 import InstantCallButton from '@/components/teacher/InstantCallButton';
+import DeleteClassButton from '@/components/teacher/DeleteClassButton';
 
 export default async function TeacherDashboard() {
   const supabase = await createClient();
@@ -109,7 +110,11 @@ export default async function TeacherDashboard() {
                         Alumno: {student?.nombre || 'Desconocido'}
                       </span>
                       <h3 style={{ margin: 0, fontSize: '24px', fontWeight: 600, color: 'white' }}>{cls.title}</h3>
-                      
+                      {cls.instrument && (
+                        <p style={{ margin: '8px 0 0 0', fontSize: '14px', color: 'var(--neon-cyan)', fontWeight: 600 }}>
+                          Instrumento: {cls.instrument}
+                        </p>
+                      )}
                       <div style={{ display: 'flex', gap: '24px', flexWrap: 'wrap', background: 'rgba(255,255,255,0.03)', padding: '12px 16px', borderRadius: '8px', marginTop: '16px', width: 'fit-content' }}>
                         <LocalTime dateIso={cls.scheduled_at} />
                       </div>
@@ -146,6 +151,8 @@ export default async function TeacherDashboard() {
                             teacherAvatar={userProfile.avatar_url}
                          />
                        )}
+                       
+                       <DeleteClassButton classId={cls.id} />
                     </div>
                   </div>
                 );
