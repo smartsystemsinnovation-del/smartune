@@ -189,6 +189,15 @@ fun HomeScreen(
         
         item { Spacer(modifier = Modifier.height(32.dp)) }
     }
+
+    PullRefreshIndicator(
+        refreshing = uiState.isRefreshing,
+        state = pullRefreshState,
+        modifier = Modifier.align(Alignment.TopCenter),
+        backgroundColor = BgCard,
+        contentColor = NeonPink
+    )
+  }
 }
 
 @Composable
@@ -298,15 +307,6 @@ private fun TopInstrumentosSection(
                 }
             }
         }
-    }
-
-        PullRefreshIndicator(
-            refreshing = uiState.isRefreshing,
-            state = pullRefreshState,
-            modifier = Modifier.align(Alignment.TopCenter),
-            backgroundColor = BgCard,
-            contentColor = NeonPink
-        )
     }
 }
 
