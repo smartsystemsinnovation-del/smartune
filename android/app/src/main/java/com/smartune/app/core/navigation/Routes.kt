@@ -12,6 +12,7 @@ object Routes {
     const val PROFILE = "profile"
     const val PUBLIC_PROFILE = "public_profile/{userId}"
     fun publicProfile(id: String) = "public_profile/$id"
+    const val MUSIC_SWIPE = "music_swipe"
 
     // Sub-screens
     const val PROFESOR_DETAIL = "profesor/{profesorId}"

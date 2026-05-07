@@ -26,6 +26,7 @@ import com.smartune.app.player.PlayerScreen
 import com.smartune.app.minijuegos.MinijuegosScreen
 import com.smartune.app.iastudio.IAStudioScreen
 import com.smartune.app.minijuegos.SmarTilesScreen
+import com.smartune.app.musicswipe.ui.MusicSwipeScreen
 
 @Composable
 fun NavGraph(
@@ -139,6 +140,10 @@ fun NavGraph(
 
         composable(Routes.MINIJUEGOS) {
             MinijuegosScreen(navController = navController)
+        }
+
+        composable(Routes.MUSIC_SWIPE) {
+            MusicSwipeScreen(navController = navController)
         }
 
         composable(Routes.SMAR_TILES) {

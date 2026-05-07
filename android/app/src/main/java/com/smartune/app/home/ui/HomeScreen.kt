@@ -71,8 +71,8 @@ fun HomeScreen(
         // Quick actions
         item {
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                QuickAction(icon = Icons.Default.VideoCall, label = "Clases", color = NeonPink, modifier = Modifier.weight(1f)) {
-                    navController.navigate(Routes.EXPLORAR)
+                QuickAction(icon = Icons.Default.Swipe, label = "MusicSwipe", color = NeonPink, modifier = Modifier.weight(1f)) {
+                    navController.navigate(Routes.MUSIC_SWIPE)
                 }
                 QuickAction(icon = Icons.Default.SportsEsports, label = "Minijuegos", color = NeonPurple, modifier = Modifier.weight(1f)) {
                     navController.navigate(Routes.MINIJUEGOS)
