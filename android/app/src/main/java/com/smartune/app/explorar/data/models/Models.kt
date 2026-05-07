@@ -77,7 +77,7 @@ data class ClaseAgendada(
 data class UserProfile(
     val id: String = "",
     val nombre: String = "",
-    val email: String = "",
+    @SerialName("correo") val email: String = "",
     @SerialName("avatar_url") val avatarUrl: String? = null,
     val rol: String = "alumno",
     val instrumento: String? = null,

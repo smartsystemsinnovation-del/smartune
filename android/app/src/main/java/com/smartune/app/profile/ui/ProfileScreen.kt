@@ -167,8 +167,9 @@ fun ProfileScreen(navController: NavController, onLogout: () -> Unit) {
                         }
                     }
 
-                    val rolLabel = if (p.profesorAprobado) "Profesor Verificado ✓" else "Alumno"
-                    val rolColor = if (p.profesorAprobado) NeonCyan else NeonPink
+                    val isProfesor = p.profesorAprobado || p.rol == "profesor"
+                    val rolLabel = if (isProfesor) "Profesor Verificado ✓" else "Estudiante"
+                    val rolColor = if (isProfesor) NeonCyan else NeonPink
                     Text(
                         text = "@${p.nombre.lowercase().replace("\\s+".toRegex(), "")} • $rolLabel",
                         fontSize = 13.sp,
@@ -324,7 +325,7 @@ private fun SettingsSheet(
 
     val instruments = listOf("Guitarra", "Batería", "Piano", "Bajo", "Voz", "Sintetizador", "Ninguno", "Otro")
     val allGenres = listOf("Hardstyle", "Phonk", "Rock", "Pop", "Electrónica", "Videojuegos", "Metal", "Trap", "Lo-fi")
-    val isProfesor = profile.profesorAprobado
+    val isProfesor = profile.profesorAprobado || profile.rol == "profesor"
     val instrumentLabel = if (isProfesor) "Instrumento Principal (Enseñar)" else "Instrumento de Práctica"
     val avatarSrc = profile.avatarUrl
         ?: "https://ui-avatars.com/api/?background=2e1e42&color=fff&bold=true&size=150&name=${profile.nombre}"
