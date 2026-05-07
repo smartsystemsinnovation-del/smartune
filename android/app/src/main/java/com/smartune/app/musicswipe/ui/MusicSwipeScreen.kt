@@ -370,12 +370,16 @@ fun YouTubeAudioPlayer(
         factory = { context ->
             WebView(context).apply {
                 settings.javaScriptEnabled = true
+                settings.domStorageEnabled = true
                 settings.mediaPlaybackRequiresUserGesture = false // Crucial for autoplay without user touch
+                settings.allowContentAccess = true
                 webViewClient = WebViewClient()
                 webChromeClient = WebChromeClient()
                 
-                // Keep it in background
-                layoutParams = ViewGroup.LayoutParams(1, 1)
+                layoutParams = ViewGroup.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT, 
+                    ViewGroup.LayoutParams.MATCH_PARENT
+                )
                 
                 val htmlData = """
                     <!DOCTYPE html>
@@ -394,11 +398,16 @@ fun YouTubeAudioPlayer(
                                         'controls': 0,
                                         'rel': 0,
                                         'modestbranding': 1,
-                                        'playsinline': 1
+                                        'playsinline': 1,
+                                        'enablejsapi': 1,
+                                        'origin': 'https://www.youtube.com'
                                     },
                                     events: {
                                         'onReady': function(event) {
                                             event.target.playVideo();
+                                        },
+                                        'onError': function(event) {
+                                            console.log("YT Player Error:", event.data);
                                         }
                                     }
                                 });
@@ -413,6 +422,6 @@ fun YouTubeAudioPlayer(
                 webViewRef = this
             }
         },
-        modifier = modifier.size(1.dp) // Invisible
+        modifier = modifier.fillMaxSize().graphicsLayer(alpha = 0.01f) // Hidden but active
     )
 }
