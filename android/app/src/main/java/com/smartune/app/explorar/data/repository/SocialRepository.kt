@@ -596,6 +596,8 @@ class SocialRepository {
         } catch (e: Exception) {
             false
         }
+    }
+
     suspend fun borrarClase(claseId: String): Boolean {
         return try {
             SupabaseClient.client.postgrest["classes"].delete {
