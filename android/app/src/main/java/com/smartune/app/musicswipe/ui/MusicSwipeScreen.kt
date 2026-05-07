@@ -339,8 +339,8 @@ fun SwipeableCard(
 }
 
 /**
- * Invisible YouTube Player using WebView.
- * Handles automatic playback of the current song.
+ * Reproductor de Audio de YouTube via embed URL directo.
+ * Mucho más confiable que el IFrame API en WebView de Android.
  */
 @SuppressLint("SetJavaScriptEnabled")
 @Composable
@@ -350,19 +350,21 @@ fun YouTubeAudioPlayer(
     modifier: Modifier = Modifier
 ) {
     var webViewRef by remember { mutableStateOf<WebView?>(null) }
-    
-    // Inject JS when play state changes
-    LaunchedEffect(isPlaying) {
-        if (isPlaying) {
-            webViewRef?.evaluateJavascript("if(window.player && player.playVideo) { player.playVideo(); }", null)
-        } else {
-            webViewRef?.evaluateJavascript("if(window.player && player.pauseVideo) { player.pauseVideo(); }", null)
-        }
-    }
 
-    // Load new video when ID changes
-    LaunchedEffect(videoId) {
-        webViewRef?.evaluateJavascript("if(window.player && player.loadVideoById) { player.loadVideoById('$videoId'); }", null)
+    // Controlar play/pause inyectando JS
+    LaunchedEffect(isPlaying, webViewRef) {
+        val wv = webViewRef ?: return@LaunchedEffect
+        if (isPlaying) {
+            wv.evaluateJavascript(
+                "(function(){ var v = document.querySelector('video'); if(v) v.play(); })()",
+                null
+            )
+        } else {
+            wv.evaluateJavascript(
+                "(function(){ var v = document.querySelector('video'); if(v) v.pause(); })()",
+                null
+            )
+        }
     }
 
     AndroidView(
@@ -370,57 +372,27 @@ fun YouTubeAudioPlayer(
             WebView(context).apply {
                 settings.javaScriptEnabled = true
                 settings.domStorageEnabled = true
-                settings.mediaPlaybackRequiresUserGesture = false // Crucial for autoplay without user touch
+                settings.mediaPlaybackRequiresUserGesture = false
                 settings.allowContentAccess = true
+                settings.loadWithOverviewMode = true
+                settings.useWideViewPort = true
                 webViewClient = WebViewClient()
                 webChromeClient = WebChromeClient()
-                
-                layoutParams = ViewGroup.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT, 
-                    ViewGroup.LayoutParams.MATCH_PARENT
-                )
-                
-                val htmlData = """
-                    <!DOCTYPE html>
-                    <html>
-                    <body style="margin:0;padding:0;background-color:black;">
-                        <div id="player"></div>
-                        <script>
-                            var player;
-                            function onYouTubeIframeAPIReady() {
-                                player = new YT.Player('player', {
-                                    height: '100%',
-                                    width: '100%',
-                                    videoId: '$videoId',
-                                    playerVars: {
-                                        'autoplay': 1,
-                                        'controls': 0,
-                                        'rel': 0,
-                                        'modestbranding': 1,
-                                        'playsinline': 1,
-                                        'enablejsapi': 1,
-                                        'origin': 'https://www.youtube.com'
-                                    },
-                                    events: {
-                                        'onReady': function(event) {
-                                            event.target.playVideo();
-                                        },
-                                        'onError': function(event) {
-                                            console.log("YT Player Error:", event.data);
-                                        }
-                                    }
-                                });
-                            }
-                        </script>
-                        <script src="https://www.youtube.com/iframe_api"></script>
-                    </body>
-                    </html>
-                """.trimIndent()
-                
-                loadDataWithBaseURL("https://www.youtube.com", htmlData, "text/html", "UTF-8", null)
+
+                // URL de embed directa: autoplay=1, mute=0 fuerza audio
+                val url = "https://www.youtube.com/embed/$videoId?autoplay=1&mute=0&controls=0&rel=0&playsinline=1&enablejsapi=1"
+                loadUrl(url)
+
                 webViewRef = this
             }
         },
-        modifier = modifier // Receives fillMaxSize from parent
+        update = { webView ->
+            // Cuando el videoId cambia, carga la nueva URL
+            val url = "https://www.youtube.com/embed/$videoId?autoplay=1&mute=0&controls=0&rel=0&playsinline=1&enablejsapi=1"
+            if (webView.url != url) {
+                webView.loadUrl(url)
+            }
+        },
+        modifier = modifier
     )
 }
