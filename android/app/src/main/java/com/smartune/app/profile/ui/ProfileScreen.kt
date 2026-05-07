@@ -34,8 +34,12 @@ import com.smartune.app.explorar.data.models.UserProfile
 import com.smartune.app.explorar.data.repository.SocialRepository
 import com.smartune.app.explorar.ui.PostAudioPlayer
 import kotlinx.coroutines.launch
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.pullrefresh.PullRefreshIndicator
+import androidx.compose.material.pullrefresh.pullRefresh
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class, ExperimentalMaterialApi::class)
 @Composable
 fun ProfileScreen(navController: NavController, onLogout: () -> Unit) {
     val scope = rememberCoroutineScope()
@@ -44,19 +48,24 @@ fun ProfileScreen(navController: NavController, onLogout: () -> Unit) {
     var posts by remember { mutableStateOf<List<Post>>(emptyList()) }
     var followersCount by remember { mutableStateOf(0) }
     var isLoading by remember { mutableStateOf(true) }
+    var isRefreshing by remember { mutableStateOf(false) }
     var activeTab by remember { mutableStateOf("grid") }
     var showSettings by remember { mutableStateOf(false) }
     val context = LocalContext.current
 
     val authUserId = remember { SupabaseClient.auth.currentSessionOrNull()?.user?.id }
 
-    LaunchedEffect(Unit) {
-        isLoading = true
+    suspend fun loadData() {
         if (authUserId != null) {
             profile = repo.getUserProfile(authUserId)
             posts = repo.getUserPosts(authUserId)
             followersCount = repo.getFollowersCount(authUserId)
         }
+    }
+
+    LaunchedEffect(Unit) {
+        isLoading = true
+        loadData()
         isLoading = false
     }
 
@@ -93,6 +102,21 @@ fun ProfileScreen(navController: NavController, onLogout: () -> Unit) {
             }
         )
     }
+
+    val pullRefreshState = rememberPullRefreshState(
+        refreshing = isRefreshing,
+        onRefresh = {
+            scope.launch {
+                isRefreshing = true
+                loadData()
+                isRefreshing = false
+            }
+        }
+    )
+
+    Box(
+        modifier = Modifier.fillMaxSize().background(BgMain).pullRefresh(pullRefreshState)
+    ) {
 
     LazyVerticalGrid(
         columns = GridCells.Fixed(3),
@@ -305,6 +329,15 @@ fun ProfileScreen(navController: NavController, onLogout: () -> Unit) {
                 }
             }
         }
+    }
+
+        PullRefreshIndicator(
+            refreshing = isRefreshing,
+            state = pullRefreshState,
+            modifier = Modifier.align(Alignment.TopCenter),
+            backgroundColor = BgCard,
+            contentColor = NeonPink
+        )
     }
 }
 

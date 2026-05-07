@@ -11,6 +11,7 @@ import kotlinx.coroutines.launch
 
 data class HomeUiState(
     val isLoading: Boolean = true,
+    val isRefreshing: Boolean = false,
     val lanzamientos: List<Cancion> = emptyList(),
     val instrumentos: List<Instrumento> = emptyList(),
     val isAlumnosView: Boolean = true
@@ -25,20 +26,27 @@ class HomeViewModel : ViewModel() {
         fetchHomeData()
     }
 
-    private fun fetchHomeData() {
+    private fun fetchHomeData(isRefresh: Boolean = false) {
         viewModelScope.launch {
-            _uiState.value = _uiState.value.copy(isLoading = true)
-            
+            if (isRefresh) {
+                _uiState.value = _uiState.value.copy(isRefreshing = true)
+            } else {
+                _uiState.value = _uiState.value.copy(isLoading = true)
+            }
+
             val canciones = repo.getNuevosLanzamientos()
             val instrumentos = repo.getTopInstrumentos()
-            
+
             _uiState.value = _uiState.value.copy(
                 isLoading = false,
+                isRefreshing = false,
                 lanzamientos = canciones,
                 instrumentos = instrumentos
             )
         }
     }
+
+    fun refresh() = fetchHomeData(isRefresh = true)
 
     fun toggleInstrumentosView() {
         _uiState.value = _uiState.value.copy(isAlumnosView = !_uiState.value.isAlumnosView)

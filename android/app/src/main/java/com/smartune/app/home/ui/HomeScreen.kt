@@ -32,7 +32,12 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.pullrefresh.PullRefreshIndicator
+import androidx.compose.material.pullrefresh.pullRefresh
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun HomeScreen(
     navController: NavController,
@@ -40,6 +45,17 @@ fun HomeScreen(
 ) {
     val uiState by homeViewModel.uiState.collectAsStateWithLifecycle()
 
+    val pullRefreshState = rememberPullRefreshState(
+        refreshing = uiState.isRefreshing,
+        onRefresh = { homeViewModel.refresh() }
+    )
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(BgMain)
+            .pullRefresh(pullRefreshState)
+    ) {
     LazyColumn(
         modifier = Modifier.fillMaxSize().background(BgMain),
         contentPadding = PaddingValues(16.dp),
@@ -282,6 +298,15 @@ private fun TopInstrumentosSection(
                 }
             }
         }
+    }
+
+        PullRefreshIndicator(
+            refreshing = uiState.isRefreshing,
+            state = pullRefreshState,
+            modifier = Modifier.align(Alignment.TopCenter),
+            backgroundColor = BgCard,
+            contentColor = NeonPink
+        )
     }
 }
 
