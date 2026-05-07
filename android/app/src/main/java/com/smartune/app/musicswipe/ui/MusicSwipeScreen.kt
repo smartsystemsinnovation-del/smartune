@@ -376,6 +376,8 @@ fun YouTubeAudioPlayer(
                 settings.allowContentAccess = true
                 settings.loadWithOverviewMode = true
                 settings.useWideViewPort = true
+                // CLAVE: YouTube bloquea WebView por defecto; fingir ser Chrome desbloquea el autoplay
+                settings.userAgentString = "Mozilla/5.0 (Linux; Android 10; Mobile) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Mobile Safari/537.36"
                 webViewClient = WebViewClient()
                 webChromeClient = WebChromeClient()
 
