@@ -47,23 +47,22 @@ fun MusicSwipeScreen(
 ) {
     var isPlaying by remember { mutableStateOf(true) }
 
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Brush.verticalGradient(listOf(BgMain, Color(0xFF121212))))
-    ) {
-        // Reproductor de YouTube Invisible
+    Box(modifier = Modifier.fillMaxSize()) {
+        // 1. Capa de fondo real: Reproductor de YouTube a pantalla completa (pero será tapado)
         if (viewModel.songs.isNotEmpty()) {
             val currentSong = viewModel.songs.first()
             YouTubeAudioPlayer(
                 videoId = currentSong.id,
-                isPlaying = isPlaying
+                isPlaying = isPlaying,
+                modifier = Modifier.fillMaxSize()
             )
         }
 
+        // 2. Capa de Interfaz Gráfica: Tapa completamente al WebView
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                .background(Brush.verticalGradient(listOf(BgMain, Color(0xFF121212))))
                 .padding(top = 16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -422,6 +421,6 @@ fun YouTubeAudioPlayer(
                 webViewRef = this
             }
         },
-        modifier = modifier.fillMaxSize().graphicsLayer(alpha = 0.01f) // Hidden but active
+        modifier = modifier // Receives fillMaxSize from parent
     )
 }
