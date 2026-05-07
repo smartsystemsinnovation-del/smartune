@@ -78,9 +78,9 @@ fun ProfileScreen(navController: NavController, onLogout: () -> Unit) {
             profile = p,
             navController = navController,
             onDismiss = { showSettings = false },
-            onSave = { newName ->
+            onSave = { newName, newInstrumento, newGeneros ->
                 scope.launch {
-                    repo.updateProfile(newName)
+                    repo.updateProfile(newName, newInstrumento, newGeneros)
                     profile = repo.getUserProfile(authUserId ?: return@launch)
                     showSettings = false
                 }
@@ -307,24 +307,34 @@ fun ProfileScreen(navController: NavController, onLogout: () -> Unit) {
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 private fun SettingsSheet(
     profile: UserProfile,
     navController: NavController,
     onDismiss: () -> Unit,
-    onSave: (String) -> Unit,
+    onSave: (String, String?, List<String>?) -> Unit,
     onLogout: () -> Unit
 ) {
     var editName by remember { mutableStateOf(profile.nombre) }
+    var editInstrumento by remember { mutableStateOf(profile.instrumento ?: "Ninguno") }
+    var editGeneros by remember { mutableStateOf(profile.gustosMusicales ?: emptyList()) }
     var isSaving by remember { mutableStateOf(false) }
+    var showInstrumentDropdown by remember { mutableStateOf(false) }
+
+    val instruments = listOf("Guitarra", "Batería", "Piano", "Bajo", "Voz", "Sintetizador", "Ninguno", "Otro")
+    val allGenres = listOf("Hardstyle", "Phonk", "Rock", "Pop", "Electrónica", "Videojuegos", "Metal", "Trap", "Lo-fi")
+    val isProfesor = profile.profesorAprobado
+    val instrumentLabel = if (isProfesor) "Instrumento Principal (Enseñar)" else "Instrumento de Práctica"
+    val avatarSrc = profile.avatarUrl
+        ?: "https://ui-avatars.com/api/?background=2e1e42&color=fff&bold=true&size=150&name=${profile.nombre}"
 
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         containerColor = Color(0xFF130d1f),
         shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp)
     ) {
-        Column(
+        androidx.compose.foundation.lazy.LazyColumn(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 24.dp)
@@ -332,113 +342,208 @@ private fun SettingsSheet(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             // Avatar
-            val avatarSrc = profile.avatarUrl
-                ?: "https://ui-avatars.com/api/?background=2e1e42&color=fff&bold=true&size=150&name=${profile.nombre}"
-            AsyncImage(
-                model = avatarSrc,
-                contentDescription = null,
-                contentScale = ContentScale.Crop,
-                modifier = Modifier.size(72.dp).clip(CircleShape)
-                    .border(2.dp, Brush.linearGradient(listOf(NeonPink, NeonPurple)), CircleShape)
-            )
-
-            Spacer(Modifier.height(12.dp))
-            Text("AJUSTES", fontSize = 18.sp, fontWeight = FontWeight.ExtraBold, color = TextPrimary, letterSpacing = 2.sp)
-            Text("Cuenta de Google vinculada", fontSize = 12.sp, color = TextTertiary)
-            Spacer(Modifier.height(24.dp))
+            item {
+                AsyncImage(
+                    model = avatarSrc,
+                    contentDescription = null,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier.size(72.dp).clip(CircleShape)
+                        .border(2.dp, Brush.linearGradient(listOf(NeonPink, NeonPurple)), CircleShape)
+                )
+                Spacer(Modifier.height(12.dp))
+                Text("AJUSTES", fontSize = 18.sp, fontWeight = FontWeight.ExtraBold, color = TextPrimary, letterSpacing = 2.sp)
+                Text("Cuenta de Google vinculada", fontSize = 12.sp, color = TextTertiary)
+                Spacer(Modifier.height(24.dp))
+            }
 
             // Name field
-            OutlinedTextField(
-                value = editName,
-                onValueChange = { editName = it },
-                label = { Text("Nombre") },
-                leadingIcon = { Icon(Icons.Default.Person, null, tint = TextTertiary) },
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(12.dp),
-                singleLine = true,
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = NeonPink,
-                    unfocusedBorderColor = TextTertiary.copy(0.3f),
-                    focusedTextColor = TextPrimary,
-                    unfocusedTextColor = TextPrimary,
-                    cursorColor = NeonPink,
-                    focusedContainerColor = Color(0xFF1e1530),
-                    unfocusedContainerColor = Color(0xFF1e1530),
-                    focusedLabelColor = NeonPink,
-                    unfocusedLabelColor = TextTertiary
+            item {
+                OutlinedTextField(
+                    value = editName,
+                    onValueChange = { editName = it },
+                    label = { Text("Nombre") },
+                    leadingIcon = { Icon(Icons.Default.Person, null, tint = TextTertiary) },
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(12.dp),
+                    singleLine = true,
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = NeonPink,
+                        unfocusedBorderColor = TextTertiary.copy(0.3f),
+                        focusedTextColor = TextPrimary,
+                        unfocusedTextColor = TextPrimary,
+                        cursorColor = NeonPink,
+                        focusedContainerColor = Color(0xFF1e1530),
+                        unfocusedContainerColor = Color(0xFF1e1530),
+                        focusedLabelColor = NeonPink,
+                        unfocusedLabelColor = TextTertiary
+                    )
                 )
-            )
-
-            Spacer(Modifier.height(12.dp))
+                Spacer(Modifier.height(12.dp))
+            }
 
             // Email (read-only)
-            OutlinedTextField(
-                value = profile.email,
-                onValueChange = {},
-                label = { Text("Correo") },
-                leadingIcon = { Icon(Icons.Default.Email, null, tint = TextTertiary) },
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(12.dp),
-                enabled = false,
-                singleLine = true,
-                colors = OutlinedTextFieldDefaults.colors(
-                    disabledBorderColor = TextTertiary.copy(0.15f),
-                    disabledTextColor = TextTertiary,
-                    disabledContainerColor = Color(0xFF1a1227),
-                    disabledLabelColor = TextTertiary.copy(0.5f),
-                    disabledLeadingIconColor = TextTertiary.copy(0.4f)
+            item {
+                OutlinedTextField(
+                    value = profile.email,
+                    onValueChange = {},
+                    label = { Text("Correo") },
+                    leadingIcon = { Icon(Icons.Default.Email, null, tint = TextTertiary) },
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(12.dp),
+                    enabled = false,
+                    singleLine = true,
+                    colors = OutlinedTextFieldDefaults.colors(
+                        disabledBorderColor = TextTertiary.copy(0.15f),
+                        disabledTextColor = TextTertiary,
+                        disabledContainerColor = Color(0xFF1a1227),
+                        disabledLabelColor = TextTertiary.copy(0.5f),
+                        disabledLeadingIconColor = TextTertiary.copy(0.4f)
+                    )
                 )
-            )
+                Spacer(Modifier.height(20.dp))
+            }
 
-            Spacer(Modifier.height(24.dp))
+            // Instrument dropdown
+            item {
+                Text(
+                    instrumentLabel.uppercase(),
+                    fontSize = 11.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = TextTertiary,
+                    letterSpacing = 1.sp,
+                    modifier = Modifier.fillMaxWidth()
+                )
+                Spacer(Modifier.height(8.dp))
+                ExposedDropdownMenuBox(
+                    expanded = showInstrumentDropdown,
+                    onExpandedChange = { showInstrumentDropdown = it },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    OutlinedTextField(
+                        value = editInstrumento,
+                        onValueChange = {},
+                        readOnly = true,
+                        modifier = Modifier.fillMaxWidth().menuAnchor(),
+                        shape = RoundedCornerShape(12.dp),
+                        leadingIcon = { Icon(Icons.Default.MusicNote, null, tint = NeonPurple) },
+                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = showInstrumentDropdown) },
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = NeonPurple,
+                            unfocusedBorderColor = NeonPurple.copy(0.3f),
+                            focusedTextColor = TextPrimary,
+                            unfocusedTextColor = TextPrimary,
+                            focusedContainerColor = Color(0xFF1e1530),
+                            unfocusedContainerColor = Color(0xFF1e1530)
+                        )
+                    )
+                    ExposedDropdownMenu(
+                        expanded = showInstrumentDropdown,
+                        onDismissRequest = { showInstrumentDropdown = false },
+                        modifier = Modifier.background(Color(0xFF1e1530))
+                    ) {
+                        instruments.forEach { inst ->
+                            DropdownMenuItem(
+                                text = { Text(inst, color = TextPrimary) },
+                                onClick = {
+                                    editInstrumento = inst
+                                    showInstrumentDropdown = false
+                                },
+                                leadingIcon = if (inst == editInstrumento) {
+                                    { Icon(Icons.Default.Check, null, tint = NeonPurple, modifier = Modifier.size(16.dp)) }
+                                } else null
+                            )
+                        }
+                    }
+                }
+                Spacer(Modifier.height(20.dp))
+            }
+
+            // Genre chips
+            item {
+                Text(
+                    "GÉNEROS FAVORITOS",
+                    fontSize = 11.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = TextTertiary,
+                    letterSpacing = 1.sp,
+                    modifier = Modifier.fillMaxWidth()
+                )
+                Spacer(Modifier.height(8.dp))
+                FlowRow(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Start
+                ) {
+                    allGenres.forEach { genre ->
+                        val selected = genre in editGeneros
+                        FilterChip(
+                            selected = selected,
+                            onClick = {
+                                editGeneros = if (selected) editGeneros - genre else editGeneros + genre
+                            },
+                            label = { Text(genre, fontSize = 13.sp) },
+                            modifier = Modifier.padding(end = 6.dp, bottom = 6.dp),
+                            colors = FilterChipDefaults.filterChipColors(
+                                selectedContainerColor = NeonPurple.copy(0.25f),
+                                selectedLabelColor = NeonPurple,
+                                containerColor = Color(0xFF1e1530),
+                                labelColor = TextTertiary
+                            ),
+                            border = FilterChipDefaults.filterChipBorder(
+                                enabled = true,
+                                selected = selected,
+                                selectedBorderColor = NeonPurple.copy(0.6f),
+                                borderColor = TextTertiary.copy(0.2f)
+                            )
+                        )
+                    }
+                }
+                Spacer(Modifier.height(24.dp))
+            }
 
             // Save button
-            Button(
-                onClick = {
-                    isSaving = true
-                    onSave(editName)
-                },
-                modifier = Modifier.fillMaxWidth().height(52.dp),
-                shape = RoundedCornerShape(14.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = NeonPink),
-                enabled = !isSaving && editName.isNotBlank()
-            ) {
-                if (isSaving) {
-                    CircularProgressIndicator(color = TextPrimary, modifier = Modifier.size(20.dp), strokeWidth = 2.dp)
-                } else {
-                    Text("GUARDAR CAMBIOS", fontWeight = FontWeight.ExtraBold, letterSpacing = 1.sp)
+            item {
+                Button(
+                    onClick = {
+                        isSaving = true
+                        onSave(editName, editInstrumento.takeIf { it != "Ninguno" }, editGeneros.toList())
+                    },
+                    modifier = Modifier.fillMaxWidth().height(52.dp),
+                    shape = RoundedCornerShape(14.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = NeonPink),
+                    enabled = !isSaving && editName.isNotBlank()
+                ) {
+                    if (isSaving) {
+                        CircularProgressIndicator(color = TextPrimary, modifier = Modifier.size(20.dp), strokeWidth = 2.dp)
+                    } else {
+                        Text("GUARDAR CAMBIOS", fontWeight = FontWeight.ExtraBold, letterSpacing = 1.sp)
+                    }
                 }
+                Spacer(Modifier.height(8.dp))
+                HorizontalDivider(color = TextTertiary.copy(0.1f), modifier = Modifier.padding(vertical = 8.dp))
             }
 
-            Spacer(Modifier.height(8.dp))
-
-            // Options divider
-            HorizontalDivider(color = TextTertiary.copy(0.1f), modifier = Modifier.padding(vertical = 8.dp))
-
-            // Teacher dashboard (if applicable)
-            if (profile.profesorAprobado) {
-                SettingsOption(icon = Icons.Default.Dashboard, label = "Panel de Profesor", tint = NeonCyan) {
-                    navController.navigate(Routes.TEACHER_DASHBOARD)
+            // Extra options
+            item {
+                if (profile.profesorAprobado) {
+                    SettingsOption(icon = Icons.Default.Dashboard, label = "Panel de Profesor", tint = NeonCyan) {
+                        navController.navigate(Routes.TEACHER_DASHBOARD)
+                        onDismiss()
+                    }
+                }
+                SettingsOption(icon = Icons.Default.Star, label = "Premium", tint = NeonPink) {
+                    navController.navigate(Routes.PREMIUM)
                     onDismiss()
                 }
+                HorizontalDivider(color = TextTertiary.copy(0.1f), modifier = Modifier.padding(vertical = 8.dp))
+                SettingsOption(icon = Icons.Default.Logout, label = "Cerrar sesión", tint = Color(0xFFFF4F4F)) {
+                    onLogout()
+                }
+                Spacer(Modifier.height(8.dp))
             }
-
-            SettingsOption(icon = Icons.Default.Star, label = "Premium", tint = NeonPink) {
-                navController.navigate(Routes.PREMIUM)
-                onDismiss()
-            }
-
-            HorizontalDivider(color = TextTertiary.copy(0.1f), modifier = Modifier.padding(vertical = 8.dp))
-
-            // Logout
-            SettingsOption(icon = Icons.Default.Logout, label = "Cerrar sesión", tint = Color(0xFFFF4F4F)) {
-                onLogout()
-            }
-
-            Spacer(Modifier.height(8.dp))
         }
     }
 }
+
 
 @Composable
 private fun SettingsOption(

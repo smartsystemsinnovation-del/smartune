@@ -377,7 +377,13 @@ class SocialRepository {
         }
     }
 
-    suspend fun updateProfile(nombre: String, avatarBytes: ByteArray? = null, avatarName: String? = null): Boolean {
+    suspend fun updateProfile(
+        nombre: String,
+        instrumento: String? = null,
+        gustosMusicales: List<String>? = null,
+        avatarBytes: ByteArray? = null,
+        avatarName: String? = null
+    ): Boolean {
         return try {
             val userId = SupabaseClient.auth.currentSessionOrNull()?.user?.id ?: return false
             var avatarUrl: String? = null
@@ -391,12 +397,20 @@ class SocialRepository {
             SupabaseClient.client.postgrest["usuarios"].update(buildJsonObject {
                 put("nombre", nombre)
                 if (avatarUrl != null) put("avatar_url", avatarUrl)
+                if (instrumento != null) put("instrumento", instrumento)
+                if (gustosMusicales != null) {
+                    put("gustos_musicales", kotlinx.serialization.json.JsonArray(
+                        gustosMusicales.map { kotlinx.serialization.json.JsonPrimitive(it) }
+                    ))
+                }
             }) { filter { eq("id", userId) } }
             true
         } catch (e: Exception) {
+            e.printStackTrace()
             false
         }
     }
+
 
     // ── Profesores ──
     suspend fun getProfesores(): List<Profesor> {
