@@ -13,7 +13,7 @@ data class MusicSwipeSong(
 
 @Serializable
 data class Favorito(
-    val id: Int = 0,
+    val id: String = "",
     @SerialName("usuario_id") val usuarioId: String = "",
     @SerialName("youtube_id") val youtubeId: String = "",
     val titulo: String = "",

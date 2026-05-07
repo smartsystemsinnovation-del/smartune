@@ -163,6 +163,30 @@ fun FavoritosScreen(
                     }
                 }
 
+                viewModel.error != null -> {
+                    item {
+                        Card(
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(16.dp),
+                            colors = CardDefaults.cardColors(containerColor = BgCard)
+                        ) {
+                            Column(
+                                modifier = Modifier.fillMaxWidth().padding(32.dp),
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                Icon(Icons.Default.ErrorOutline, contentDescription = null, tint = NeonRed, modifier = Modifier.size(48.dp))
+                                Spacer(modifier = Modifier.height(12.dp))
+                                Text(viewModel.error ?: "Error", color = NeonRed, fontWeight = FontWeight.Bold, fontSize = 14.sp, textAlign = androidx.compose.ui.text.style.TextAlign.Center)
+                                Spacer(modifier = Modifier.height(16.dp))
+                                Button(
+                                    onClick = { viewModel.fetchFavoritos() },
+                                    colors = ButtonDefaults.buttonColors(containerColor = NeonPink)
+                                ) { Text("Reintentar") }
+                            }
+                        }
+                    }
+                }
+
                 viewModel.favoritos.isEmpty() -> {
                     item {
                         Card(
