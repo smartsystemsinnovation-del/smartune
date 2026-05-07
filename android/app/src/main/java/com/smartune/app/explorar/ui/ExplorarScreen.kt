@@ -100,7 +100,9 @@ fun ExplorarScreen(
                         isPosting = uiState.isPosting,
                         currentAvatarUrl = currentAvatarUrl,
                         context = context,
-                        onPost = { content, bytes, name -> viewModel.createPost(content, bytes, name) }
+                        onPost = { content, imageBytes, imageName, audioBytes, audioName ->
+                            viewModel.createPost(content, imageBytes, imageName, audioBytes, audioName)
+                        }
                     )
                 }
 
