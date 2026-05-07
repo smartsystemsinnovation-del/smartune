@@ -173,17 +173,14 @@ private fun CreatePostComposer(
     var content by remember { mutableStateOf("") }
     var selectedImageUri by remember { mutableStateOf<Uri?>(null) }
     var selectedAudioUri by remember { mutableStateOf<Uri?>(null) }
-    var expanded by remember { mutableStateOf(false) }
     val MAX_CHARS = 500
 
     val imageLauncher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri ->
         selectedImageUri = uri
-        if (uri != null) expanded = true
     }
-    
+
     val audioLauncher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri ->
         selectedAudioUri = uri
-        if (uri != null) expanded = true
     }
 
     Card(
@@ -194,6 +191,8 @@ private fun CreatePostComposer(
         colors = CardDefaults.cardColors(containerColor = BgCard)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
+
+            // ── Header row: avatar + text field ──
             Row(verticalAlignment = Alignment.Top) {
                 AsyncImage(
                     model = currentAvatarUrl,
@@ -207,12 +206,12 @@ private fun CreatePostComposer(
                 Spacer(modifier = Modifier.width(12.dp))
                 OutlinedTextField(
                     value = content,
-                    onValueChange = { if (it.length <= MAX_CHARS) { content = it; if (it.isNotEmpty()) expanded = true } },
+                    onValueChange = { if (it.length <= MAX_CHARS) content = it },
                     placeholder = { Text("¿Qué está pulsando hoy?", color = TextTertiary, fontSize = 14.sp) },
                     modifier = Modifier.weight(1f),
                     colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = NeonPink.copy(alpha = 0.3f),
-                        unfocusedBorderColor = TextTertiary.copy(alpha = 0.1f),
+                        focusedBorderColor = NeonPink.copy(alpha = 0.5f),
+                        unfocusedBorderColor = TextTertiary.copy(alpha = 0.15f),
                         focusedTextColor = TextPrimary,
                         unfocusedTextColor = TextPrimary,
                         cursorColor = NeonPink,
@@ -220,11 +219,12 @@ private fun CreatePostComposer(
                         unfocusedContainerColor = BgMain.copy(alpha = 0.5f),
                     ),
                     shape = RoundedCornerShape(12.dp),
-                    maxLines = if (expanded) 5 else 2
+                    maxLines = 5,
+                    minLines = 2
                 )
             }
 
-            // Image preview
+            // ── Image preview ──
             if (selectedImageUri != null) {
                 Spacer(modifier = Modifier.height(8.dp))
                 Box {
@@ -250,7 +250,7 @@ private fun CreatePostComposer(
                 }
             }
 
-            // Audio preview
+            // ── Audio preview ──
             if (selectedAudioUri != null) {
                 Spacer(modifier = Modifier.height(8.dp))
                 Row(
@@ -258,13 +258,13 @@ private fun CreatePostComposer(
                         .fillMaxWidth()
                         .clip(RoundedCornerShape(12.dp))
                         .background(BgMain.copy(alpha = 0.5f))
-                        .border(1.dp, NeonPurple.copy(alpha = 0.3f), RoundedCornerShape(12.dp))
-                        .padding(12.dp),
+                        .border(1.dp, NeonPurple.copy(alpha = 0.5f), RoundedCornerShape(12.dp))
+                        .padding(horizontal = 12.dp, vertical = 10.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Icon(Icons.Default.AudioFile, contentDescription = "Audio", tint = NeonPurple, modifier = Modifier.size(24.dp))
+                    Icon(Icons.Default.Mic, contentDescription = "Audio", tint = NeonPurple, modifier = Modifier.size(22.dp))
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text("Audio adjuntado", color = TextPrimary, fontSize = 13.sp, modifier = Modifier.weight(1f))
+                    Text("Audio seleccionado ✓", color = NeonPurple, fontSize = 13.sp, fontWeight = FontWeight.SemiBold, modifier = Modifier.weight(1f))
                     IconButton(
                         onClick = { selectedAudioUri = null },
                         modifier = Modifier.size(24.dp)
@@ -275,42 +275,59 @@ private fun CreatePostComposer(
             }
 
             Spacer(modifier = Modifier.height(10.dp))
-            // Toolbar row
+
+            // ── Toolbar row: attach buttons + char count + publish ──
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
             ) {
+                // Imagen
                 IconButton(onClick = { imageLauncher.launch("image/*") }, modifier = Modifier.size(36.dp)) {
-                    Icon(Icons.Default.Image, contentDescription = "Adjuntar imagen", tint = NeonPink, modifier = Modifier.size(22.dp))
+                    Icon(
+                        Icons.Default.Image,
+                        contentDescription = "Adjuntar imagen",
+                        tint = if (selectedImageUri != null) NeonPink else NeonPink.copy(alpha = 0.5f),
+                        modifier = Modifier.size(22.dp)
+                    )
                 }
                 Spacer(modifier = Modifier.width(4.dp))
+                // Audio
                 IconButton(onClick = { audioLauncher.launch("audio/*") }, modifier = Modifier.size(36.dp)) {
-                    Icon(Icons.Default.Mic, contentDescription = "Adjuntar audio", tint = NeonPurple, modifier = Modifier.size(22.dp))
+                    Icon(
+                        Icons.Default.Mic,
+                        contentDescription = "Adjuntar audio",
+                        tint = if (selectedAudioUri != null) NeonPurple else NeonPurple.copy(alpha = 0.5f),
+                        modifier = Modifier.size(22.dp)
+                    )
                 }
+
                 Spacer(modifier = Modifier.weight(1f))
+
+                // Char counter
                 Text(
                     "${content.length}/$MAX_CHARS",
                     fontSize = 11.sp,
                     color = if (content.length > MAX_CHARS * 0.9) NeonPink else TextTertiary
                 )
                 Spacer(modifier = Modifier.width(12.dp))
+
+                // Publish button
                 Button(
                     onClick = {
                         val imageBytes = selectedImageUri?.let { uri ->
                             context.contentResolver.openInputStream(uri)?.readBytes()
                         }
                         val imageName = selectedImageUri?.lastPathSegment
-                        
+
                         val audioBytes = selectedAudioUri?.let { uri ->
                             context.contentResolver.openInputStream(uri)?.readBytes()
                         }
                         val audioName = selectedAudioUri?.lastPathSegment
-                        
+
                         onPost(content, imageBytes, imageName, audioBytes, audioName)
                         content = ""
                         selectedImageUri = null
                         selectedAudioUri = null
-                        expanded = false
                     },
                     enabled = (content.isNotBlank() || selectedImageUri != null || selectedAudioUri != null) && !isPosting,
                     shape = RoundedCornerShape(20.dp),
@@ -325,6 +342,7 @@ private fun CreatePostComposer(
         }
     }
 }
+
 
 @Composable
 fun PostCardItem(
