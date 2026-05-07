@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef, useCallback } from 'react';
-import { toggleLike, getComments, addComment, toggleFollow } from '@/actions/socialActions';
+import { toggleLike, getComments, addComment, toggleFollow, deletePost } from '@/actions/socialActions';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 
@@ -35,6 +35,13 @@ const PlayIcon = ({ className }: { className?: string }) => (
 const PauseIcon = ({ className }: { className?: string }) => (
   <svg className={className} viewBox="0 0 24 24" fill="currentColor">
     <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" />
+  </svg>
+);
+
+const TrashIcon = ({ className }: { className?: string }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M3 6h18"></path>
+    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
   </svg>
 );
 
@@ -199,6 +206,8 @@ export default function PostCard({ post, currentUserId }: { post: any; currentUs
   const [newComment, setNewComment] = useState('');
   const [isSubmittingComment, setIsSubmittingComment] = useState(false);
   const [showHeartBurst, setShowHeartBurst] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [isDeleted, setIsDeleted] = useState(false);
 
   const [isFollowing, setIsFollowing] = useState(post.isFollowing || false);
   const isOwnPost = post.user_id === currentUserId;
@@ -261,7 +270,23 @@ export default function PostCard({ post, currentUserId }: { post: any; currentUs
     setIsSubmittingComment(false);
   };
 
+  const handleDeletePost = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (confirm('¿Estás seguro de que quieres borrar esta publicación?')) {
+      setIsDeleting(true);
+      const res = await deletePost(post.id);
+      if (res.success) {
+        setIsDeleted(true);
+      } else {
+        setIsDeleting(false);
+        alert('Error al borrar la publicación');
+      }
+    }
+  };
+
   const avatarSrc = post.avatar_url || `${DEFAULT_AVATAR}${encodeURIComponent(post.username || 'U')}`;
+
+  if (isDeleted) return null;
 
   /* =========================================
      DISEÑO 1A: POST SOLO-AUDIO (TARJETA MUSICAL)
@@ -275,6 +300,11 @@ export default function PostCard({ post, currentUserId }: { post: any; currentUs
           <div className="absolute inset-0" style={{ backgroundImage: 'radial-gradient(ellipse at 20% 50%, rgba(246,51,154,0.08) 0%, transparent 60%), radial-gradient(ellipse at 80% 50%, rgba(152,16,250,0.08) 0%, transparent 60%)' }} />
 
           <div className="relative z-10 p-6 flex flex-col items-center gap-5">
+            {isOwnPost && (
+              <button onClick={handleDeletePost} disabled={isDeleting} className="absolute right-4 top-4 p-2.5 text-white/40 hover:text-[#f6339a] hover:bg-[#f6339a]/10 rounded-full transition-all z-20" title="Borrar publicación">
+                <TrashIcon className="w-5 h-5" />
+              </button>
+            )}
             {/* Header del usuario */}
             <Link href={`/profile/${post.user_id}`} className="flex flex-col items-center gap-3 group/user">
               <div className="relative">
@@ -367,7 +397,12 @@ export default function PostCard({ post, currentUserId }: { post: any; currentUs
      ========================================= */
   if (!hasMedia) {
     return (
-      <article className="w-full max-w-[540px] mx-auto mb-6 bg-[#0f0f0f] border border-white/[0.05] rounded-[28px] overflow-hidden shadow-lg transition-colors hover:border-white/[0.08]">
+      <article className="w-full max-w-[540px] mx-auto mb-6 bg-[#0f0f0f] border border-white/[0.05] rounded-[28px] overflow-hidden shadow-lg transition-colors hover:border-white/[0.08] relative">
+        {isOwnPost && (
+          <button onClick={handleDeletePost} disabled={isDeleting} className="absolute right-5 top-5 p-2.5 text-white/40 hover:text-[#f6339a] hover:bg-[#f6339a]/10 rounded-full transition-all z-20" title="Borrar publicación">
+            <TrashIcon className="w-5 h-5" />
+          </button>
+        )}
         <div className="p-7 flex flex-col items-center gap-6">
 
           {/* Header y Contenido Clickable */}
@@ -498,6 +533,14 @@ export default function PostCard({ post, currentUserId }: { post: any; currentUs
             </div>
             <span className="text-white text-xs font-black drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">{formatCount(Number(post.comments_count) || 0)}</span>
           </button>
+
+          {isOwnPost && (
+            <button onClick={handleDeletePost} disabled={isDeleting} className="flex flex-col items-center gap-1 group mt-2" title="Borrar publicación">
+              <div className="p-3 rounded-full bg-white/10 text-white backdrop-blur-md shadow-2xl group-hover:bg-[#f6339a]/90 transition-all">
+                <TrashIcon className="w-6 h-6" />
+              </div>
+            </button>
+          )}
         </div>
 
         {/* Info Inferior */}

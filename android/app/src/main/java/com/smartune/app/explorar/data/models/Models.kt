@@ -12,6 +12,8 @@ data class Post(
     @SerialName("created_at") val createdAt: String = "",
     val username: String? = null,
     @SerialName("avatar_url") val avatarUrl: String? = null,
+    val rol: String? = null,
+    @SerialName("audio_url") val audioUrl: String? = null,
     @SerialName("likes_count") val likesCount: Int = 0,
     @SerialName("comments_count") val commentsCount: Int = 0,
     @SerialName("hasLiked") val hasLiked: Boolean = false
@@ -78,6 +80,8 @@ data class UserProfile(
     val email: String = "",
     @SerialName("avatar_url") val avatarUrl: String? = null,
     val rol: String = "alumno",
+    val instrumento: String? = null,
+    @SerialName("gustos_musicales") val gustosMusicales: List<String>? = null,
     @SerialName("profesor_aprobado") val profesorAprobado: Boolean = false,
     @SerialName("created_at") val createdAt: String = ""
 )

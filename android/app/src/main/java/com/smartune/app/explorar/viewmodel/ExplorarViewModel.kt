@@ -70,16 +70,37 @@ class ExplorarViewModel : ViewModel() {
         }
     }
 
-    fun createPost(content: String, imageBytes: ByteArray? = null, imageName: String? = null) {
+    fun createPost(
+        content: String,
+        imageBytes: ByteArray? = null,
+        imageName: String? = null,
+        audioBytes: ByteArray? = null,
+        audioName: String? = null
+    ) {
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(isPosting = true, postError = null)
-            val error = repo.createPost(content, imageBytes, imageName)
+            val error = repo.createPost(content, imageBytes, imageName, audioBytes, audioName)
             if (error == null) {
                 loadFeed()
             } else {
                 _uiState.value = _uiState.value.copy(postError = error)
             }
             _uiState.value = _uiState.value.copy(isPosting = false)
+        }
+    }
+
+    fun deletePost(postId: String) {
+        viewModelScope.launch {
+            _uiState.value = _uiState.value.copy(postError = null)
+            val error = repo.deletePost(postId)
+            if (error == null) {
+                // Remove from local state immediately for better UX
+                _uiState.value = _uiState.value.copy(
+                    posts = _uiState.value.posts.filter { it.id != postId }
+                )
+            } else {
+                _uiState.value = _uiState.value.copy(postError = error)
+            }
         }
     }
 

@@ -40,6 +40,10 @@ android {
 
 dependencies {
     // ═══════════════════════════════════════
+    //  GOOGLE GENERATIVE AI (Gemini)
+    // ═══════════════════════════════════════
+    implementation("com.google.ai.client.generativeai:generativeai:0.9.0")
+    // ═══════════════════════════════════════
     //  CORE ANDROID + COMPOSE
     // ═══════════════════════════════════════
     implementation("androidx.core:core-ktx:1.12.0")

@@ -224,3 +224,24 @@ export async function toggleFollow(followedId: string, currentlyFollowing: boole
     return { success: false, error: error.message };
   }
 }
+
+export async function deletePost(postId: string) {
+  try {
+    const supabase = await createClient();
+    const { data: userAuth } = await supabase.auth.getUser();
+    if (!userAuth.user) return { success: false, error: 'Unauthorized' };
+
+    const { error } = await supabase
+      .from('posts')
+      .delete()
+      .match({ id: postId, user_id: userAuth.user.id });
+
+    if (error) return { success: false, error: error.message };
+
+    revalidatePath('/explorar');
+    return { success: true };
+  } catch (error: any) {
+    return { success: false, error: error.message };
+  }
+}
+

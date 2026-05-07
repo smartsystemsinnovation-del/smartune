@@ -10,6 +10,8 @@ object Routes {
     const val FAVORITOS = "favoritos"
     const val PROFESORES = "profesores"
     const val PROFILE = "profile"
+    const val PUBLIC_PROFILE = "public_profile/{userId}"
+    fun publicProfile(id: String) = "public_profile/$id"
 
     // Sub-screens
     const val PROFESOR_DETAIL = "profesor/{profesorId}"
@@ -18,6 +20,8 @@ object Routes {
     const val CREAR_CLASE = "teacher/clases/crear"
     const val PREMIUM = "premium"
     const val MINIJUEGOS = "minijuegos"
+    const val SMAR_TILES = "smar-tiles"
+    const val IA_STUDIO = "ia-studio"
     const val NOVEDADES = "novedades"
     const val PLAYLIST = "playlist"
     const val PLAYLIST_CREAR = "playlist/crear"

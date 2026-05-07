@@ -18,10 +18,14 @@ import com.smartune.app.profesores.ui.HaztePrScreen
 import com.smartune.app.profesores.ui.ProfesorDetailScreen
 import com.smartune.app.profesores.ui.ProfesoresScreen
 import com.smartune.app.profile.ui.ProfileScreen
+import com.smartune.app.profile.ui.PublicProfileScreen
 import com.smartune.app.teacher.ui.CrearClaseScreen
 import com.smartune.app.teacher.ui.TeacherDashboardScreen
 import com.smartune.app.course.CourseDetailScreen
 import com.smartune.app.player.PlayerScreen
+import com.smartune.app.minijuegos.MinijuegosScreen
+import com.smartune.app.iastudio.IAStudioScreen
+import com.smartune.app.minijuegos.SmarTilesScreen
 
 @Composable
 fun NavGraph(
@@ -100,6 +104,14 @@ fun NavGraph(
             )
         }
 
+        composable(
+            route = Routes.PUBLIC_PROFILE,
+            arguments = listOf(navArgument("userId") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val userId = backStackEntry.arguments?.getString("userId") ?: return@composable
+            PublicProfileScreen(userId = userId, navController = navController)
+        }
+
         // ── Sub-screens ──
         composable(
             route = Routes.PROFESOR_DETAIL,
@@ -123,6 +135,18 @@ fun NavGraph(
 
         composable(Routes.PREMIUM) {
             PremiumScreen(navController = navController)
+        }
+
+        composable(Routes.MINIJUEGOS) {
+            MinijuegosScreen(navController = navController)
+        }
+
+        composable(Routes.SMAR_TILES) {
+            SmarTilesScreen(navController = navController)
+        }
+
+        composable(Routes.IA_STUDIO) {
+            IAStudioScreen()
         }
 
         composable(

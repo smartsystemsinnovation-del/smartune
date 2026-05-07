@@ -55,14 +55,14 @@ fun HomeScreen(
         // Quick actions
         item {
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                QuickAction(icon = Icons.Default.Explore, label = "Explorar", color = NeonPink, modifier = Modifier.weight(1f)) {
+                QuickAction(icon = Icons.Default.VideoCall, label = "Clases", color = NeonPink, modifier = Modifier.weight(1f)) {
                     navController.navigate(Routes.EXPLORAR)
                 }
-                QuickAction(icon = Icons.Default.School, label = "Profesores", color = NeonPurple, modifier = Modifier.weight(1f)) {
-                    navController.navigate(Routes.PROFESORES)
+                QuickAction(icon = Icons.Default.SportsEsports, label = "Minijuegos", color = NeonPurple, modifier = Modifier.weight(1f)) {
+                    navController.navigate(Routes.MINIJUEGOS)
                 }
-                QuickAction(icon = Icons.Default.MusicNote, label = "Favoritos", color = NeonBlue, modifier = Modifier.weight(1f)) {
-                    navController.navigate(Routes.FAVORITOS)
+                QuickAction(icon = Icons.Default.AutoAwesome, label = "IA-Studio", color = NeonBlue, modifier = Modifier.weight(1f)) {
+                    navController.navigate(Routes.IA_STUDIO)
                 }
             }
         }

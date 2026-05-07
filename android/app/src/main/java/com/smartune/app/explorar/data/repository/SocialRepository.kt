@@ -6,6 +6,7 @@ import io.github.jan.supabase.postgrest.postgrest
 import io.github.jan.supabase.postgrest.query.Columns
 import io.github.jan.supabase.postgrest.rpc
 import io.github.jan.supabase.storage.storage
+import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 import kotlinx.serialization.json.JsonObject
@@ -114,8 +115,32 @@ class SocialRepository {
         }
     }
 
-    // ── Create Post ──
-    suspend fun createPost(content: String, imageBytes: ByteArray? = null, imageName: String? = null): String? {
+    // ── Create/Delete Post ──
+    suspend fun deletePost(postId: String): String? {
+        val userId = SupabaseClient.auth.currentSessionOrNull()?.user?.id 
+            ?: return "Sesión no encontrada. Vuelve a iniciar sesión."
+            
+        return try {
+            SupabaseClient.client.postgrest["posts"].delete {
+                filter {
+                    eq("id", postId)
+                    eq("user_id", userId)
+                }
+            }
+            null // success
+        } catch (e: Exception) {
+            e.printStackTrace()
+            "Error al eliminar: ${e.message}"
+        }
+    }
+
+    suspend fun createPost(
+        content: String,
+        imageBytes: ByteArray? = null,
+        imageName: String? = null,
+        audioBytes: ByteArray? = null,
+        audioName: String? = null
+    ): String? {
         // sync user first — returns error string if fails
         val syncError = syncUserProfile()
         if (syncError != null) return "Perfil no sincronizado: $syncError"
@@ -124,6 +149,7 @@ class SocialRepository {
             val userId = SupabaseClient.auth.currentSessionOrNull()?.user?.id 
                 ?: return "Sesión no encontrada. Vuelve a iniciar sesión."
             var imageUrl: String? = null
+            var audioUrl: String? = null
 
             if (imageBytes != null && imageName != null) {
                 val path = "$userId/${System.currentTimeMillis()}_$imageName"
@@ -131,10 +157,17 @@ class SocialRepository {
                 imageUrl = SupabaseClient.client.storage.from("posts_images").publicUrl(path)
             }
 
+            if (audioBytes != null && audioName != null) {
+                val path = "$userId/${System.currentTimeMillis()}_$audioName"
+                SupabaseClient.client.storage.from("posts_audio").upload(path, audioBytes)
+                audioUrl = SupabaseClient.client.storage.from("posts_audio").publicUrl(path)
+            }
+
             SupabaseClient.client.postgrest["posts"].insert(buildJsonObject {
                 put("user_id", userId)
                 put("content", content)
                 if (imageUrl != null) put("image_url", imageUrl)
+                if (audioUrl != null) put("audio_url", audioUrl)
             })
             null // success
         } catch (e: Exception) {
@@ -207,6 +240,140 @@ class SocialRepository {
                 .decodeSingle<UserProfile>()
         } catch (e: Exception) {
             null
+        }
+    }
+
+    suspend fun getUserProfile(userId: String): UserProfile? {
+        return try {
+            SupabaseClient.client.postgrest["usuarios"]
+                .select { filter { eq("id", userId) } }
+                .decodeSingle<UserProfile>()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
+        }
+    }
+
+    @Serializable
+    private data class FollowRow(val id: String)
+
+    @Serializable
+    private data class FollowedRow(
+        @kotlinx.serialization.SerialName("seguido_id") val seguidoId: String
+    )
+
+    suspend fun getFollowersCount(userId: String): Int {
+        return try {
+            val rows = SupabaseClient.client.postgrest["seguidores"]
+                .select(Columns.list("id")) {
+                    filter { eq("seguido_id", userId) }
+                }
+                .decodeList<FollowRow>()
+            rows.size
+        } catch (e: Exception) {
+            0
+        }
+    }
+
+    // Checks if the current logged-in user follows [userId].
+    // Uses a single eq filter (which we know works) and checks the result in memory.
+    suspend fun checkIsFollowing(userId: String): Boolean {
+        val authUserId = SupabaseClient.auth.currentSessionOrNull()?.user?.id ?: return false
+        if (authUserId == userId) return false
+        return try {
+            val rows = SupabaseClient.client.postgrest["seguidores"]
+                .select(Columns.list("seguido_id")) {
+                    filter { eq("seguidor_id", authUserId) }
+                }
+                .decodeList<FollowedRow>()
+            // Check in-memory if any row matches the target userId
+            rows.any { it.seguidoId == userId }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            false
+        }
+    }
+
+    suspend fun toggleFollow(userId: String, currentlyFollowing: Boolean): Boolean {
+        val authUserId = SupabaseClient.auth.currentSessionOrNull()?.user?.id ?: return false
+        if (authUserId == userId) return false
+        return try {
+            if (currentlyFollowing) {
+                SupabaseClient.client.postgrest["seguidores"].delete {
+                    filter {
+                        eq("seguidor_id", authUserId)
+                        eq("seguido_id", userId)
+                    }
+                }
+            } else {
+                SupabaseClient.client.postgrest["seguidores"].insert(buildJsonObject {
+                    put("seguidor_id", authUserId)
+                    put("seguido_id", userId)
+                })
+            }
+            true
+        } catch (e: Exception) {
+            e.printStackTrace()
+            false
+        }
+    }
+
+    suspend fun getUserPosts(userId: String): List<Post> {
+        val currentUserId = SupabaseClient.auth.currentSessionOrNull()?.user?.id
+        return try {
+            val rawPosts = SupabaseClient.client.postgrest["vw_posts_with_details"]
+                .select {
+                    filter { eq("user_id", userId) }
+                    order("created_at", io.github.jan.supabase.postgrest.query.Order.DESCENDING)
+                }
+                .decodeList<Post>()
+
+            val likedPostIds = if (currentUserId != null) {
+                val userLikes = SupabaseClient.client.postgrest["likes"]
+                    .select(Columns.list("post_id")) {
+                        filter { eq("user_id", currentUserId) }
+                    }
+                    .decodeList<JsonObject>()
+                userLikes.mapNotNull { it["post_id"]?.jsonPrimitive?.content }.toSet()
+            } else emptySet()
+
+            rawPosts.map { post -> post.copy(hasLiked = likedPostIds.contains(post.id)) }
+        } catch (e: Exception) {
+            emptyList()
+        }
+    }
+
+    suspend fun getUserLikedPosts(userId: String): List<Post> {
+        val currentUserId = SupabaseClient.auth.currentSessionOrNull()?.user?.id
+        return try {
+            val likedIdsData = SupabaseClient.client.postgrest["likes"]
+                .select(Columns.list("post_id")) {
+                    filter { eq("user_id", userId) }
+                }
+                .decodeList<JsonObject>()
+                
+            val likedIds = likedIdsData.mapNotNull { it["post_id"]?.jsonPrimitive?.content }
+            if (likedIds.isEmpty()) return emptyList()
+
+            val rawPosts = SupabaseClient.client.postgrest["vw_posts_with_details"]
+                .select {
+                    filter { isIn("id", likedIds) }
+                    order("created_at", io.github.jan.supabase.postgrest.query.Order.DESCENDING)
+                }
+                .decodeList<Post>()
+
+            val myLikedPostIds = if (currentUserId != null) {
+                val userLikes = SupabaseClient.client.postgrest["likes"]
+                    .select(Columns.list("post_id")) {
+                        filter { eq("user_id", currentUserId) }
+                    }
+                    .decodeList<JsonObject>()
+                userLikes.mapNotNull { it["post_id"]?.jsonPrimitive?.content }.toSet()
+            } else emptySet()
+
+            rawPosts.map { post -> post.copy(hasLiked = myLikedPostIds.contains(post.id)) }
+        } catch (e: Exception) {
+            emptyList()
         }
     }
 

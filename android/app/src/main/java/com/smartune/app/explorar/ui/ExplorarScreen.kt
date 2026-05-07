@@ -19,12 +19,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.delay
+import androidx.media3.common.MediaItem
+import androidx.media3.exoplayer.ExoPlayer
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
@@ -124,9 +129,19 @@ fun ExplorarScreen(
                         PostCardItem(
                             post = post,
                             comments = uiState.comments[post.id] ?: emptyList(),
+                            currentUserId = currentUser?.id,
+                            context = context,
                             onLike = { viewModel.toggleLike(post.id, post.hasLiked) },
                             onLoadComments = { viewModel.loadComments(post.id) },
-                            onAddComment = { content -> viewModel.addComment(post.id, content) }
+                            onAddComment = { content -> viewModel.addComment(post.id, content) },
+                            onDelete = { viewModel.deletePost(post.id) },
+                            onNavigateToProfile = { userId -> 
+                                if (userId.isNotBlank()) {
+                                    try {
+                                        navController.navigate(com.smartune.app.core.navigation.Routes.publicProfile(userId))
+                                    } catch (e: Exception) { e.printStackTrace() }
+                                }
+                            }
                         )
                         Spacer(modifier = Modifier.height(8.dp))
                     }
@@ -151,15 +166,21 @@ private fun CreatePostComposer(
     isPosting: Boolean,
     currentAvatarUrl: String,
     context: android.content.Context,
-    onPost: (String, ByteArray?, String?) -> Unit
+    onPost: (String, ByteArray?, String?, ByteArray?, String?) -> Unit
 ) {
     var content by remember { mutableStateOf("") }
     var selectedImageUri by remember { mutableStateOf<Uri?>(null) }
+    var selectedAudioUri by remember { mutableStateOf<Uri?>(null) }
     var expanded by remember { mutableStateOf(false) }
     val MAX_CHARS = 500
 
-    val launcher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri ->
+    val imageLauncher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri ->
         selectedImageUri = uri
+        if (uri != null) expanded = true
+    }
+    
+    val audioLauncher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri ->
+        selectedAudioUri = uri
         if (uri != null) expanded = true
     }
 
@@ -227,14 +248,42 @@ private fun CreatePostComposer(
                 }
             }
 
+            // Audio preview
+            if (selectedAudioUri != null) {
+                Spacer(modifier = Modifier.height(8.dp))
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(BgMain.copy(alpha = 0.5f))
+                        .border(1.dp, NeonPurple.copy(alpha = 0.3f), RoundedCornerShape(12.dp))
+                        .padding(12.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(Icons.Default.AudioFile, contentDescription = "Audio", tint = NeonPurple, modifier = Modifier.size(24.dp))
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text("Audio adjuntado", color = TextPrimary, fontSize = 13.sp, modifier = Modifier.weight(1f))
+                    IconButton(
+                        onClick = { selectedAudioUri = null },
+                        modifier = Modifier.size(24.dp)
+                    ) {
+                        Icon(Icons.Default.Close, contentDescription = "Quitar audio", tint = TextTertiary, modifier = Modifier.size(16.dp))
+                    }
+                }
+            }
+
             Spacer(modifier = Modifier.height(10.dp))
             // Toolbar row
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                IconButton(onClick = { launcher.launch("image/*") }, modifier = Modifier.size(36.dp)) {
+                IconButton(onClick = { imageLauncher.launch("image/*") }, modifier = Modifier.size(36.dp)) {
                     Icon(Icons.Default.Image, contentDescription = "Adjuntar imagen", tint = NeonPink, modifier = Modifier.size(22.dp))
+                }
+                Spacer(modifier = Modifier.width(4.dp))
+                IconButton(onClick = { audioLauncher.launch("audio/*") }, modifier = Modifier.size(36.dp)) {
+                    Icon(Icons.Default.Mic, contentDescription = "Adjuntar audio", tint = NeonPurple, modifier = Modifier.size(22.dp))
                 }
                 Spacer(modifier = Modifier.weight(1f))
                 Text(
@@ -249,12 +298,19 @@ private fun CreatePostComposer(
                             context.contentResolver.openInputStream(uri)?.readBytes()
                         }
                         val imageName = selectedImageUri?.lastPathSegment
-                        onPost(content, imageBytes, imageName)
+                        
+                        val audioBytes = selectedAudioUri?.let { uri ->
+                            context.contentResolver.openInputStream(uri)?.readBytes()
+                        }
+                        val audioName = selectedAudioUri?.lastPathSegment
+                        
+                        onPost(content, imageBytes, imageName, audioBytes, audioName)
                         content = ""
                         selectedImageUri = null
+                        selectedAudioUri = null
                         expanded = false
                     },
-                    enabled = content.isNotBlank() && !isPosting,
+                    enabled = (content.isNotBlank() || selectedImageUri != null || selectedAudioUri != null) && !isPosting,
                     shape = RoundedCornerShape(20.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = NeonPink),
                     contentPadding = PaddingValues(horizontal = 20.dp, vertical = 8.dp),
@@ -269,16 +325,32 @@ private fun CreatePostComposer(
 }
 
 @Composable
-private fun PostCardItem(
+fun PostCardItem(
     post: Post,
     comments: List<com.smartune.app.explorar.data.models.Comment>,
+    currentUserId: String?,
+    context: android.content.Context,
     onLike: () -> Unit,
     onLoadComments: () -> Unit,
-    onAddComment: (String) -> Unit
+    onAddComment: (String) -> Unit,
+    onDelete: () -> Unit,
+    onNavigateToProfile: (String) -> Unit = {}
 ) {
     var showComments by remember { mutableStateOf(false) }
     var saved by remember { mutableStateOf(false) }
     var commentText by remember { mutableStateOf("") }
+
+    // ── Follow state per card ──
+    val repo = remember { com.smartune.app.explorar.data.repository.SocialRepository() }
+    val scope = rememberCoroutineScope()
+    var isFollowing by remember { mutableStateOf<Boolean?>(null) } // null = loading
+
+    // Load real follow state once when the card appears
+    LaunchedEffect(post.userId) {
+        if (currentUserId != null && currentUserId != post.userId) {
+            isFollowing = repo.checkIsFollowing(post.userId)
+        }
+    }
 
     val avatarUrl = post.avatarUrl ?: "https://ui-avatars.com/api/?background=f6339a&color=fff&bold=true&size=128&name=${post.username ?: "U"}"
 
@@ -290,7 +362,10 @@ private fun PostCardItem(
         Column {
             // ── Header ──
             Row(
-                modifier = Modifier.fillMaxWidth().padding(12.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { onNavigateToProfile(post.userId) }
+                    .padding(12.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 AsyncImage(
@@ -314,19 +389,50 @@ private fun PostCardItem(
                         Spacer(modifier = Modifier.width(6.dp))
                         Text("•", color = TextTertiary, fontSize = 12.sp)
                         Spacer(modifier = Modifier.width(6.dp))
+                        Spacer(modifier = Modifier.width(6.dp))
                         Text(formatTimeAgo(post.createdAt), color = TextTertiary, fontSize = 12.sp)
+                    }
+                    if (post.rol == "profesor") {
+                        Text("Profesor", color = NeonPink, fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                    } else if (post.rol != null) {
+                        Text(post.rol.replaceFirstChar { if (it.isLowerCase()) it.titlecase(java.util.Locale.getDefault()) else it.toString() }, color = TextTertiary, fontSize = 11.sp)
                     }
                 }
                 
-                Button(
-                    onClick = { /* Follow action */ },
-                    colors = ButtonDefaults.buttonColors(containerColor = NeonPink),
-                    contentPadding = PaddingValues(horizontal = 12.dp, vertical = 0.dp),
-                    modifier = Modifier.height(28.dp),
-                    shape = RoundedCornerShape(14.dp)
-                ) {
-                    Text("Seguir", fontSize = 11.sp, fontWeight = FontWeight.Bold, color = TextPrimary)
+                if (currentUserId == post.userId) {
+                    IconButton(onClick = onDelete, modifier = Modifier.size(32.dp)) {
+                        Icon(Icons.Default.DeleteOutline, contentDescription = "Eliminar", tint = NeonRed, modifier = Modifier.size(20.dp))
+                    }
+                } else if (isFollowing != null) {
+                    // Show button only when follow state is known
+                    Button(
+                        onClick = {
+                            val wasFollowing = isFollowing == true
+                            isFollowing = !wasFollowing // Optimistic
+                            scope.launch {
+                                val success = repo.toggleFollow(post.userId, wasFollowing)
+                                if (!success) isFollowing = wasFollowing // Revert on failure
+                            }
+                        },
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = if (isFollowing == true) Color(0xFF2A1A3E) else NeonPink
+                        ),
+                        border = if (isFollowing == true)
+                            androidx.compose.foundation.BorderStroke(1.dp, TextTertiary.copy(alpha = 0.4f))
+                        else null,
+                        contentPadding = PaddingValues(horizontal = 12.dp, vertical = 0.dp),
+                        modifier = Modifier.height(28.dp),
+                        shape = RoundedCornerShape(14.dp)
+                    ) {
+                        Text(
+                            text = if (isFollowing == true) "Siguiendo" else "Seguir",
+                            fontSize = 11.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = if (isFollowing == true) TextTertiary else TextPrimary
+                        )
+                    }
                 }
+
             }
 
             // ── Content ──
@@ -347,6 +453,12 @@ private fun PostCardItem(
                     modifier = Modifier.fillMaxWidth().heightIn(max = 400.dp),
                     contentScale = ContentScale.Crop
                 )
+            }
+            
+            // ── Audio ──
+            post.audioUrl?.let { audioUrl ->
+                Spacer(modifier = Modifier.height(8.dp))
+                PostAudioPlayer(audioUrl = audioUrl)
             }
 
             // ── Action Bar ──
@@ -449,7 +561,7 @@ private fun PostCardItem(
     }
 }
 
-private fun formatTimeAgo(dateStr: String): String {
+fun formatTimeAgo(dateStr: String): String {
     return try {
         val diffMs = System.currentTimeMillis() - java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", java.util.Locale.getDefault()).apply { timeZone = java.util.TimeZone.getTimeZone("UTC") }.parse(dateStr.take(19))!!.time
         val mins = diffMs / 60000
@@ -461,8 +573,72 @@ private fun formatTimeAgo(dateStr: String): String {
     } catch (_: Exception) { "ahora" }
 }
 
-private fun formatCount(n: Int): String = when {
+fun formatCount(n: Int): String = when {
     n >= 1000000 -> "${(n / 1000000.0).let { "%.1f".format(it) }}M"
     n >= 1000 -> "${(n / 1000.0).let { "%.1f".format(it) }}k"
     else -> n.toString()
+}
+
+@Composable
+fun PostAudioPlayer(audioUrl: String) {
+    val context = LocalContext.current
+    val exoPlayer = remember {
+        androidx.media3.exoplayer.ExoPlayer.Builder(context).build().apply {
+            setMediaItem(androidx.media3.common.MediaItem.fromUri(audioUrl))
+            prepare()
+        }
+    }
+    var isPlaying by remember { mutableStateOf(false) }
+
+    DisposableEffect(Unit) {
+        val listener = object : androidx.media3.common.Player.Listener {
+            override fun onIsPlayingChanged(isPlayingState: Boolean) {
+                isPlaying = isPlayingState
+            }
+        }
+        exoPlayer.addListener(listener)
+        onDispose {
+            exoPlayer.removeListener(listener)
+            exoPlayer.release()
+        }
+    }
+
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 12.dp)
+            .clip(RoundedCornerShape(12.dp))
+            .background(
+                brush = Brush.linearGradient(listOf(NeonPurple, NeonPink))
+            )
+            .clickable {
+                if (isPlaying) exoPlayer.pause() else exoPlayer.play()
+            }
+            .padding(12.dp),
+        contentAlignment = Alignment.CenterStart
+    ) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Box(
+                modifier = Modifier
+                    .size(36.dp)
+                    .background(BgMain.copy(alpha = 0.5f), CircleShape),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = if (isPlaying) Icons.Default.Pause else Icons.Default.PlayArrow,
+                    contentDescription = "Play/Pause Audio",
+                    tint = TextPrimary,
+                    modifier = Modifier.size(20.dp)
+                )
+            }
+            Spacer(modifier = Modifier.width(12.dp))
+            Column {
+                Text("Nota de Voz", fontWeight = FontWeight.Bold, color = TextPrimary, fontSize = 14.sp)
+                Text(if (isPlaying) "Reproduciendo..." else "Toca para reproducir", color = TextPrimary.copy(alpha = 0.8f), fontSize = 12.sp)
+            }
+            Spacer(modifier = Modifier.weight(1f))
+            // Minimal audio waves icon
+            Icon(Icons.Default.GraphicEq, contentDescription = null, tint = TextPrimary.copy(alpha = 0.7f), modifier = Modifier.size(24.dp))
+        }
+    }
 }
