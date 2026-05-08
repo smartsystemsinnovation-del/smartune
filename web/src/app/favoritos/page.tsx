@@ -344,11 +344,15 @@ export default function MusicSwipePage() {
               </div>
             </div>
           ) : (
-            <div className="text-center p-12 bg-[#1f1f1f] rounded-3xl border border-dashed border-white/10">
-              <p className="text-gray-500 font-medium mb-6">¡Descubrimientos agotados!</p>
+            <div className="text-center p-12 bg-[#1f1f1f] rounded-3xl border border-dashed border-white/10 max-w-sm">
+              <div className="w-20 h-20 bg-white/5 rounded-full flex items-center justify-center mx-auto mb-6">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="gray" strokeWidth="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+              </div>
+              <p className="text-white text-xl font-bold mb-2">¡Todo explorado por ahora!</p>
+              <p className="text-gray-500 font-medium mb-8">Has visto todas las recomendaciones actuales. ¡Vuelve a cargar para buscar más éxitos!</p>
               <button 
                 onClick={() => fetchSongs()} 
-                className="px-8 py-3 bg-[#f6339a] text-white font-bold rounded-xl hover:bg-[#ee10b0] transition-colors"
+                className="w-full py-4 bg-gradient-to-r from-[#f6339a] to-[#9810fa] text-white font-bold rounded-2xl hover:scale-105 transition-all shadow-lg"
               >
                 Volver a cargar
               </button>

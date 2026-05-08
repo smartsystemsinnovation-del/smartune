@@ -6,7 +6,19 @@ const MASTER_FALLBACK = [
   { id: 'G7KNmW9a75Y', title: 'Miley Cyrus - Flowers (Official Video)', artist: 'Miley Cyrus', coverUrl: 'https://i.ytimg.com/vi/G7KNmW9a75Y/hqdefault.jpg', previewUrl: 'https://www.youtube.com/watch?v=G7KNmW9a75Y' },
   { id: 'ic8j13piAhQ', title: 'Taylor Swift - Cruel Summer (Official Audio)', artist: 'Taylor Swift', coverUrl: 'https://i.ytimg.com/vi/ic8j13piAhQ/hqdefault.jpg', previewUrl: 'https://www.youtube.com/watch?v=ic8j13piAhQ' },
   { id: 'Xq_reL_tCis', title: 'Bad Bunny - MONACO (Official Video)', artist: 'Bad Bunny', coverUrl: 'https://i.ytimg.com/vi/Xq_reL_tCis/hqdefault.jpg', previewUrl: 'https://www.youtube.com/watch?v=Xq_reL_tCis' },
-  { id: 'CocEMW6N65Q', title: 'Shakira || BZRP Music Sessions #53', artist: 'Bizarrap', coverUrl: 'https://i.ytimg.com/vi/CocEMW6N65Q/hqdefault.jpg', previewUrl: 'https://www.youtube.com/watch?v=CocEMW6N65Q' }
+  { id: 'CocEMW6N65Q', title: 'Shakira || BZRP Music Sessions #53', artist: 'Bizarrap', coverUrl: 'https://i.ytimg.com/vi/CocEMW6N65Q/hqdefault.jpg', previewUrl: 'https://www.youtube.com/watch?v=CocEMW6N65Q' },
+  { id: '9bZkp7q19f0', title: 'PSY - GANGNAM STYLE(강남스타일) M/V', artist: 'officialpsy', coverUrl: 'https://i.ytimg.com/vi/9bZkp7q19f0/hqdefault.jpg', previewUrl: 'https://www.youtube.com/watch?v=9bZkp7q19f0' },
+  { id: 'kJQP7kiw5Fk', title: 'Luis Fonsi - Despacito ft. Daddy Yankee', artist: 'Luis Fonsi', coverUrl: 'https://i.ytimg.com/vi/kJQP7kiw5Fk/hqdefault.jpg', previewUrl: 'https://www.youtube.com/watch?v=kJQP7kiw5Fk' },
+  { id: 'fWNaR-rxAic', title: 'Carly Rae Jepsen - Call Me Maybe', artist: 'Carly Rae Jepsen', coverUrl: 'https://i.ytimg.com/vi/fWNaR-rxAic/hqdefault.jpg', previewUrl: 'https://www.youtube.com/watch?v=fWNaR-rxAic' },
+  { id: '09R8_2nJtjg', title: 'Maroon 5 - Sugar (Official Music Video)', artist: 'Maroon 5', coverUrl: 'https://i.ytimg.com/vi/09R8_2nJtjg/hqdefault.jpg', previewUrl: 'https://www.youtube.com/watch?v=09R8_2nJtjg' },
+  { id: 'UqyT8IEBkvY', title: 'Rema, Selena Gomez - Calm Down (Official Music Video)', artist: 'Rema', coverUrl: 'https://i.ytimg.com/vi/UqyT8IEBkvY/hqdefault.jpg', previewUrl: 'https://www.youtube.com/watch?v=UqyT8IEBkvY' },
+  { id: 'YykjpeuMNEk', title: 'Coldplay - Hymn For The Weekend (Official Video)', artist: 'Coldplay', coverUrl: 'https://i.ytimg.com/vi/YykjpeuMNEk/hqdefault.jpg', previewUrl: 'https://www.youtube.com/watch?v=YykjpeuMNEk' },
+  { id: 'JGwWNGJdvx8', title: 'Ed Sheeran - Shape of You (Official Music Video)', artist: 'Ed Sheeran', coverUrl: 'https://i.ytimg.com/vi/JGwWNGJdvx8/hqdefault.jpg', previewUrl: 'https://www.youtube.com/watch?v=JGwWNGJdvx8' },
+  { id: 'CevxZvSJLk8', title: 'Katy Perry - Roar (Official)', artist: 'Katy Perry', coverUrl: 'https://i.ytimg.com/vi/CevxZvSJLk8/hqdefault.jpg', previewUrl: 'https://www.youtube.com/watch?v=CevxZvSJLk8' },
+  { id: 'L_jWHffIx5E', title: 'Smash Mouth - All Star (Official Music Video)', artist: 'Smash Mouth', coverUrl: 'https://i.ytimg.com/vi/L_jWHffIx5E/hqdefault.jpg', previewUrl: 'https://www.youtube.com/watch?v=L_jWHffIx5E' },
+  { id: '60ItHLz5WEA', title: 'Alan Walker - Faded', artist: 'Alan Walker', coverUrl: 'https://i.ytimg.com/vi/60ItHLz5WEA/hqdefault.jpg', previewUrl: 'https://www.youtube.com/watch?v=60ItHLz5WEA' },
+  { id: 'MWPME087K_0', title: 'Imagine Dragons - Believer', artist: 'Imagine Dragons', coverUrl: 'https://i.ytimg.com/vi/MWPME087K_0/hqdefault.jpg', previewUrl: 'https://www.youtube.com/watch?v=MWPME087K_0' },
+  { id: 'n4tK7LYFxI0', title: 'Avicii - The Nights (Official Video)', artist: 'Avicii', coverUrl: 'https://i.ytimg.com/vi/n4tK7LYFxI0/hqdefault.jpg', previewUrl: 'https://www.youtube.com/watch?v=n4tK7LYFxI0' }
 ];
 
 export async function fetchYouTubeSongs(genre?: string) {

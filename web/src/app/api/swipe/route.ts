@@ -71,9 +71,19 @@ export async function POST(request: Request) {
       interactionCounts.discards += 1;
     }
 
+    // Fetch updated like count from DB
+    const { count: likeCount } = await supabase
+      .from('favoritos')
+      .select('*', { count: 'exact', head: true })
+      .eq('usuario_id', user.id);
+
     return NextResponse.json({ 
       success: true, 
-      counts: interactionCounts 
+      counts: {
+        likes: likeCount || 0,
+        views: interactionCounts.views,
+        discards: interactionCounts.discards
+      } 
     });
   } catch (error: any) {
     console.error('API ERROR /api/swipe POST:', error.message);
@@ -82,5 +92,25 @@ export async function POST(request: Request) {
 }
 
 export async function PATCH() {
-  return NextResponse.json(interactionCounts);
+  try {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const { count: likeCount } = await supabase
+      .from('favoritos')
+      .select('*', { count: 'exact', head: true })
+      .eq('usuario_id', user.id);
+
+    return NextResponse.json({
+      likes: likeCount || 0,
+      views: interactionCounts.views,
+      discards: interactionCounts.discards
+    });
+  } catch (error: any) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
 }
