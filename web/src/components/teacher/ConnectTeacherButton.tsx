@@ -3,7 +3,15 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
-export default function ConnectTeacherButton({ teacherId }: { teacherId: string }) {
+export default function ConnectTeacherButton({ 
+  teacherId, 
+  studentId, 
+  hasConnection 
+}: { 
+  teacherId: string;
+  studentId?: string;
+  hasConnection?: boolean;
+}) {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
@@ -31,21 +39,21 @@ export default function ConnectTeacherButton({ teacherId }: { teacherId: string 
   return (
     <button 
       onClick={handleConnect}
-      disabled={loading}
+      disabled={loading || hasConnection}
       style={{
         padding: '16px 32px',
-        background: 'var(--neon-pink)',
-        color: 'white',
+        background: hasConnection ? 'rgba(255,255,255,0.05)' : 'var(--neon-pink)',
+        color: hasConnection ? 'rgba(255,255,255,0.3)' : 'white',
         border: 'none',
         borderRadius: '12px',
         fontWeight: 600,
         fontSize: '16px',
-        cursor: loading ? 'not-allowed' : 'pointer',
-        boxShadow: '0 8px 30px rgba(255, 0, 122, 0.4)',
+        cursor: (loading || hasConnection) ? 'not-allowed' : 'pointer',
+        boxShadow: hasConnection ? 'none' : '0 8px 30px rgba(255, 0, 122, 0.4)',
         transition: 'all 0.3s'
       }}
     >
-      {loading ? 'Conectando...' : 'Elegir y Conectar con este Profesor'}
+      {loading ? 'Conectando...' : (hasConnection ? '✓ Profesor Conectado' : 'Elegir y Conectar con este Profesor')}
     </button>
   );
 }
