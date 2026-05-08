@@ -19,7 +19,7 @@ export async function POST(req: Request) {
       if (authHeader && authHeader.startsWith('Bearer ')) {
         const token = authHeader.replace('Bearer ', '');
         const { data: { user } } = await supabase.auth.getUser(token);
-        sessionUser = user ?? undefined;
+        sessionUser = user ?? undefined; // Fix for TypeScript null/undefined mismatch
       }
     }
 
