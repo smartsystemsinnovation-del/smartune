@@ -21,6 +21,10 @@ import com.smartune.app.core.navigation.Routes
 import com.smartune.app.core.supabase.SupabaseClient
 import com.smartune.app.core.theme.SmarTuneTheme
 import io.github.jan.supabase.gotrue.handleDeeplinks
+import kotlinx.coroutines.launch
+import com.smartune.app.explorar.data.repository.SocialRepository
+import com.google.firebase.messaging.FirebaseMessaging
+import androidx.compose.runtime.rememberCoroutineScope
 
 class MainActivity : ComponentActivity() {
     override fun onNewIntent(intent: android.content.Intent) {
@@ -50,6 +54,24 @@ class MainActivity : ComponentActivity() {
                 }
 
                 val isLoggedIn = sessionStatus is io.github.jan.supabase.gotrue.SessionStatus.Authenticated
+                val scope = rememberCoroutineScope()
+
+                LaunchedEffect(isLoggedIn) {
+                    if (isLoggedIn) {
+                        try {
+                            FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
+                                if (task.isSuccessful) {
+                                    val token = task.result
+                                    scope.launch {
+                                        SocialRepository().updateFcmToken(token)
+                                    }
+                                }
+                            }
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                        }
+                    }
+                }
 
                 val navBackStackEntry by navController.currentBackStackEntryAsState()
                 val currentRoute = navBackStackEntry?.destination?.route
