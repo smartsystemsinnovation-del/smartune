@@ -2,6 +2,7 @@ plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     kotlin("plugin.serialization")
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -39,6 +40,12 @@ android {
 }
 
 dependencies {
+    // ═══════════════════════════════════════
+    //  FIREBASE
+    // ═══════════════════════════════════════
+    implementation(platform("com.google.firebase:firebase-bom:32.8.0"))
+    implementation("com.google.firebase:firebase-messaging-ktx")
+    
     // ═══════════════════════════════════════
     //  GOOGLE GENERATIVE AI (Gemini)
     // ═══════════════════════════════════════

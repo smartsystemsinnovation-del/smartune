@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "482788543252",
+    "project_id": "smartune-aa215",
+    "storage_bucket": "smartune-aa215.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:482788543252:android:3d1493007ef203996c1001",
+        "android_client_info": {
+          "package_name": "com.smartune.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB-1c-ZymSESYmEGgVUdVFg_qyefGhibW8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

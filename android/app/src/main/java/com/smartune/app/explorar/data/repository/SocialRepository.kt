@@ -414,6 +414,19 @@ class SocialRepository {
     }
 
 
+    suspend fun updateFcmToken(token: String): Boolean {
+        return try {
+            val userId = SupabaseClient.auth.currentSessionOrNull()?.user?.id ?: return false
+            SupabaseClient.client.postgrest["usuarios"].update(buildJsonObject {
+                put("fcm_token", token)
+            }) { filter { eq("id", userId) } }
+            true
+        } catch (e: Exception) {
+            e.printStackTrace()
+            false
+        }
+    }
+
     // ── Profesores ──
     suspend fun getProfesores(): List<Profesor> {
         return try {

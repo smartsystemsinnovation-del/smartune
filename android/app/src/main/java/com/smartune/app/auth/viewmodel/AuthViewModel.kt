@@ -40,6 +40,7 @@ class AuthViewModel : ViewModel() {
                     android.util.Log.w("AuthViewModel", "syncUserProfile failed: $syncError")
                 }
                 _uiState.value = AuthUiState(success = true)
+                syncFcmToken()
             } catch (e: Exception) {
                 _uiState.value = AuthUiState(error = e.message ?: "Error al iniciar sesión")
             }
@@ -64,6 +65,7 @@ class AuthViewModel : ViewModel() {
                     _uiState.value = AuthUiState(error = "Registro OK pero error de perfil: $syncError")
                 } else {
                     _uiState.value = AuthUiState(success = true)
+                    syncFcmToken()
                 }
             } catch (e: Exception) {
                 _uiState.value = AuthUiState(error = e.message ?: "Error al registrarse")
@@ -80,6 +82,7 @@ class AuthViewModel : ViewModel() {
                 }
                 socialRepo.syncUserProfile() // Ensure Google users land in public.usuarios
                 _uiState.value = AuthUiState(success = true)
+                syncFcmToken()
             } catch (e: Exception) {
                 _uiState.value = AuthUiState(error = e.message ?: "Error con Google")
             }
@@ -129,5 +132,20 @@ class AuthViewModel : ViewModel() {
 
     fun clearError() {
         _uiState.value = _uiState.value.copy(error = null, message = null)
+    }
+
+    private fun syncFcmToken() {
+        try {
+            com.google.firebase.messaging.FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    val token = task.result
+                    viewModelScope.launch {
+                        socialRepo.updateFcmToken(token)
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 }
