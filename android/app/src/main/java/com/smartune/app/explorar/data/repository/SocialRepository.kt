@@ -428,6 +428,37 @@ class SocialRepository {
     }
 
     // ── Profesores ──
+    suspend fun getMisProfesoresAsignados(): List<Profesor> {
+        return try {
+            val userId = SupabaseClient.auth.currentSessionOrNull()?.user?.id ?: return emptyList()
+            val rawConnections = SupabaseClient.client.postgrest["student_teacher_connections"]
+                .select(Columns.raw("teacher_id, teacher:usuarios!student_teacher_connections_teacher_id_fkey(id, nombre, avatar_url, instrumento, bio, precio_por_hora, rating, total_clases)")) {
+                    filter { eq("student_id", userId) }
+                }.decodeList<JsonObject>()
+            
+            rawConnections.mapNotNull { obj ->
+                try {
+                    val teacherObj = obj["teacher"]?.let { if (it is kotlinx.serialization.json.JsonArray) it[0].jsonObject else it.jsonObject }
+                    if (teacherObj != null) {
+                        Profesor(
+                            id = teacherObj["id"]?.jsonPrimitive?.content.orEmpty(),
+                            nombre = teacherObj["nombre"]?.jsonPrimitive?.content.orEmpty(),
+                            avatarUrl = teacherObj["avatar_url"]?.jsonPrimitive?.contentOrNull,
+                            instrumento = teacherObj["instrumento"]?.jsonPrimitive?.contentOrNull,
+                            bio = teacherObj["bio"]?.jsonPrimitive?.contentOrNull,
+                            precioPorHora = teacherObj["precio_por_hora"]?.jsonPrimitive?.doubleOrNull,
+                            rating = teacherObj["rating"]?.jsonPrimitive?.doubleOrNull,
+                            totalClases = teacherObj["total_clases"]?.jsonPrimitive?.intOrNull ?: 0
+                        )
+                    } else null
+                } catch(e: Exception) { null }
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            emptyList()
+        }
+    }
+
     suspend fun getProfesores(): List<Profesor> {
         return try {
             SupabaseClient.client.postgrest["usuarios"]
@@ -439,16 +470,21 @@ class SocialRepository {
     }
 
     // ── Clases ──
-    suspend fun getMisClases(): List<ClaseAgendada> {
+    suspend fun getMisClases(profesorId: String? = null): List<ClaseAgendada> {
         return try {
             val userId = SupabaseClient.auth.currentSessionOrNull()?.user?.id ?: return emptyList()
             // Fetch raw JSON from classes table, then parse manually to avoid complex relation models
             val rawArray = SupabaseClient.client.postgrest["classes"]
                 .select(Columns.raw("*, teacher:usuarios!classes_teacher_id_fkey(nombre), student:usuarios!classes_student_id_fkey(nombre)")) {
                     filter {
-                        or {
+                        if (profesorId != null) {
                             eq("student_id", userId)
-                            eq("teacher_id", userId)
+                            eq("teacher_id", profesorId)
+                        } else {
+                            or {
+                                eq("student_id", userId)
+                                eq("teacher_id", userId)
+                            }
                         }
                     }
                     order("scheduled_at", io.github.jan.supabase.postgrest.query.Order.ASCENDING)

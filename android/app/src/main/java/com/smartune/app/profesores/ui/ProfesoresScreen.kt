@@ -29,10 +29,14 @@ import com.smartune.app.explorar.data.repository.SocialRepository
 fun ProfesoresScreen(navController: NavController) {
     val repo = remember { SocialRepository() }
     var profesores by remember { mutableStateOf<List<Profesor>>(emptyList()) }
+    var misProfesores by remember { mutableStateOf<List<Profesor>>(emptyList()) }
     var isLoading by remember { mutableStateOf(true) }
 
     LaunchedEffect(Unit) {
-        profesores = repo.getProfesores()
+        val all = repo.getProfesores()
+        val mine = repo.getMisProfesoresAsignados()
+        misProfesores = mine
+        profesores = all.filter { p -> mine.none { it.id == p.id } }
         isLoading = false
     }
 
@@ -66,6 +70,20 @@ fun ProfesoresScreen(navController: NavController) {
             }
         }
 
+        if (misProfesores.isNotEmpty()) {
+            item {
+                Text("Mis Profesores Asignados", fontSize = 18.sp, fontWeight = FontWeight.Bold, color = TextPrimary, modifier = Modifier.padding(top = 8.dp))
+            }
+            items(misProfesores) { prof ->
+                ProfesorCard(prof, isAssigned = true) {
+                    navController.navigate(Routes.profesorDetail(prof.id))
+                }
+            }
+            item {
+                Text("Descubrir Profesores", fontSize = 18.sp, fontWeight = FontWeight.Bold, color = TextPrimary, modifier = Modifier.padding(top = 16.dp))
+            }
+        }
+
         if (isLoading) {
             item {
                 Box(modifier = Modifier.fillMaxWidth().padding(48.dp), contentAlignment = Alignment.Center) {
@@ -95,7 +113,7 @@ fun ProfesoresScreen(navController: NavController) {
 }
 
 @Composable
-private fun ProfesorCard(profesor: Profesor, onClick: () -> Unit) {
+private fun ProfesorCard(profesor: Profesor, isAssigned: Boolean = false, onClick: () -> Unit) {
     val avatarUrl = profesor.avatarUrl ?: "https://ui-avatars.com/api/?background=9810fa&color=fff&bold=true&size=128&name=${profesor.nombre}"
 
     Card(
@@ -130,10 +148,10 @@ private fun ProfesorCard(profesor: Profesor, onClick: () -> Unit) {
             Button(
                 onClick = onClick,
                 shape = RoundedCornerShape(20.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = NeonPink),
+                colors = ButtonDefaults.buttonColors(containerColor = if (isAssigned) NeonBlue else NeonPink),
                 contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
             ) {
-                Text("Ver", fontWeight = FontWeight.Bold, fontSize = 13.sp)
+                Text(if (isAssigned) "Mis clases" else "Ver", fontWeight = FontWeight.Bold, fontSize = 13.sp)
             }
         }
     }
@@ -142,6 +160,26 @@ private fun ProfesorCard(profesor: Profesor, onClick: () -> Unit) {
 // ── Profesor Detail Screen ──
 @Composable
 fun ProfesorDetailScreen(profesorId: String, navController: NavController) {
+    val repo = remember { SocialRepository() }
+    var profesor by remember { mutableStateOf<Profesor?>(null) }
+    var clases by remember { mutableStateOf<List<com.smartune.app.explorar.data.models.ClaseAgendada>>(emptyList()) }
+    var isLoading by remember { mutableStateOf(true) }
+
+    LaunchedEffect(profesorId) {
+        // Fetch all teachers to find this one (or create a specific method if preferred)
+        profesor = repo.getMisProfesoresAsignados().find { it.id == profesorId } 
+            ?: repo.getProfesores().find { it.id == profesorId }
+        clases = repo.getMisClases(profesorId)
+        isLoading = false
+    }
+
+    if (isLoading) {
+        Box(modifier = Modifier.fillMaxSize().background(BgMain), contentAlignment = Alignment.Center) {
+            CircularProgressIndicator(color = NeonPink)
+        }
+        return
+    }
+
     Column(
         modifier = Modifier.fillMaxSize().background(BgMain).padding(16.dp)
     ) {
@@ -149,23 +187,76 @@ fun ProfesorDetailScreen(profesorId: String, navController: NavController) {
             IconButton(onClick = { navController.popBackStack() }) {
                 Icon(Icons.Default.ArrowBack, contentDescription = "Back", tint = TextPrimary)
             }
-            Text("Profesor", fontWeight = FontWeight.Bold, fontSize = 18.sp, color = TextPrimary)
+            Text(profesor?.nombre ?: "Profesor", fontWeight = FontWeight.Bold, fontSize = 18.sp, color = TextPrimary)
         }
         Spacer(modifier = Modifier.height(24.dp))
-        Text("Detalles del profesor", color = TextSecondary, fontSize = 14.sp)
-        Text("ID: $profesorId", color = TextTertiary, fontSize = 12.sp, modifier = Modifier.padding(top = 8.dp))
+        
+        profesor?.let {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                AsyncImage(
+                    model = it.avatarUrl ?: "https://ui-avatars.com/api/?background=9810fa&color=fff&bold=true&size=128&name=${it.nombre}",
+                    contentDescription = null,
+                    modifier = Modifier.size(80.dp).clip(CircleShape),
+                    contentScale = ContentScale.Crop
+                )
+                Spacer(modifier = Modifier.width(16.dp))
+                Column {
+                    Text(it.nombre, fontWeight = FontWeight.Bold, fontSize = 20.sp, color = TextPrimary)
+                    Text(it.instrumento ?: "Especialidad no especificada", color = NeonPink, fontSize = 14.sp)
+                    it.bio?.let { bio ->
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Text(bio, color = TextSecondary, fontSize = 12.sp, maxLines = 2)
+                    }
+                }
+            }
+        }
 
         Spacer(modifier = Modifier.height(24.dp))
+        
+        if (clases.isNotEmpty()) {
+            Text("Clases Agendadas", fontWeight = FontWeight.Bold, fontSize = 16.sp, color = TextPrimary)
+            Spacer(modifier = Modifier.height(12.dp))
+            LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                items(clases) { clase ->
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(12.dp),
+                        colors = CardDefaults.cardColors(containerColor = BgCard)
+                    ) {
+                        Column(modifier = Modifier.padding(16.dp)) {
+                            Text(clase.titulo, fontWeight = FontWeight.Bold, color = TextPrimary)
+                            Text(clase.fechaInicio, color = TextSecondary, fontSize = 12.sp)
+                            Spacer(modifier = Modifier.height(8.dp))
+                            if (clase.meetLink != null) {
+                                Button(
+                                    onClick = { /* Abrir meetLink */ },
+                                    colors = ButtonDefaults.buttonColors(containerColor = NeonBlue),
+                                    modifier = Modifier.fillMaxWidth().height(36.dp),
+                                    shape = RoundedCornerShape(8.dp)
+                                ) {
+                                    Icon(Icons.Default.VideoCall, contentDescription = null, modifier = Modifier.size(16.dp))
+                                    Spacer(modifier = Modifier.width(8.dp))
+                                    Text("Unirse a la clase")
+                                }
+                            } else {
+                                Text("Esperando enlace del profesor...", color = TextTertiary, fontSize = 12.sp)
+                            }
+                        }
+                    }
+                }
+            }
+            Spacer(modifier = Modifier.height(16.dp))
+        }
 
         Button(
             onClick = { /* Connect / schedule class */ },
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(12.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = NeonBlue)
+            colors = ButtonDefaults.buttonColors(containerColor = if (clases.isNotEmpty()) BgCard else NeonBlue)
         ) {
-            Icon(Icons.Default.VideoCall, contentDescription = null, modifier = Modifier.size(20.dp))
+            Icon(Icons.Default.CalendarToday, contentDescription = null, modifier = Modifier.size(20.dp), tint = if (clases.isNotEmpty()) TextPrimary else Color.White)
             Spacer(modifier = Modifier.width(8.dp))
-            Text("Conectar y agendar clase", fontWeight = FontWeight.Bold)
+            Text(if (clases.isNotEmpty()) "Agendar nueva clase" else "Conectar y agendar clase", fontWeight = FontWeight.Bold, color = if (clases.isNotEmpty()) TextPrimary else Color.White)
         }
     }
 }
