@@ -75,22 +75,33 @@ class MainActivity : ComponentActivity() {
                 val isLoggedIn = sessionStatus is io.github.jan.supabase.gotrue.SessionStatus.Authenticated
                 val scope = rememberCoroutineScope()
 
-                LaunchedEffect(isLoggedIn) {
+                // Force FCM token refresh on EVERY app launch when logged in
+                // This fixes users who logged in before the FCM code existed
+                LaunchedEffect(Unit) {
                     if (isLoggedIn) {
                         try {
-                            FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
-                                if (task.isSuccessful) {
-                                    val token = task.result
-                                    scope.launch {
-                                        SocialRepository().updateFcmToken(token)
-                                    }
+                            // Delete stale token first to force a fresh one
+                            com.google.firebase.messaging.FirebaseMessaging.getInstance()
+                                .deleteToken()
+                                .addOnCompleteListener {
+                                    // Now get the fresh token
+                                    com.google.firebase.messaging.FirebaseMessaging.getInstance()
+                                        .token
+                                        .addOnCompleteListener { task ->
+                                            if (task.isSuccessful) {
+                                                val token = task.result
+                                                scope.launch {
+                                                    SocialRepository().updateFcmToken(token)
+                                                }
+                                            }
+                                        }
                                 }
-                            }
                         } catch (e: Exception) {
                             e.printStackTrace()
                         }
                     }
                 }
+
 
                 val navBackStackEntry by navController.currentBackStackEntryAsState()
                 val currentRoute = navBackStackEntry?.destination?.route
