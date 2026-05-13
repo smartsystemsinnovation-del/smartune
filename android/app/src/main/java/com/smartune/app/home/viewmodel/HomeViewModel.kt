@@ -15,7 +15,8 @@ data class HomeUiState(
     val lanzamientos: List<Cancion> = emptyList(),
     val instrumentos: List<Instrumento> = emptyList(),
     val misClases: List<com.smartune.app.explorar.data.models.ClaseAgendada> = emptyList(),
-    val isAlumnosView: Boolean = true
+    val isAlumnosView: Boolean = true,
+    val isProfesor: Boolean = false
 )
 
 class HomeViewModel : ViewModel() {
@@ -39,6 +40,8 @@ class HomeViewModel : ViewModel() {
             val canciones = repo.getNuevosLanzamientos()
             val instrumentos = repo.getTopInstrumentos()
             val clases = socialRepo.getMisClases()
+            val profile = socialRepo.getProfile()
+            val isProf = profile?.rol == "profesor"
             
             // Filter classes for today or future ones
             val now = java.time.Instant.now()
@@ -54,7 +57,8 @@ class HomeViewModel : ViewModel() {
                 isRefreshing = false,
                 lanzamientos = canciones,
                 instrumentos = instrumentos,
-                misClases = upcomingClases
+                misClases = upcomingClases,
+                isProfesor = isProf
             )
         }
     }

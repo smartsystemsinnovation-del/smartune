@@ -95,14 +95,20 @@ fun HomeScreen(
                 
                 if (uiState.misClases.isEmpty()) {
                     Card(
-                        modifier = Modifier.fillMaxWidth().clickable { navController.navigate(Routes.PROFESORES) },
+                        modifier = Modifier.fillMaxWidth().clickable { 
+                            if (!uiState.isProfesor) navController.navigate(Routes.PROFESORES) 
+                        },
                         shape = RoundedCornerShape(16.dp),
                         colors = CardDefaults.cardColors(containerColor = BgCard)
                     ) {
                         Column(modifier = Modifier.padding(16.dp)) {
                             Text("No tienes clases programadas para hoy", color = TextSecondary, fontSize = 14.sp)
                             Spacer(modifier = Modifier.height(8.dp))
-                            Text("Toca aquí para buscar un profesor", color = NeonPink, fontSize = 13.sp, fontWeight = FontWeight.SemiBold)
+                            if (uiState.isProfesor) {
+                                Text("Tus alumnos agendarán clases contigo", color = NeonPink, fontSize = 13.sp, fontWeight = FontWeight.SemiBold)
+                            } else {
+                                Text("Toca aquí para buscar un profesor", color = NeonPink, fontSize = 13.sp, fontWeight = FontWeight.SemiBold)
+                            }
                         }
                     }
                 } else {
@@ -155,28 +161,30 @@ fun HomeScreen(
         }
 
         // Become a teacher
-        item {
-            Card(
-                modifier = Modifier.fillMaxWidth().clickable { navController.navigate(Routes.HAZTE_PROFESOR) },
-                shape = RoundedCornerShape(16.dp),
-                colors = CardDefaults.cardColors(containerColor = BgCard)
-            ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth().padding(16.dp),
-                    verticalAlignment = Alignment.CenterVertically
+        if (!uiState.isProfesor) {
+            item {
+                Card(
+                    modifier = Modifier.fillMaxWidth().clickable { navController.navigate(Routes.HAZTE_PROFESOR) },
+                    shape = RoundedCornerShape(16.dp),
+                    colors = CardDefaults.cardColors(containerColor = BgCard)
                 ) {
-                    Column(modifier = Modifier.weight(1f)) {
-                        Text("¿Eres profesor?", fontWeight = FontWeight.Bold, fontSize = 16.sp, color = TextPrimary)
-                        Spacer(modifier = Modifier.height(4.dp))
-                        Text("Comparte tu conocimiento musical", color = TextSecondary, fontSize = 13.sp)
-                    }
-                    Button(
-                        onClick = { navController.navigate(Routes.HAZTE_PROFESOR) },
-                        shape = RoundedCornerShape(20.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = NeonPink),
-                        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
+                    Row(
+                        modifier = Modifier.fillMaxWidth().padding(16.dp),
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text("Aplicar", fontWeight = FontWeight.Bold, fontSize = 13.sp)
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text("¿Eres profesor?", fontWeight = FontWeight.Bold, fontSize = 16.sp, color = TextPrimary)
+                            Spacer(modifier = Modifier.height(4.dp))
+                            Text("Comparte tu conocimiento musical", color = TextSecondary, fontSize = 13.sp)
+                        }
+                        Button(
+                            onClick = { navController.navigate(Routes.HAZTE_PROFESOR) },
+                            shape = RoundedCornerShape(20.dp),
+                            colors = ButtonDefaults.buttonColors(containerColor = NeonPink),
+                            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
+                        ) {
+                            Text("Aplicar", fontWeight = FontWeight.Bold, fontSize = 13.sp)
+                        }
                     }
                 }
             }
