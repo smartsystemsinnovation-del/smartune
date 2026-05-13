@@ -46,7 +46,7 @@ fun NavGraph(
         val currentRoute = currentEntry?.destination?.route
         if (!isLoggedIn && currentRoute != Routes.LOGIN && currentRoute != null) {
             navController.navigate(Routes.LOGIN) {
-                popUpTo(0) { inclusive = true }
+                popUpTo(navController.graph.id) { inclusive = true }
             }
         } else if (isLoggedIn && currentRoute == Routes.LOGIN) {
             // Auto-sync user if they just logged in via Deeplink
@@ -99,7 +99,7 @@ fun NavGraph(
                 navController = navController,
                 onLogout = {
                     navController.navigate(Routes.LOGIN) {
-                        popUpTo(0) { inclusive = true }
+                        popUpTo(navController.graph.id) { inclusive = true }
                     }
                 }
             )
