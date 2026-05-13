@@ -432,7 +432,7 @@ class SocialRepository {
         return try {
             val userId = SupabaseClient.auth.currentSessionOrNull()?.user?.id ?: return emptyList()
             val rawConnections = SupabaseClient.client.postgrest["student_teacher_connections"]
-                .select(Columns.raw("teacher_id, teacher:usuarios!student_teacher_connections_teacher_id_fkey(id, nombre, avatar_url, instrumento, bio, precio_por_hora, rating, total_clases)")) {
+                .select(Columns.raw("teacher_id, teacher:usuarios!student_teacher_connections_teacher_id_fkey(id, nombre, avatar_url, instrumento)")) {
                     filter { eq("student_id", userId) }
                 }.decodeList<JsonObject>()
             
@@ -444,11 +444,7 @@ class SocialRepository {
                             id = teacherObj["id"]?.jsonPrimitive?.content.orEmpty(),
                             nombre = teacherObj["nombre"]?.jsonPrimitive?.content.orEmpty(),
                             avatarUrl = teacherObj["avatar_url"]?.jsonPrimitive?.content?.takeIf { it != "null" },
-                            instrumento = teacherObj["instrumento"]?.jsonPrimitive?.content?.takeIf { it != "null" },
-                            bio = teacherObj["bio"]?.jsonPrimitive?.content?.takeIf { it != "null" },
-                            precioPorHora = teacherObj["precio_por_hora"]?.jsonPrimitive?.content?.toDoubleOrNull(),
-                            rating = teacherObj["rating"]?.jsonPrimitive?.content?.toDoubleOrNull(),
-                            totalClases = teacherObj["total_clases"]?.jsonPrimitive?.content?.toIntOrNull() ?: 0
+                            instrumento = teacherObj["instrumento"]?.jsonPrimitive?.content?.takeIf { it != "null" }
                         )
                     } else null
                 } catch(e: Exception) { null }
@@ -462,7 +458,7 @@ class SocialRepository {
     suspend fun getProfesores(): List<Profesor> {
         return try {
             SupabaseClient.client.postgrest["usuarios"]
-                .select { filter { eq("profesor_aprobado", true) } }
+                .select(Columns.list("id", "nombre", "avatar_url", "instrumento")) { filter { eq("rol", "profesor") } }
                 .decodeList<Profesor>()
         } catch (e: Exception) {
             emptyList()
