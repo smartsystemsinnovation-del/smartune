@@ -108,7 +108,7 @@ class MainActivity : ComponentActivity() {
 
                 // Routes that should NOT show the bottom nav bar
                 val hideBottomBar = currentRoute in listOf(
-                    Routes.LOGIN, Routes.ONBOARDING
+                    Routes.LOGIN, Routes.ONBOARDING, Routes.MUSIC_SWIPE, Routes.MINIJUEGOS, Routes.IA_STUDIO, Routes.PREMIUM, Routes.COURSE_DETAIL, Routes.PLAYER, Routes.PUBLIC_PROFILE, Routes.CREAR_CLASE
                 )
 
                 Scaffold(
