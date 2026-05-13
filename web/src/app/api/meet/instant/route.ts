@@ -17,7 +17,7 @@ export async function POST(req: Request) {
 
     const providerToken = session.provider_token;
     if (!providerToken) {
-      return NextResponse.json({ error: 'Se requiere iniciar sesión con Google para generar llamadas instantáneas (Falta provider_token).' }, { status: 403 });
+      return NextResponse.json({ error: 'Falta permiso de Google Meet. Por favor cierra sesión y vuelve a iniciar sesión con Google para autorizar la creación de salas.' }, { status: 403 });
     }
 
     // Usando la nueva Google Meet REST API v2

@@ -85,7 +85,7 @@ function HomeContent() {
           access_type: 'offline',
           prompt: 'consent',
         },
-        scopes: 'https://www.googleapis.com/auth/calendar.events'
+        scopes: 'https://www.googleapis.com/auth/calendar.events https://www.googleapis.com/auth/meetings.space.created'
       }
     });
   };

@@ -85,19 +85,71 @@ fun HomeScreen(
 
         // Mis Clases section
         item {
-            Card(
-                modifier = Modifier.fillMaxWidth().clickable { navController.navigate(Routes.courseDetail("1")) },
-                shape = RoundedCornerShape(16.dp),
-                colors = CardDefaults.cardColors(containerColor = BgCard)
-            ) {
-                Column(modifier = Modifier.padding(16.dp)) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(Icons.Default.VideoCall, contentDescription = null, tint = NeonBlue, modifier = Modifier.size(20.dp))
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text("Mis Clases", fontWeight = FontWeight.Bold, fontSize = 16.sp, color = TextPrimary)
+            Column {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(Icons.Default.VideoCall, contentDescription = null, tint = NeonBlue, modifier = Modifier.size(24.dp))
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text("Clases de Hoy", fontWeight = FontWeight.Bold, fontSize = 20.sp, color = TextPrimary)
+                }
+                Spacer(modifier = Modifier.height(12.dp))
+                
+                if (uiState.misClases.isEmpty()) {
+                    Card(
+                        modifier = Modifier.fillMaxWidth().clickable { navController.navigate(Routes.PROFESORES) },
+                        shape = RoundedCornerShape(16.dp),
+                        colors = CardDefaults.cardColors(containerColor = BgCard)
+                    ) {
+                        Column(modifier = Modifier.padding(16.dp)) {
+                            Text("No tienes clases programadas para hoy", color = TextSecondary, fontSize = 14.sp)
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Text("Toca aquí para buscar un profesor", color = NeonPink, fontSize = 13.sp, fontWeight = FontWeight.SemiBold)
+                        }
                     }
-                    Spacer(modifier = Modifier.height(12.dp))
-                    Text("Tus próximas clases aparecerán aquí", color = TextTertiary, fontSize = 13.sp)
+                } else {
+                    LazyRow(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                        items(uiState.misClases) { clase ->
+                            Card(
+                                modifier = Modifier.width(280.dp),
+                                shape = RoundedCornerShape(16.dp),
+                                colors = CardDefaults.cardColors(containerColor = BgCard)
+                            ) {
+                                Column(modifier = Modifier.padding(16.dp)) {
+                                    Text(clase.titulo, fontWeight = FontWeight.Bold, color = TextPrimary, fontSize = 16.sp, maxLines = 1, overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis)
+                                    Spacer(modifier = Modifier.height(4.dp))
+                                    Text("Con ${if(uiState.isAlumnosView) clase.profesorNombre else clase.alumnoNombre}", color = TextSecondary, fontSize = 13.sp)
+                                    Spacer(modifier = Modifier.height(8.dp))
+                                    
+                                    val timeString = try {
+                                        val time = java.time.Instant.parse(clase.fechaInicio)
+                                        val formatter = java.time.format.DateTimeFormatter.ofPattern("HH:mm").withZone(java.time.ZoneId.systemDefault())
+                                        formatter.format(time)
+                                    } catch(e: Exception) { "Hora pendiente" }
+                                    
+                                    Row(verticalAlignment = Alignment.CenterVertically) {
+                                        Icon(Icons.Default.Schedule, contentDescription = null, tint = TextTertiary, modifier = Modifier.size(16.dp))
+                                        Spacer(modifier = Modifier.width(4.dp))
+                                        Text(timeString, color = TextTertiary, fontSize = 12.sp)
+                                    }
+                                    
+                                    Spacer(modifier = Modifier.height(12.dp))
+                                    if (clase.meetLink != null) {
+                                        Button(
+                                            onClick = { /* Handle Meet join */ },
+                                            colors = ButtonDefaults.buttonColors(containerColor = NeonBlue),
+                                            modifier = Modifier.fillMaxWidth().height(40.dp),
+                                            shape = RoundedCornerShape(12.dp)
+                                        ) {
+                                            Icon(Icons.Default.VideoCall, contentDescription = null, modifier = Modifier.size(18.dp))
+                                            Spacer(modifier = Modifier.width(8.dp))
+                                            Text("Unirse a la clase", fontWeight = FontWeight.Bold)
+                                        }
+                                    } else {
+                                        Text("Esperando enlace de Meet...", color = NeonPink, fontSize = 12.sp, fontStyle = androidx.compose.ui.text.font.FontStyle.Italic)
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }

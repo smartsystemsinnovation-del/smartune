@@ -48,8 +48,8 @@ export default function AuthModal({ onClose, initialMode = 'login' }: AuthModalP
             access_type: 'offline',
             prompt: 'consent',
           },
-          // Incluimos scopes para obtener nombre y email, además del calendario
-          scopes: 'openid https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/calendar.events'
+          // Incluimos scopes para obtener nombre y email, además del calendario y Google Meet
+          scopes: 'openid https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/calendar.events https://www.googleapis.com/auth/meetings.space.created'
         }
       });
       if (error) throw error;

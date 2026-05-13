@@ -79,6 +79,7 @@ class AuthViewModel : ViewModel() {
             try {
                 SupabaseClient.auth.signInWith(Google) {
                     scopes.add("https://www.googleapis.com/auth/calendar.events")
+                    scopes.add("https://www.googleapis.com/auth/meetings.space.created")
                 }
                 socialRepo.syncUserProfile() // Ensure Google users land in public.usuarios
                 _uiState.value = AuthUiState(success = true)

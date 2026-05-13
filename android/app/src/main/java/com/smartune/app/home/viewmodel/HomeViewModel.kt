@@ -14,11 +14,13 @@ data class HomeUiState(
     val isRefreshing: Boolean = false,
     val lanzamientos: List<Cancion> = emptyList(),
     val instrumentos: List<Instrumento> = emptyList(),
+    val misClases: List<com.smartune.app.explorar.data.models.ClaseAgendada> = emptyList(),
     val isAlumnosView: Boolean = true
 )
 
 class HomeViewModel : ViewModel() {
     private val repo = HomeRepository()
+    private val socialRepo = com.smartune.app.explorar.data.repository.SocialRepository()
     private val _uiState = MutableStateFlow(HomeUiState())
     val uiState = _uiState.asStateFlow()
 
@@ -36,12 +38,23 @@ class HomeViewModel : ViewModel() {
 
             val canciones = repo.getNuevosLanzamientos()
             val instrumentos = repo.getTopInstrumentos()
+            val clases = socialRepo.getMisClases()
+            
+            // Filter classes for today or future ones
+            val now = java.time.Instant.now()
+            val upcomingClases = clases.filter {
+                try {
+                    val claseTime = java.time.Instant.parse(it.fechaInicio)
+                    claseTime.isAfter(now.minusSeconds(3600)) // Include classes up to 1 hour ago
+                } catch(e: Exception) { true }
+            }.take(3)
 
             _uiState.value = _uiState.value.copy(
                 isLoading = false,
                 isRefreshing = false,
                 lanzamientos = canciones,
-                instrumentos = instrumentos
+                instrumentos = instrumentos,
+                misClases = upcomingClases
             )
         }
     }
