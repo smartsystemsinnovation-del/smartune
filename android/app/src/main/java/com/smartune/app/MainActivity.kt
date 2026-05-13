@@ -88,7 +88,7 @@ class MainActivity : ComponentActivity() {
                 ) { innerPadding ->
                     NavGraph(
                         navController = navController,
-                        isLoggedIn = isLoggedIn ?: false,
+                        isLoggedIn = isLoggedIn,
                         startWithRecovery = isRecovery,
                         modifier = Modifier.padding(innerPadding)
                     )

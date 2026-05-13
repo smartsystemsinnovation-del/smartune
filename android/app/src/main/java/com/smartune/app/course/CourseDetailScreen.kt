@@ -1,6 +1,5 @@
 package com.smartune.app.course
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -23,7 +22,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import coil.compose.rememberAsyncImagePainter
+import coil.compose.AsyncImage
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.media3.common.MediaItem
@@ -72,8 +71,8 @@ fun CourseDetailScreen(
         item {
             Box(modifier = Modifier.fillMaxWidth().height(300.dp)) {
                 if (!isPlaying) {
-                    Image(
-                        painter = rememberAsyncImagePainter("https://images.unsplash.com/photo-1511379938547-c1f69419868d?q=80&w=800&h=600&crop=edges"),
+                    AsyncImage(
+                        model = "https://images.unsplash.com/photo-1511379938547-c1f69419868d?q=80&w=800&h=600&crop=edges",
                         contentDescription = "Course Cover",
                         contentScale = ContentScale.Crop,
                         modifier = Modifier.fillMaxSize().clip(RoundedCornerShape(bottomStart = 32.dp, bottomEnd = 32.dp))
