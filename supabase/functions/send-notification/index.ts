@@ -55,10 +55,10 @@ serve(async (req) => {
               body: body,
             },
             android: {
+              priority: 'HIGH',
               notification: {
                 sound: 'default',
                 channel_id: 'smartune_general',
-                priority: 'HIGH',
               }
             }
           }
