@@ -126,7 +126,13 @@ fun HomeScreen(
                                     Spacer(modifier = Modifier.height(8.dp))
                                     
                                     val timeString = try {
-                                        val time = java.time.Instant.parse(clase.fechaInicio)
+                                        val str = clase.fechaInicio.replace(" ", "T")
+                                        val time = try {
+                                            java.time.Instant.parse(str)
+                                        } catch(e: Exception) {
+                                            java.time.LocalDateTime.parse(str.substringBefore("+").substringBefore("Z"))
+                                                .toInstant(java.time.ZoneOffset.UTC)
+                                        }
                                         val formatter = java.time.format.DateTimeFormatter.ofPattern("HH:mm").withZone(java.time.ZoneId.systemDefault())
                                         formatter.format(time)
                                     } catch(e: Exception) { "Hora pendiente" }

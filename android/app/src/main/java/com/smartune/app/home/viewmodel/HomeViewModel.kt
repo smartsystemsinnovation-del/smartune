@@ -47,9 +47,15 @@ class HomeViewModel : ViewModel() {
             val now = java.time.Instant.now()
             val upcomingClases = clases.filter {
                 try {
-                    val claseTime = java.time.Instant.parse(it.fechaInicio)
+                    val str = it.fechaInicio.replace(" ", "T")
+                    val claseTime = try {
+                        java.time.Instant.parse(str)
+                    } catch(e: Exception) {
+                        java.time.LocalDateTime.parse(str.substringBefore("+").substringBefore("Z"))
+                            .toInstant(java.time.ZoneOffset.UTC)
+                    }
                     claseTime.isAfter(now.minusSeconds(3600)) // Include classes up to 1 hour ago
-                } catch(e: Exception) { true }
+                } catch(e: Exception) { false }
             }.take(3)
 
             _uiState.value = _uiState.value.copy(
