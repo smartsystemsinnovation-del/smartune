@@ -477,10 +477,8 @@ class SocialRepository {
                             eq("student_id", userId)
                             eq("teacher_id", profesorId)
                         } else {
-                            or {
-                                eq("student_id", userId)
-                                eq("teacher_id", userId)
-                            }
+                            // Raw OR filter string to ensure it works correctly across all versions of jan.supabase
+                            or("student_id.eq.$userId,teacher_id.eq.$userId")
                         }
                     }
                     order("scheduled_at", io.github.jan.supabase.postgrest.query.Order.ASCENDING)
