@@ -12,7 +12,20 @@
           "package_name": "com.smartune.app"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "482788543252-2803l18auktlqp1bond9a6ui3tog6ccs.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.smartune.app",
+            "certificate_hash": "fd2d429d9265fc46687711fee014986c54828a1a"
+          }
+        },
+        {
+          "client_id": "482788543252-s7jus08pgphv8cs30ko9b3ruob7ll8g1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyB-1c-ZymSESYmEGgVUdVFg_qyefGhibW8"
@@ -20,7 +33,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "482788543252-s7jus08pgphv8cs30ko9b3ruob7ll8g1.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }
