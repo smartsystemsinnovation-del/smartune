@@ -443,12 +443,12 @@ class SocialRepository {
                         Profesor(
                             id = teacherObj["id"]?.jsonPrimitive?.content.orEmpty(),
                             nombre = teacherObj["nombre"]?.jsonPrimitive?.content.orEmpty(),
-                            avatarUrl = teacherObj["avatar_url"]?.jsonPrimitive?.contentOrNull,
-                            instrumento = teacherObj["instrumento"]?.jsonPrimitive?.contentOrNull,
-                            bio = teacherObj["bio"]?.jsonPrimitive?.contentOrNull,
-                            precioPorHora = teacherObj["precio_por_hora"]?.jsonPrimitive?.doubleOrNull,
-                            rating = teacherObj["rating"]?.jsonPrimitive?.doubleOrNull,
-                            totalClases = teacherObj["total_clases"]?.jsonPrimitive?.intOrNull ?: 0
+                            avatarUrl = teacherObj["avatar_url"]?.jsonPrimitive?.content?.takeIf { it != "null" },
+                            instrumento = teacherObj["instrumento"]?.jsonPrimitive?.content?.takeIf { it != "null" },
+                            bio = teacherObj["bio"]?.jsonPrimitive?.content?.takeIf { it != "null" },
+                            precioPorHora = teacherObj["precio_por_hora"]?.jsonPrimitive?.content?.toDoubleOrNull(),
+                            rating = teacherObj["rating"]?.jsonPrimitive?.content?.toDoubleOrNull(),
+                            totalClases = teacherObj["total_clases"]?.jsonPrimitive?.content?.toIntOrNull() ?: 0
                         )
                     } else null
                 } catch(e: Exception) { null }
