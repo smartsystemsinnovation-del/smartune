@@ -17,12 +17,26 @@ interface Tile {
   missed: boolean;
 }
 
+interface Song {
+  id: string; // youtube_id
+  title: string;
+  artist: string;
+  coverUrl: string;
+}
+
 export default function SmarTilesGame() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isGameOver, setIsGameOver] = useState(false);
   const [score, setScore] = useState(0);
   const [highScore, setHighScore] = useState(0);
   const [speedMultiplier, setSpeedMultiplier] = useState(1);
+
+  // MusiSwipe Integration State
+  const [showModal, setShowModal] = useState(false);
+  const [likedSongs, setLikedSongs] = useState<Song[]>([]);
+  const [loadingSongs, setLoadingSongs] = useState(false);
+  const [selectedSong, setSelectedSong] = useState<Song | null>(null);
+  const playerRef = useRef<any>(null);
 
   // Refs for Game Loop state to prevent constant re-renders breaking things
   const requestRef = useRef<number | null>(null);
@@ -34,9 +48,68 @@ export default function SmarTilesGame() {
   useEffect(() => {
     const saved = localStorage.getItem('smartiles_highscore');
     if (saved) setHighScore(parseInt(saved, 10));
+
+    // Load YouTube API
+    if (!(window as any).YT) {
+      const tag = document.createElement('script');
+      tag.src = "https://www.youtube.com/iframe_api";
+      const firstScriptTag = document.getElementsByTagName('script')[0];
+      firstScriptTag.parentNode?.insertBefore(tag, firstScriptTag);
+      (window as any).onYouTubeIframeAPIReady = () => {
+        console.log("YouTube API Ready in Smar-Tiles");
+      };
+    }
   }, []);
 
-  const startGame = () => {
+  const openSongSelection = async () => {
+    setShowModal(true);
+    setLoadingSongs(true);
+    try {
+      const res = await fetch('/api/swipe');
+      if (res.ok) {
+        const data = await res.json();
+        setLikedSongs(data);
+      }
+    } catch (e) {
+      console.error("Error fetching liked songs:", e);
+    } finally {
+      setLoadingSongs(false);
+    }
+  };
+
+  const startGame = (song?: Song) => {
+    if (song) {
+      setSelectedSong(song);
+      setShowModal(false);
+      
+      // Initialize or play YouTube player
+      if ((window as any).YT && (window as any).YT.Player) {
+        if (!playerRef.current) {
+          playerRef.current = new (window as any).YT.Player('youtube-player-smartiles', {
+            height: '0',
+            width: '0',
+            videoId: song.id,
+            playerVars: { autoplay: 1, controls: 0, disablekb: 1 },
+            events: {
+              onReady: (e: any) => e.target.playVideo(),
+              onStateChange: (e: any) => {
+                 if (e.data === (window as any).YT.PlayerState.ENDED) {
+                    endGame(); // Game over when song ends
+                 }
+              }
+            }
+          });
+        } else {
+          playerRef.current.loadVideoById(song.id);
+          playerRef.current.playVideo();
+        }
+      }
+    } else if (selectedSong && playerRef.current) {
+       // Playing again with same song
+       playerRef.current.seekTo(0);
+       playerRef.current.playVideo();
+    }
+
     setIsPlaying(true);
     setIsGameOver(false);
     setScore(0);
@@ -50,6 +123,11 @@ export default function SmarTilesGame() {
     setIsPlaying(false);
     setIsGameOver(true);
     if (requestRef.current) cancelAnimationFrame(requestRef.current);
+    
+    // Stop audio
+    if (playerRef.current && typeof playerRef.current.pauseVideo === 'function') {
+      playerRef.current.pauseVideo();
+    }
     
     // Check Top Score
     if (score > highScore) {
@@ -163,9 +241,16 @@ export default function SmarTilesGame() {
         <div className="flex-1 flex items-center justify-center p-4 relative" style={{ background: '#0a0a0a' }}>
            {/* Game preview background */}
            <div className="absolute inset-0 z-0 overflow-hidden">
-             <img src="/smartiles-preview.png" alt="" className="w-full h-full object-cover opacity-20" />
+             <img 
+               src={selectedSong ? selectedSong.coverUrl : "/smartiles-preview.png"} 
+               alt="" 
+               className="w-full h-full object-cover opacity-20 transition-all duration-1000" 
+             />
              <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-[#0a0a0a]/60 to-[#0a0a0a]/40" />
            </div>
+
+           {/* Hidden YouTube Player */}
+           <div id="youtube-player-smartiles" className="hidden"></div>
 
            {/* Game Board Surface */}
            <div 
@@ -246,7 +331,7 @@ export default function SmarTilesGame() {
                        {score > highScore && <p className="text-[#9810fa] text-xs font-bold mt-2 tracking-widest uppercase">¡Nuevo récord! 🎉</p>}
                      </div>
                      <button
-                       onClick={startGame}
+                       onClick={openSongSelection}
                        className="flex items-center justify-center gap-2 transition-all duration-200 hover:brightness-110 hover:-translate-y-[1px] active:scale-95"
                        style={{
                          background: 'linear-gradient(90deg, #f6339a 0%, #9810fa 100%)',
@@ -260,7 +345,7 @@ export default function SmarTilesGame() {
                          border: 'none',
                        }}
                      >
-                       Jugar otra vez <span style={{ fontSize: '18px', fontWeight: 'bold' }}>+</span>
+                       Elegir otra pista <span style={{ fontSize: '18px', fontWeight: 'bold' }}>+</span>
                      </button>
                    </>
                  ) : (
@@ -270,7 +355,7 @@ export default function SmarTilesGame() {
                        <strong className="text-white/70 font-bold">A S D F</strong>. ¡No falles ninguna!
                      </p>
                      <button
-                       onClick={startGame}
+                       onClick={openSongSelection}
                        className="flex items-center justify-center gap-2 transition-all duration-200 hover:brightness-110 hover:-translate-y-[1px] active:scale-95"
                        style={{
                          background: 'linear-gradient(90deg, #f6339a 0%, #9810fa 100%)',
@@ -284,7 +369,7 @@ export default function SmarTilesGame() {
                          border: 'none',
                        }}
                      >
-                       Iniciar juego <span style={{ fontSize: '18px', fontWeight: 'bold' }}>+</span>
+                       Elegir pista <span style={{ fontSize: '18px', fontWeight: 'bold' }}>+</span>
                      </button>
                    </>
                  )}
@@ -295,6 +380,60 @@ export default function SmarTilesGame() {
                      <span className="text-white font-black text-lg">{highScore}</span>
                    </div>
                  )}
+               </div>
+             )}
+
+             {/* Song Selection Modal */}
+             {showModal && (
+               <div className="fixed inset-0 z-[100] bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
+                 <div className="bg-[#151515] border border-white/10 rounded-2xl p-6 w-full max-w-2xl max-h-[80vh] flex flex-col shadow-2xl">
+                   
+                   <div className="flex justify-between items-center mb-6">
+                     <div>
+                       <h2 className="text-2xl font-black text-white flex items-center gap-2">
+                         Tu Playlist <span className="text-[#f6339a]">MusiSwipe</span>
+                       </h2>
+                       <p className="text-white/40 text-sm mt-1">Elige una pista para jugar en Smar-Tiles</p>
+                     </div>
+                     <button 
+                       onClick={() => setShowModal(false)}
+                       className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-white/50 hover:text-white hover:bg-white/10 transition-colors"
+                     >
+                       ✕
+                     </button>
+                   </div>
+
+                   <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar">
+                     {loadingSongs ? (
+                       <div className="h-40 flex items-center justify-center text-white/50">Cargando pistas...</div>
+                     ) : likedSongs.length === 0 ? (
+                       <div className="h-40 flex flex-col items-center justify-center text-center">
+                         <div className="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center mb-3 text-white/30">🎵</div>
+                         <p className="text-white/60 font-medium">Aún no tienes canciones favoritas.</p>
+                         <p className="text-white/40 text-sm mt-1">Ve a Explorar y desliza algunas canciones en MusiSwipe.</p>
+                       </div>
+                     ) : (
+                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                         {likedSongs.map((song) => (
+                           <button
+                             key={song.id}
+                             onClick={() => startGame(song)}
+                             className="flex items-center gap-3 p-3 rounded-xl bg-white/[0.03] border border-white/5 hover:border-[#f6339a]/50 hover:bg-white/[0.06] transition-all text-left group"
+                           >
+                             <img src={song.coverUrl} alt={song.title} className="w-12 h-12 rounded-lg object-cover shadow-md group-hover:scale-105 transition-transform" />
+                             <div className="flex-1 min-w-0">
+                               <p className="text-white font-bold text-sm truncate">{song.title}</p>
+                               <p className="text-white/40 text-xs truncate">{song.artist}</p>
+                             </div>
+                             <div className="w-8 h-8 rounded-full bg-[#f6339a]/10 text-[#f6339a] flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                               ▶
+                             </div>
+                           </button>
+                         ))}
+                       </div>
+                     )}
+                   </div>
+                 </div>
                </div>
              )}
            </div>

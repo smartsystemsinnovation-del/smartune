@@ -120,7 +120,7 @@ export default function Feed({
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
-            className="relative flex-1 py-3.5 text-[14px] font-bold transition-all duration-200"
+            className="relative flex-1 py-4 text-[18px] font-extrabold transition-all duration-200 uppercase tracking-wide"
             style={activeTab === tab ? {
               background: 'linear-gradient(90deg, #f6339a, #9810fa)',
               WebkitBackgroundClip: 'text',
@@ -133,7 +133,7 @@ export default function Feed({
             {activeTab === tab && (
               <motion.div
                 layoutId="tabLine"
-                className="absolute bottom-0 left-1/2 -translate-x-1/2 w-12 h-[2px] rounded-full"
+                className="absolute bottom-0 left-1/2 -translate-x-1/2 w-16 h-[3px] rounded-full"
                 style={{ background: 'linear-gradient(90deg, #f6339a, #9810fa)' }}
                 transition={{ type: 'spring', stiffness: 400, damping: 32 }}
               />
