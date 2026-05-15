@@ -60,13 +60,14 @@ export default function ArcadeLobbyPage() {
           transition={{ duration: 0.5 }}
           className="text-center mb-12 mt-4 flex flex-col items-center"
         >
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 mb-4">
-            <span className="w-2 h-2 rounded-full bg-[#00ffff] shadow-[0_0_8px_#00ffff] animate-pulse"></span>
-            <span className="text-[10px] uppercase tracking-widest font-bold text-white/70">Modo Arcade</span>
-          </div>
-
-          <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-3 text-transparent bg-clip-text bg-gradient-to-r from-white via-white to-white/50">
-            SmarTune <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#00ffff] to-[#f6339a]">Arcade</span>
+          <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-3">
+            <span style={{
+              background: 'linear-gradient(90deg, #f6339a 0%, #9810fa 100%)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              backgroundClip: 'text',
+            }}>SmarTune</span>{' '}
+            <span className="text-white">Arcade</span>
           </h1>
           <p className="text-sm md:text-base text-white/50 font-light max-w-xl mx-auto leading-relaxed">
             Aprende, compite y domina la música jugando. Pon a prueba tus reflejos y tu oído musical.
@@ -119,10 +120,21 @@ export default function ArcadeLobbyPage() {
                   <Link href="/minijuegos/smar-tiles" className="w-full sm:w-auto inline-block">
                     <motion.button
                       whileTap={{ scale: 0.96 }}
-                      className="w-full sm:w-auto px-6 py-2.5 bg-gradient-to-r from-[#00ffff] to-[#00bfff] text-white font-extrabold text-[13px] rounded-full transition-all duration-300 shadow-[0_0_15px_rgba(0,255,255,0.3)] hover:shadow-[0_0_25px_rgba(0,255,255,0.5)] flex items-center justify-center gap-2"
+                      className={`flex items-center justify-center gap-2 transition-all duration-200 hover:brightness-110 hover:-translate-y-[1px] active:scale-95`}
+                      style={{
+                        background: 'linear-gradient(90deg, #f6339a 0%, #9810fa 100%)',
+                        color: '#ffffff',
+                        padding: '8px 20px',
+                        borderRadius: '10px',
+                        fontSize: '13px',
+                        fontWeight: 700,
+                        letterSpacing: '0.02em',
+                        boxShadow: '0 0 20px rgba(246,51,154,0.35)',
+                        border: 'none',
+                      }}
                     >
                       <PlayIcon />
-                      JUGAR AHORA
+                      Jugar ahora <span style={{ fontSize: '16px', fontWeight: 'bold' }}>+</span>
                     </motion.button>
                   </Link>
                 </div>
