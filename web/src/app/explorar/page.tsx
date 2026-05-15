@@ -12,6 +12,8 @@ import SidebarHeaderButtons from '@/components/explorar/SidebarHeaderButtons';
 import { createClient } from '@/utils/supabase/server';
 import AuthGatekeeper from '@/components/AuthGatekeeper';
 import { getFeed } from '@/actions/socialActions';
+import Script from 'next/script';
+import AdSenseUnit from '@/components/AdSenseUnit';
 
 export default async function ExplorarPage() {
   const supabase = await createClient();
@@ -57,6 +59,7 @@ export default async function ExplorarPage() {
 
   return (
     <div className="min-h-screen bg-[#111315] text-white antialiased font-sans selection:bg-[#3B82F6]/30">
+      <Script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8388922041059415" crossOrigin="anonymous" strategy="afterInteractive" />
 
       {/* ── LAYOUT PRINCIPAL: feed | sidebar der ── */}
       <div className="flex justify-center w-full min-h-screen">
@@ -78,12 +81,13 @@ export default async function ExplorarPage() {
             </div>
 
             {/* ── SLOT ANUNCIO GOOGLE ADSENSE (in-feed) ── */}
-            {/* CAMBIO: Slot preparado para insertar anuncio entre el CreatePost y el Feed.
-                Para activar: reemplaza el div interno con el script de AdSense correspondiente.
-                Documentación: https://support.google.com/adsense/answer/7480870 */}
-            <div id="ad-slot-feed" className="w-full rounded-2xl overflow-hidden mb-6 border border-white/[0.05] bg-[#1a1d23] min-h-[90px] flex items-center justify-center">
-              {/* INSERT GOOGLE ADSENSE SCRIPT HERE */}
-              <span className="text-[11px] text-white/10 select-none">Espacio publicitario</span>
+            <div id="ad-slot-feed" className="w-full rounded-2xl overflow-hidden mb-6 border border-white/[0.05] bg-[#1a1d23] min-h-[90px] flex flex-col justify-center">
+              <AdSenseUnit 
+                client="ca-pub-8388922041059415" 
+                slot="6257617311" 
+                format="fluid" 
+                layoutKey="-73+ex-1f-2m+af"
+              />
             </div>
 
             {/* Feed principal */}
@@ -139,12 +143,13 @@ export default async function ExplorarPage() {
             </section>
 
             {/* ── SLOT ANUNCIO GOOGLE ADSENSE (sidebar) ── */}
-            {/* CAMBIO: Slot preparado para banner 300x250 (Rectangle) de Google AdSense.
-                Para activar: reemplaza el contenido interno con tu script de AdSense.
-                Tamaño recomendado para sidebar: 300x250 o 300x600. */}
-            <div id="ad-slot-sidebar" className="w-full rounded-2xl overflow-hidden border border-white/[0.05] bg-[#1a1d23] min-h-[250px] flex items-center justify-center">
-              {/* INSERT GOOGLE ADSENSE 300x250 SCRIPT HERE */}
-              <span className="text-[11px] text-white/10 select-none">Anuncio 300×250</span>
+            <div id="ad-slot-sidebar" className="w-full rounded-2xl overflow-hidden border border-white/[0.05] bg-[#1a1d23] min-h-[250px] flex flex-col justify-center">
+              <AdSenseUnit 
+                client="ca-pub-8388922041059415" 
+                slot="6257617311" 
+                format="fluid" 
+                layoutKey="-73+ex-1f-2m+af"
+              />
             </div>
 
             {/* ── BOTÓN PUBLICAR NUEVO POST (Modal) ── */}
