@@ -43,7 +43,7 @@ const CodeIcon = () => (
 
 export default function ArcadeLobbyPage() {
   return (
-    <div className="min-h-screen bg-[#0a0a0a] text-white p-4 sm:p-8 md:p-12 overflow-hidden selection:bg-[#f6339a]/30 selection:text-white relative font-sans">
+    <div className="min-h-screen bg-[#0a0a0a] text-white overflow-hidden selection:bg-[#f6339a]/30 selection:text-white relative font-sans flex flex-col items-center">
 
       {/* ── Background Ambience (Neon Glows sutiles) ── */}
       <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
@@ -51,7 +51,7 @@ export default function ArcadeLobbyPage() {
         <div className="absolute bottom-[-20%] right-[-10%] w-[50%] h-[50%] bg-[#00ffff] rounded-full mix-blend-screen filter blur-[200px] opacity-[0.05]"></div>
       </div>
 
-      <div className="max-w-[1000px] mx-auto relative z-10">
+      <div className="w-full max-w-[1000px] mx-auto px-4 sm:px-8 md:px-12 py-4 sm:py-8 md:py-12 relative z-10">
 
         {/* ── Hero Section (Proporcionado) ── */}
         <motion.div
