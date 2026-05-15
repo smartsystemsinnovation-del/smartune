@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter, Vazirmatn } from "next/font/google";
 import { Analytics } from "@vercel/analytics/react"; // <-- Analíticas
+import Script from "next/script"; // <-- AdSense Script
 import Sidebar from "@/components/Sidebar"; // <-- Sidebar movido hacia arriba
 import Navigation from "@/components/Navigation";
 import RealtimeListener from "@/components/RealtimeListener";
@@ -21,6 +22,14 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="es">
+      <head>
+        <Script 
+          async 
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8388922041059415" 
+          crossOrigin="anonymous" 
+          strategy="lazyOnload"
+        />
+      </head>
       <body className={`${inter.variable} ${vazirmatn.variable}`}>
         <div className="app-layout">
           <Sidebar />
