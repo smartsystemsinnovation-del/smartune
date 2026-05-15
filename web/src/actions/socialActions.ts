@@ -164,6 +164,8 @@ export async function getComments(postId: string) {
       .select(`
         id,
         content,
+        image_url,
+        audio_url,
         created_at,
         usuarios ( nombre, avatar_url, rol )
       `)
@@ -177,7 +179,7 @@ export async function getComments(postId: string) {
   }
 }
 
-export async function addComment(postId: string, content: string) {
+export async function addComment(postId: string, content: string, imageUrl?: string | null, audioUrl?: string | null) {
   try {
     const supabase = await createClient();
     const { data: userAuth } = await supabase.auth.getUser();
@@ -188,7 +190,9 @@ export async function addComment(postId: string, content: string) {
       .insert({
         post_id: postId,
         user_id: userAuth.user.id,
-        content
+        content,
+        image_url: imageUrl || null,
+        audio_url: audioUrl || null
       });
 
     if (error) return { success: false, error: error.message };

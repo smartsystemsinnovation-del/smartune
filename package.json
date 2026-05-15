@@ -2,5 +2,8 @@
   "dependencies": {
     "pdf-parse": "^2.4.5",
     "pdf2json": "^4.0.2"
+  },
+  "devDependencies": {
+    "pdfkit": "^0.18.0"
   }
 }

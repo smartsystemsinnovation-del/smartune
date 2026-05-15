@@ -71,7 +71,7 @@ export default function Navigation() {
   const pathname = usePathname();
 
   // Hide global navigation on landing page or immersive focus/gaming pages
-  if (pathname === '/' || pathname.startsWith('/minijuegos') || pathname.startsWith('/practica')) {
+  if (pathname === '/' || pathname.startsWith('/minijuegos') || pathname.startsWith('/practica') || pathname.startsWith('/explorar')) {
     return null;
   }
 

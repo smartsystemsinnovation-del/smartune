@@ -1,14 +1,21 @@
 "use client";
 
-import { useRef, useState, useEffect } from 'react';
+import { useRef, useState, useEffect, useCallback } from 'react';
 
-const DEFAULT_AVATAR = 'https://ui-avatars.com/api/?background=f6339a&color=fff&bold=true&size=128&name=';
+const DEFAULT_AVATAR = 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png';
+const STORY_DURATION = 5000; // 5 segundos por historia
+
+interface Story {
+  id: string;
+  media_url: string;
+  created_at: string;
+}
 
 interface StoryUser {
   userId: string;
   nombre: string;
   avatar_url: string;
-  stories: { id: string; media_url: string; created_at: string }[];
+  stories: Story[];
   isOwn: boolean;
 }
 
@@ -18,29 +25,56 @@ interface StoriesRowProps {
 
 export default function StoriesRow({ currentUserAvatar }: StoriesRowProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const progressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
   const [isUploading, setIsUploading] = useState(false);
   const [storyUsers, setStoryUsers] = useState<StoryUser[]>([]);
   const [loading, setLoading] = useState(true);
   const [viewingStory, setViewingStory] = useState<{ user: StoryUser; index: number } | null>(null);
+  const [progress, setProgress] = useState(0);
 
-  // Fetch stories from followed users
-  useEffect(() => {
-    async function fetchStories() {
-      try {
-        const res = await fetch('/api/social/stories');
-        const json = await res.json();
-        if (json.success && json.data) {
-          setStoryUsers(json.data);
-        }
-      } catch (e) {
-        console.error('Error fetching stories:', e);
-      } finally {
-        setLoading(false);
-      }
+  // ── Fetch stories ──────────────────────────────────────────────────
+  const fetchStories = useCallback(async () => {
+    try {
+      const res = await fetch('/api/social/stories');
+      const json = await res.json();
+      if (json.success && json.data) setStoryUsers(json.data);
+    } catch (e) {
+      console.error('Error fetching stories:', e);
+    } finally {
+      setLoading(false);
     }
-    fetchStories();
   }, []);
 
+  useEffect(() => { fetchStories(); }, [fetchStories]);
+
+  // ── Auto-progress timer ────────────────────────────────────────────
+  useEffect(() => {
+    if (!viewingStory) { setProgress(0); return; }
+
+    setProgress(0);
+    const startTime = Date.now();
+    const tick = setInterval(() => {
+      const elapsed = Date.now() - startTime;
+      const pct = Math.min((elapsed / STORY_DURATION) * 100, 100);
+      setProgress(pct);
+      if (pct >= 100) {
+        clearInterval(tick);
+        // Advance to next story or close
+        const { user, index } = viewingStory;
+        if (index < user.stories.length - 1) {
+          setViewingStory({ user, index: index + 1 });
+        } else {
+          setViewingStory(null);
+        }
+      }
+    }, 50);
+
+    return () => clearInterval(tick);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [viewingStory?.user.userId, viewingStory?.index]);
+
+  // ── Upload ──────────────────────────────────────────────────────────
   const handleStoryUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -48,18 +82,10 @@ export default function StoriesRow({ currentUserAvatar }: StoriesRowProps) {
     try {
       const formData = new FormData();
       formData.append('file', file);
-      const res = await fetch('/api/social/stories', {
-        method: 'POST',
-        body: formData,
-      });
+      const res = await fetch('/api/social/stories', { method: 'POST', body: formData });
       const json = await res.json();
       if (json.success) {
-        // Refresh stories
-        const refreshRes = await fetch('/api/social/stories');
-        const refreshJson = await refreshRes.json();
-        if (refreshJson.success && refreshJson.data) {
-          setStoryUsers(refreshJson.data);
-        }
+        await fetchStories();
       } else {
         alert('Error: ' + (json.error || 'No se pudo subir la historia'));
       }
@@ -72,166 +98,175 @@ export default function StoriesRow({ currentUserAvatar }: StoriesRowProps) {
   };
 
   const openStory = (user: StoryUser) => {
-    if (user.stories.length > 0 && user.stories[0].media_url) {
-      setViewingStory({ user, index: 0 });
-    }
+    if (user.stories.length > 0) setViewingStory({ user, index: 0 });
   };
-
   const closeStory = () => setViewingStory(null);
 
-  // Check if current user has uploaded a story
   const ownStory = storyUsers.find(u => u.isOwn);
-  const othersStories = storyUsers.filter(u => !u.isOwn);
+  const othersStories = storyUsers.filter(u => !u.isOwn && u.stories.length > 0);
   const hasOwnStory = ownStory && ownStory.stories.length > 0;
 
-  // Don't show anything while loading
-  if (loading) return null;
-
-  // If there are no stories at all (no own story, nobody you follow has stories), show only the upload button
-  const hasAnyStories = storyUsers.length > 0;
+  if (loading) return (
+    <div className="flex gap-4 pb-2">
+      {[...Array(3)].map((_, i) => (
+        <div key={i} className="flex flex-col items-center gap-1 flex-shrink-0 animate-pulse">
+          <div className="w-14 h-14 rounded-full bg-white/5" />
+          <div className="h-2 w-10 bg-white/5 rounded" />
+        </div>
+      ))}
+    </div>
+  );
 
   return (
     <>
-      <div className="flex gap-4 overflow-x-auto no-scrollbar pb-2">
-        {/* ── Tu historia (Upload / View) ── */}
+      <div className="flex gap-4 overflow-x-auto scrollbar-none pb-2 pt-1">
+
+        {/* ── Tu historia ── */}
         <div
           onClick={() => {
-            if (hasOwnStory) {
-              openStory(ownStory!);
-            } else {
-              if (!isUploading) fileInputRef.current?.click();
-            }
+            if (hasOwnStory) openStory(ownStory!);
+            else if (!isUploading) fileInputRef.current?.click();
           }}
-          className={`flex-shrink-0 relative w-[130px] h-[200px] rounded-2xl overflow-hidden cursor-pointer group shadow-lg border border-white/5 ${isUploading ? 'opacity-50 pointer-events-none' : ''}`}
+          className={`flex flex-col items-center gap-1.5 flex-shrink-0 cursor-pointer ${isUploading ? 'opacity-50 pointer-events-none' : ''}`}
         >
-          <input type="file" ref={fileInputRef} className="hidden" accept="image/*,video/*" onChange={handleStoryUpload} />
-          
-          {/* Background image: user avatar or own story cover */}
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={hasOwnStory ? ownStory!.stories[0].media_url : (currentUserAvatar || `${DEFAULT_AVATAR}U`)}
-            alt="Tu historia"
-            className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+          <input
+            type="file"
+            ref={fileInputRef}
+            className="hidden"
+            accept="image/*,video/*"
+            onChange={handleStoryUpload}
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-
-          {/* Plus badge or Loading */}
-          {!hasOwnStory && (
-            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-              {isUploading ? (
-                <div className="w-8 h-8 border-4 border-white border-t-transparent rounded-full animate-spin" />
-              ) : (
-                <div className="w-10 h-10 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center transition-colors">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round"><path d="M12 5v14M5 12h14"/></svg>
-                </div>
-              )}
+          <div className="relative">
+            <div className={`w-14 h-14 rounded-full p-[2px] ${hasOwnStory ? 'bg-gradient-to-tr from-[#f6339a] to-[#9810fa]' : 'bg-white/10'}`}>
+              <div className="w-full h-full rounded-full overflow-hidden border-[2px] border-[#111315] bg-[#111315]">
+                <img
+                  src={currentUserAvatar || DEFAULT_AVATAR}
+                  alt="Tu historia"
+                  className="w-full h-full object-cover"
+                  onError={e => { (e.currentTarget as HTMLImageElement).src = DEFAULT_AVATAR; }}
+                />
+              </div>
             </div>
-          )}
-
-          {/* User badge bottom */}
-          <div className="absolute bottom-3 left-3 flex items-center gap-2">
-            <div className="w-6 h-6 rounded-full overflow-hidden border border-white bg-[#181818]">
-               {/* eslint-disable-next-line @next/next/no-img-element */}
-               <img src={currentUserAvatar || `${DEFAULT_AVATAR}U`} alt="" className="w-full h-full object-cover" />
-            </div>
-            <span className="text-[11px] font-bold text-white tracking-wide">Add Story</span>
+            {!hasOwnStory && (
+              <div className="absolute bottom-0 right-0 w-5 h-5 bg-[#f6339a] rounded-full flex items-center justify-center border-2 border-[#111315] shadow z-10">
+                {isUploading
+                  ? <div className="w-2.5 h-2.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  : <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round"><path d="M12 5v14M5 12h14" /></svg>
+                }
+              </div>
+            )}
           </div>
+          <span className="text-[10px] font-semibold text-white/70 tracking-wide">
+            {hasOwnStory ? 'Mi historia' : 'Add Story'}
+          </span>
         </div>
 
-        {/* ── Stories from people you follow ── */}
-        {othersStories.map(storyUser => (
+        {/* ── Historias de seguidos ── */}
+        {othersStories.map((storyUser) => (
           <div
             key={storyUser.userId}
             onClick={() => openStory(storyUser)}
-            className="flex-shrink-0 relative w-[130px] h-[200px] rounded-2xl overflow-hidden cursor-pointer group shadow-lg border border-white/5"
+            className="flex flex-col items-center gap-1.5 flex-shrink-0 cursor-pointer"
           >
-            {/* Background image: first story cover */}
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={storyUser.stories.length > 0 ? storyUser.stories[0].media_url : storyUser.avatar_url}
-              alt={storyUser.nombre}
-              className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-
-            <div className="absolute bottom-3 left-3 flex items-center gap-2 z-10">
-              <div className="w-6 h-6 rounded-full overflow-hidden border-2 border-white/80 bg-[#0d0714]">
-                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                 <img src={storyUser.avatar_url || `${DEFAULT_AVATAR}${encodeURIComponent(storyUser.nombre)}`} alt="" className="w-full h-full rounded-full object-cover" />
+            <div className="relative">
+              <div className="w-14 h-14 rounded-full p-[2px] bg-gradient-to-tr from-[#f6339a] to-[#9810fa]">
+                <div className="w-full h-full rounded-full overflow-hidden border-[2px] border-[#111315] bg-[#111315]">
+                  <img
+                    src={storyUser.avatar_url || DEFAULT_AVATAR}
+                    alt={storyUser.nombre}
+                    className="w-full h-full object-cover"
+                    onError={e => { (e.currentTarget as HTMLImageElement).src = DEFAULT_AVATAR; }}
+                  />
+                </div>
               </div>
-              <span className="text-[11px] font-bold text-white tracking-wide truncate max-w-[70px]">
-                {storyUser.nombre}
-              </span>
             </div>
+            <span className="text-[10px] font-semibold text-white/70 tracking-wide truncate max-w-[56px] text-center">
+              {storyUser.nombre.split(' ')[0]}
+            </span>
           </div>
         ))}
+
+
       </div>
 
-      {/* ── Full-screen Story Viewer ── */}
+      {/* ── Visor de Historia (fullscreen) ── */}
       {viewingStory && (
-        <div className="fixed inset-0 z-[9999] bg-black/95 flex items-center justify-center" onClick={closeStory}>
-          <div className="relative max-w-lg w-full max-h-[90vh] mx-4" onClick={(e) => e.stopPropagation()}>
-            {/* Top bar */}
-            <div className="absolute top-0 left-0 right-0 z-10 p-4 flex items-center justify-between bg-gradient-to-b from-black/60 to-transparent">
-              <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-full overflow-hidden">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
+        <div
+          className="fixed inset-0 z-[9999] bg-black/95 flex items-center justify-center"
+          onClick={closeStory}
+        >
+          <div
+            className="relative w-full mx-4 rounded-2xl overflow-hidden bg-[#0d0f12] shadow-2xl"
+            onClick={e => e.stopPropagation()}
+            style={{ maxWidth: '420px', maxHeight: '92vh', aspectRatio: '9/16' }}
+          >
+            {/* Barras de progreso */}
+            <div className="absolute top-3 left-3 right-3 z-20 flex gap-1">
+              {viewingStory.user.stories.map((_, idx) => (
+                <div key={idx} className="flex-1 h-[3px] rounded-full bg-white/20 overflow-hidden">
+                  <div
+                    className="h-full rounded-full bg-white transition-none"
+                    style={{
+                      width: idx < viewingStory.index ? '100%'
+                        : idx === viewingStory.index ? `${progress}%`
+                          : '0%'
+                    }}
+                  />
+                </div>
+              ))}
+            </div>
+
+            {/* Header */}
+            <div className="absolute top-8 left-0 right-0 z-20 px-4 py-2 flex items-center justify-between bg-gradient-to-b from-black/60 to-transparent">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-full overflow-hidden border border-white/20">
                   <img
-                    src={viewingStory.user.avatar_url || `${DEFAULT_AVATAR}${encodeURIComponent(viewingStory.user.nombre)}`}
+                    src={viewingStory.user.avatar_url || DEFAULT_AVATAR}
                     alt=""
                     className="w-full h-full object-cover"
+                    onError={e => { (e.currentTarget as HTMLImageElement).src = DEFAULT_AVATAR; }}
                   />
                 </div>
                 <div>
-                  <p className="text-white text-sm font-bold">{viewingStory.user.nombre}</p>
+                  <p className="text-white text-[13px] font-bold leading-tight">{viewingStory.user.nombre}</p>
                   <p className="text-white/50 text-[10px]">
                     {new Date(viewingStory.user.stories[viewingStory.index].created_at).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}
                   </p>
                 </div>
               </div>
-              <button onClick={closeStory} className="text-white/70 hover:text-white transition-colors p-1">
-                <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                  <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+              <button onClick={closeStory} className="w-8 h-8 flex items-center justify-center text-white/70 hover:text-white transition-colors">
+                <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                  <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
                 </svg>
               </button>
             </div>
 
-            {/* Progress bar */}
-            <div className="absolute top-2 left-4 right-4 z-10 flex gap-1">
-              {viewingStory.user.stories.map((_, idx) => (
-                <div key={idx} className="flex-1 h-0.5 rounded-full overflow-hidden bg-white/20">
-                  <div className={`h-full rounded-full ${idx <= viewingStory.index ? 'bg-white' : 'bg-transparent'}`} style={{ width: '100%' }} />
-                </div>
-              ))}
-            </div>
+            {/* Imagen/Video */}
+            <img
+              src={viewingStory.user.stories[viewingStory.index].media_url}
+              alt="Historia"
+              className="w-full h-full object-cover"
+            />
 
-            {/* Story content */}
-            <div className="rounded-2xl overflow-hidden bg-[#1a1a22]">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={viewingStory.user.stories[viewingStory.index].media_url}
-                alt="Historia"
-                className="w-full max-h-[80vh] object-contain"
-              />
-            </div>
-
-            {/* Navigation arrows */}
-            {viewingStory.index > 0 && (
-              <button
-                onClick={() => setViewingStory({ ...viewingStory, index: viewingStory.index - 1 })}
-                className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-white/10 rounded-full flex items-center justify-center text-white hover:bg-white/20 transition-colors"
-              >
-                <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M15 18l-6-6 6-6"/></svg>
-              </button>
-            )}
-            {viewingStory.index < viewingStory.user.stories.length - 1 && (
-              <button
-                onClick={() => setViewingStory({ ...viewingStory, index: viewingStory.index + 1 })}
-                className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-white/10 rounded-full flex items-center justify-center text-white hover:bg-white/20 transition-colors"
-              >
-                <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M9 18l6-6-6-6"/></svg>
-              </button>
-            )}
+            {/* Navegación táctil — izquierda/derecha */}
+            <button
+              className="absolute left-0 top-0 w-1/3 h-full z-10 opacity-0"
+              onClick={e => {
+                e.stopPropagation();
+                const { user, index } = viewingStory;
+                if (index > 0) setViewingStory({ user, index: index - 1 });
+                else closeStory();
+              }}
+            />
+            <button
+              className="absolute right-0 top-0 w-2/3 h-full z-10 opacity-0"
+              onClick={e => {
+                e.stopPropagation();
+                const { user, index } = viewingStory;
+                if (index < user.stories.length - 1) setViewingStory({ user, index: index + 1 });
+                else closeStory();
+              }}
+            />
           </div>
         </div>
       )}
