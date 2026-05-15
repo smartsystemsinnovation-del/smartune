@@ -140,7 +140,7 @@ export default function PostCard({ post, currentUserId, currentUserAvatar }: { p
   const handleLike = useCallback(async () => {
     setHasLiked((p: boolean) => !p);
     setLikesCount((p: number) => p + (hasLiked ? -1 : 1));
-    await toggleLike(post.id);
+    await toggleLike(post.id, hasLiked);
   }, [post.id, hasLiked]);
 
   const loadComments = async () => {
@@ -215,7 +215,7 @@ export default function PostCard({ post, currentUserId, currentUserAvatar }: { p
   const handleFollow = async (e: React.MouseEvent) => {
     e.preventDefault();
     setIsFollowing((v: boolean) => !v);
-    await toggleFollow(post.user_id);
+    await toggleFollow(post.user_id, isFollowing);
   };
 
   const handleDelete = async () => {
