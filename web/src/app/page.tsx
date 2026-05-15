@@ -242,8 +242,8 @@ function HomeContent() {
              <button className={styles.ctaSubmitBtn} onClick={() => openAuth(ctaMode)} style={{ width: '100%', padding: '12px 10px', display: 'flex', gap: '8px', justifyContent: 'center', alignItems: 'center' }}>
                 {ctaMode === 'register' ? 'REGISTER' : 'LOGIN'}
              </button>
-             <button onClick={signInWithGoogle} style={{ width: '100%', padding: '10px 10px', background: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', display: 'flex', gap: '12px', alignItems: 'center', justifyContent: 'center', fontFamily: 'var(--font-inter)', fontSize: '14px', fontWeight: 500, color: '#333' }}>
-                <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" style={{ width: '20px', height: '20px' }} />
+             <button onClick={signInWithGoogle} style={{ width: '100%', padding: '11px 10px', background: '#ffffff', border: 'none', borderRadius: '4px', cursor: 'pointer', display: 'flex', gap: '12px', alignItems: 'center', justifyContent: 'center', fontFamily: 'var(--font-inter)', fontSize: '14px', fontWeight: 500, color: '#3c4043', letterSpacing: '0.25px', boxShadow: '0 1px 2px rgba(60,64,67,0.3), 0 1px 3px 1px rgba(60,64,67,0.15)', transition: 'all 0.2s ease' }}>
+                <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" style={{ width: '18px', height: '18px', flexShrink: 0 }} />
                 Continuar con Google
              </button>
           </div>
