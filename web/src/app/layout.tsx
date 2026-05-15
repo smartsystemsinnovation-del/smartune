@@ -23,12 +23,11 @@ export default function RootLayout({
   return (
     <html lang="es">
       <head>
-        <Script 
+        <script 
           async 
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8388922041059415" 
           crossOrigin="anonymous" 
-          strategy="lazyOnload"
-        />
+        ></script>
       </head>
       <body className={`${inter.variable} ${vazirmatn.variable}`}>
         <div className="app-layout">
