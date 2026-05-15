@@ -95,7 +95,7 @@ export default async function ExplorarPage() {
           </main>
 
         {/* ═══ SIDEBAR DERECHA (solo desktop) ═══ */}
-        <aside className="hidden lg:flex flex-col w-[300px] shrink-0 sticky top-0 h-screen border-l border-white/[0.05] bg-[#111315] overflow-y-auto">
+        <aside className="hidden lg:flex flex-col w-[300px] shrink-0 sticky top-0 h-screen border-l border-white/[0.05] bg-[#111315] overflow-y-auto hide-scrollbar">
           <div className="flex flex-col gap-5 p-5 pt-8">
 
             {/* Header del sidebar */}
