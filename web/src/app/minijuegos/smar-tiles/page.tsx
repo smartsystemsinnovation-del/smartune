@@ -160,9 +160,12 @@ export default function SmarTilesGame() {
   return (
     <div className="flex min-h-screen bg-[#111]">
       <div className="flex-1 flex flex-col h-screen overflow-hidden relative">
-        <div className="flex-1 flex items-center justify-center p-4 bg-[url('https://images.unsplash.com/photo-1511379938547-c1f69419868d?q=80&w=2070&auto=format&fit=crop')] bg-cover bg-center">
-           {/* Dark Overlay over Background image */}
-           <div className="absolute inset-0 bg-black/80 backdrop-blur-sm z-0"></div>
+        <div className="flex-1 flex items-center justify-center p-4 relative" style={{ background: '#0a0a0a' }}>
+           {/* Game preview background */}
+           <div className="absolute inset-0 z-0 overflow-hidden">
+             <img src="/smartiles-preview.png" alt="" className="w-full h-full object-cover opacity-20" />
+             <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-[#0a0a0a]/60 to-[#0a0a0a]/40" />
+           </div>
 
            {/* Game Board Surface */}
            <div 
@@ -216,39 +219,80 @@ export default function SmarTilesGame() {
 
              {/* Overlays (Start / Game Over) */}
              {!isPlaying && (
-               <div className="absolute inset-0 bg-black/70 backdrop-blur-md flex flex-col items-center justify-center z-30">
+               <div className="absolute inset-0 bg-black/75 backdrop-blur-sm flex flex-col items-center justify-center z-30 px-6">
+                 {/* Logo */}
+                 <div className="mb-3">
+                   <span style={{
+                     background: 'linear-gradient(90deg, #f6339a 0%, #9810fa 100%)',
+                     WebkitBackgroundClip: 'text',
+                     WebkitTextFillColor: 'transparent',
+                     backgroundClip: 'text',
+                     fontSize: '16px',
+                     fontWeight: 700,
+                     letterSpacing: '0.18em',
+                     textTransform: 'uppercase',
+                   }}>SmarTune</span>
+                 </div>
+
                  <h1 className="text-5xl font-black text-white mb-2 tracking-tighter" style={{ fontFamily: 'var(--font-vazirmatn)' }}>
                    SMAR-TILES
                  </h1>
-                 
+
                  {isGameOver ? (
                    <>
-                    <p className="text-pink-500 font-bold text-2xl mb-1">¡FIN DEL JUEGO!</p>
-                    <p className="text-white text-lg mb-6">Puntuación: <span className="text-cyan-400 font-black">{score}</span></p>
-                    <button 
-                      onClick={startGame}
-                      className="px-8 py-4 bg-gradient-to-r from-pink-500 to-purple-600 rounded-full font-bold text-white text-lg tracking-wide hover:scale-105 transition-transform shadow-[0_0_20px_rgba(238,16,176,0.5)]"
-                    >
-                      JUGAR OTRA VEZ
-                    </button>
+                     <div className="mt-5 mb-7 text-center">
+                       <p className="text-[#f6339a] font-bold text-2xl mb-2">¡Fin del juego!</p>
+                       <p className="text-white/60 text-base">Puntuación: <span className="text-white font-black text-3xl">{score}</span></p>
+                       {score > highScore && <p className="text-[#9810fa] text-xs font-bold mt-2 tracking-widest uppercase">¡Nuevo récord! 🎉</p>}
+                     </div>
+                     <button
+                       onClick={startGame}
+                       className="flex items-center justify-center gap-2 transition-all duration-200 hover:brightness-110 hover:-translate-y-[1px] active:scale-95"
+                       style={{
+                         background: 'linear-gradient(90deg, #f6339a 0%, #9810fa 100%)',
+                         color: '#ffffff',
+                         padding: '13px 36px',
+                         borderRadius: '12px',
+                         fontSize: '15px',
+                         fontWeight: 700,
+                         letterSpacing: '0.05em',
+                         boxShadow: '0 0 28px rgba(246,51,154,0.45)',
+                         border: 'none',
+                       }}
+                     >
+                       Jugar otra vez <span style={{ fontSize: '18px', fontWeight: 'bold' }}>+</span>
+                     </button>
                    </>
                  ) : (
                    <>
-                    <p className="text-gray-300 mb-8 max-w-xs text-center text-sm leading-relaxed">
-                      Usa el mouse para tocar las teclas luminosas, o presiona las letras <strong className="text-white bg-white/10 px-1 rounded">A S D F</strong>. ¡No falles ninguna!
-                    </p>
-                    <button 
-                      onClick={startGame}
-                      className="px-8 py-4 bg-gradient-to-r from-cyan-500 to-blue-600 rounded-full font-bold text-white text-lg tracking-wide hover:scale-105 transition-transform shadow-[0_0_20px_rgba(34,211,238,0.5)]"
-                    >
-                      INICIAR JUEGO
-                    </button>
+                     <p className="text-white/40 mt-4 mb-10 max-w-[300px] text-center text-[15px] leading-relaxed">
+                       Toca las teclas con el mouse, o presiona{' '}
+                       <strong className="text-white/70 font-bold">A S D F</strong>. ¡No falles ninguna!
+                     </p>
+                     <button
+                       onClick={startGame}
+                       className="flex items-center justify-center gap-2 transition-all duration-200 hover:brightness-110 hover:-translate-y-[1px] active:scale-95"
+                       style={{
+                         background: 'linear-gradient(90deg, #f6339a 0%, #9810fa 100%)',
+                         color: '#ffffff',
+                         padding: '13px 36px',
+                         borderRadius: '12px',
+                         fontSize: '15px',
+                         fontWeight: 700,
+                         letterSpacing: '0.05em',
+                         boxShadow: '0 0 28px rgba(246,51,154,0.45)',
+                         border: 'none',
+                       }}
+                     >
+                       Iniciar juego <span style={{ fontSize: '18px', fontWeight: 'bold' }}>+</span>
+                     </button>
                    </>
                  )}
-                 
+
                  {highScore > 0 && (
-                   <div className="mt-8 text-white/50 text-sm font-medium">
-                     Récord Actual: <span className="text-white">{highScore}</span>
+                   <div className="mt-8 px-6 py-3 rounded-xl bg-white/[0.04] border border-white/[0.07]">
+                     <span className="text-white/30 text-[12px] uppercase tracking-widest">Récord </span>
+                     <span className="text-white font-black text-lg">{highScore}</span>
                    </div>
                  )}
                </div>

@@ -58,7 +58,7 @@ export default function ArcadeLobbyPage() {
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="text-center mb-12 mt-4 flex flex-col items-center"
+          className="text-center mb-12 mt-12 flex flex-col items-center"
         >
           <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-3">
             <span style={{
@@ -181,15 +181,21 @@ export default function ArcadeLobbyPage() {
               </div>
             </motion.div>
 
-            {/* Tarjeta de Sugerencias (Equilibrio visual) */}
+            {/* Tarjeta de Sugerencias — click abre correo */}
             <motion.div variants={itemVariants} className="h-full">
-              <div className="h-full bg-white/[0.02] rounded-[20px] p-5 border border-dashed border-white/10 flex flex-col items-center justify-center text-center transition-all duration-300 hover:bg-white/[0.04]">
-                <div className="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center mb-3">
-                  <svg className="w-5 h-5 text-white/40" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
+              <a
+                href="mailto:smartsystemsinnovation@gmail.com?subject=Sugerencia%20de%20Minijuego%20-%20SmarTune&body=Hola%20equipo%20SmarTune%2C%20tengo%20una%20idea%20para%20un%20minijuego%3A%0A%0A"
+                className="block h-full"
+              >
+                <div className="h-full bg-white/[0.02] rounded-[20px] p-5 border border-dashed border-white/10 flex flex-col items-center justify-center text-center transition-all duration-300 hover:bg-white/[0.04] hover:border-[#f6339a]/30 cursor-pointer">
+                  <div className="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center mb-3 group-hover:bg-[#f6339a]/10 transition-colors">
+                    <svg className="w-5 h-5 text-white/40" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
+                  </div>
+                  <h3 className="text-[14px] font-bold text-white/70 mb-1">¿Tienes una idea?</h3>
+                  <p className="text-[12px] text-white/30 px-2">Sugiere un nuevo minijuego para la comunidad.</p>
+                  <span className="mt-3 text-[11px] text-[#f6339a]/60">Enviar sugerencia →</span>
                 </div>
-                <h3 className="text-[14px] font-bold text-white/70 mb-1">¿Tienes una idea?</h3>
-                <p className="text-[12px] text-white/30 px-2">Sugiere un nuevo minijuego para la comunidad.</p>
-              </div>
+              </a>
             </motion.div>
 
           </div>
