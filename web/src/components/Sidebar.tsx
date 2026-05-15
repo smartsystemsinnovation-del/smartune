@@ -98,9 +98,9 @@ export default function Sidebar() {
                   Minijuegos
                 </Link>
                 {userRole === 'profesor' && (
-                  <Link href="/teacher/clases/crear" className={`${styles.navItem} ${isPrefixActive('/teacher/clases/crear') ? styles.active : ''}`} onClick={() => setIsOpen(false)}>
+                  <Link href="/teacher/clases" className={`${styles.navItem} ${isPrefixActive('/teacher/clases') ? styles.active : ''}`} onClick={() => setIsOpen(false)}>
                     <span className={styles.icon}>📚</span>
-                    Crear Clases
+                    Clases
                   </Link>
                 )}
                 <Link href="/ia-studio" className={`${styles.navItem} ${isPrefixActive('/ia-studio') ? styles.active : ''}`} onClick={() => setIsOpen(false)}>
@@ -150,12 +150,12 @@ export default function Sidebar() {
                 <span className={styles.icon}><LayoutDashboard size={18} /></span>
                 Dashboard
               </Link>
-              <Link href="/teacher/clases/crear" className={`${styles.navItem} ${isActive('/teacher/clases/crear') ? styles.active : ''}`} onClick={() => setIsOpen(false)}>
+              <Link href="/teacher/clases" className={`${styles.navItem} ${isActive('/teacher/clases') ? styles.active : ''}`} onClick={() => setIsOpen(false)}>
                 <span className={styles.icon} style={{ display: 'flex', gap: '4px' }}>
-                  <PlusCircle size={18} />
+                  <BookOpen size={18} />
                   <Calendar size={12} style={{ color: '#4285F4' }} />
                 </span>
-                Crear Clase
+                Clases
               </Link>
               <Link href="/teacher/integraciones" className={`${styles.navItem} ${isActive('/teacher/integraciones') ? styles.active : ''}`} onClick={() => setIsOpen(false)}>
                 <span className={styles.icon} style={{ display: 'flex', gap: '4px' }}>

@@ -1,14 +1,15 @@
 import type { Metadata } from "next";
-import { Inter, Vazirmatn } from "next/font/google";
-import { Analytics } from "@vercel/analytics/react"; // <-- Analíticas
-import Script from "next/script"; // <-- AdSense Script
-import Sidebar from "@/components/Sidebar"; // <-- Sidebar movido hacia arriba
+import { Inter, Vazirmatn, Roboto } from "next/font/google";
+import { Analytics } from "@vercel/analytics/react";
+import Script from "next/script";
+import Sidebar from "@/components/Sidebar";
 import Navigation from "@/components/Navigation";
 import RealtimeListener from "@/components/RealtimeListener";
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const vazirmatn = Vazirmatn({ subsets: ["arabic", "latin"], variable: "--font-vazirmatn" });
+const roboto = Roboto({ subsets: ["latin"], weight: ["400", "500", "700"], variable: "--font-roboto" });
 
 export const metadata: Metadata = {
   title: "Smartune - Aprende Música Rápido",
@@ -29,7 +30,7 @@ export default function RootLayout({
           crossOrigin="anonymous" 
         ></script>
       </head>
-      <body className={`${inter.variable} ${vazirmatn.variable}`}>
+      <body className={`${inter.variable} ${vazirmatn.variable} ${roboto.variable}`}>
         <div className="app-layout">
           <Sidebar />
           <div className="main-content">

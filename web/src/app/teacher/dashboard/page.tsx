@@ -47,7 +47,7 @@ export default async function TeacherDashboard() {
             </p>
           </div>
           
-          <Link href="/teacher/clases/crear" style={{
+          <Link href="/teacher/clases/meet" style={{
             display: 'flex',
             alignItems: 'center',
             gap: '8px',
@@ -83,7 +83,7 @@ export default async function TeacherDashboard() {
               <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '15px' }}>
                 Revisa tu red de alumnos y empieza a programar clases usando Google Meet.
               </p>
-              <Link href="/teacher/clases/crear" style={{ color: 'var(--neon-cyan)', fontWeight: 600, display: 'inline-block', marginTop: '16px' }}>
+              <Link href="/teacher/clases/meet" style={{ color: 'var(--neon-cyan)', fontWeight: 600, display: 'inline-block', marginTop: '16px' }}>
                 Crear mi primera clase
               </Link>
             </div>
