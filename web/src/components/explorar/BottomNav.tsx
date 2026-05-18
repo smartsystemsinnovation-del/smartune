@@ -2,7 +2,7 @@
 
 export default function BottomNav() {
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-40 bg-[#121216]/90 backdrop-blur-md border-t border-[#2a2a35] pb-safe">
+    <div className="fixed bottom-0 left-0 right-0 z-40 bg-[#0a0a0a]/95 backdrop-blur-md border-t border-white/[0.04] pb-safe">
       <div className="max-w-2xl mx-auto flex justify-between items-center h-16 px-6 relative">
         {/* Home */}
         <button className="text-gray-400 hover:text-white transition-colors">

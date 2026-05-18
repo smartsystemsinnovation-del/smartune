@@ -1,9 +1,4 @@
-// CAMBIOS:
-// - Layout de 3 columnas (sidebar izq | feed central | sidebar der) en desktop
-// - Feed central max-w-[600px] para uniformidad total de cards
-// - Sidebar derecha: Stories + Friend Suggestions + slot de anuncio Google AdSense
-// - CreatePost sticky en la parte superior del feed
-// - Fondo #111315 unificado, colores coherentes con PostCard rediseñado
+// Explorar — Minimalist Social Feed with SmarTune palette
 import Feed from '@/components/explorar/Feed';
 import StoriesRow from '@/components/explorar/StoriesRow';
 import RecentFollowers from '@/components/explorar/RecentFollowers';
@@ -21,7 +16,7 @@ export default async function ExplorarPage() {
 
   if (authError || !user) {
     return (
-      <div className="min-h-screen bg-[#111315] text-white flex items-center justify-center p-6">
+      <div className="min-h-screen text-white flex items-center justify-center p-6">
         <AuthGatekeeper
           iconNode={
             <div style={{ width: 80, height: 80, borderRadius: '50%', border: '2px solid var(--neon-pink)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -58,30 +53,28 @@ export default async function ExplorarPage() {
   const initialPosts = feedRes.success && feedRes.data ? feedRes.data : [];
 
   return (
-    <div className="min-h-screen bg-[#111315] text-white antialiased font-sans selection:bg-[#3B82F6]/30">
+    <div className="min-h-screen text-white antialiased font-sans">
       <Script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8388922041059415" crossOrigin="anonymous" strategy="afterInteractive" />
 
-      {/* ── LAYOUT PRINCIPAL: feed | sidebar der ── */}
+      {/* ── LAYOUT: feed | sidebar ── */}
       <div className="flex justify-center w-full min-h-screen">
-        <div className="flex w-full max-w-[1000px] justify-between lg:gap-8 xl:gap-12 px-4 sm:px-6">
+        <div className="flex w-full max-w-[960px] justify-between lg:gap-0 px-4 sm:px-6">
 
-          {/* ═══ COLUMNA CENTRAL ═══ */}
-          <main className="w-full max-w-[600px] flex-1 min-w-0 pt-6 lg:pt-8 pb-32">
+          {/* ═══ FEED CENTRAL ═══ */}
+          <main className="w-full max-w-[580px] flex-1 min-w-0 pt-6 lg:pt-8 pb-32">
             
             {/* Stories (solo móvil) */}
             <div className="lg:hidden mb-5">
               <StoriesRow currentUserAvatar={profile?.avatar_url} />
             </div>
 
-            {/* Add New Post — botón flotante (mobile) -> lo movemos a CreatePostModal si se quiere, o lo dejamos aquí pero abriendo modal.
-                Como CreatePostModal ya tiene su botón y es full width, reemplazaremos esto para no duplicar código, o lo adaptaremos luego.
-                Por ahora el modal en sidebar cubre escritorio. Para móvil agregaremos el Modal aquí: */}
-            <div className="lg:hidden w-full mb-5 px-2">
+            {/* Crear post mobile */}
+            <div className="lg:hidden w-full mb-5">
               <CreatePostModal avatarUrl={profile?.avatar_url} />
             </div>
 
-            {/* ── SLOT ANUNCIO GOOGLE ADSENSE (in-feed) ── */}
-            <div id="ad-slot-feed" className="w-full rounded-2xl overflow-hidden mb-6 border border-white/[0.05] bg-[#1a1d23] min-h-[90px] flex flex-col justify-center">
+            {/* AdSense in-feed */}
+            <div id="ad-slot-feed" className="w-full rounded-2xl overflow-hidden mb-6 border border-white/[0.04] bg-white/[0.02] min-h-[90px] flex flex-col justify-center">
               <AdSenseUnit 
                 client="ca-pub-8388922041059415" 
                 slot="6257617311" 
@@ -90,7 +83,7 @@ export default async function ExplorarPage() {
               />
             </div>
 
-            {/* Feed principal */}
+            {/* Feed */}
             <Feed
               initialPosts={initialPosts}
               currentUserId={user.id}
@@ -98,81 +91,81 @@ export default async function ExplorarPage() {
             />
           </main>
 
-        {/* ═══ SIDEBAR DERECHA (solo desktop) ═══ */}
-        <aside className="hidden lg:flex flex-col w-[300px] shrink-0 sticky top-0 h-screen border-l border-white/[0.05] bg-[#111315] overflow-y-auto hide-scrollbar">
-          <div className="flex flex-col gap-5 p-5 pt-8">
+          {/* ═══ SIDEBAR (desktop) ═══ */}
+          <aside className="hidden lg:flex flex-col w-[280px] shrink-0 sticky top-0 h-screen overflow-y-auto hide-scrollbar"
+            style={{ borderLeft: '1px solid rgba(255,255,255,0.03)' }}
+          >
+            <div className="flex flex-col gap-6 p-5 pt-8">
 
-            {/* Header del sidebar */}
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2.5">
-                {/* Avatar del usuario actual con indicador online */}
-                <div className="relative w-9 h-9">
-                  <img
-                    src={profile?.avatar_url || `https://ui-avatars.com/api/?background=1a1d23&color=fff&bold=true&size=128&name=${encodeURIComponent(profile?.nombre || 'U')}`}
-                    alt="Perfil"
-                    className="w-full h-full rounded-full object-cover border border-white/10"
-                  />
-                  <div className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-400 rounded-full border-2 border-[#111315]" />
+              {/* Header — Avatar + settings */}
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2.5">
+                  <div className="relative w-9 h-9">
+                    <img
+                      src={profile?.avatar_url || `https://ui-avatars.com/api/?background=1a1d23&color=fff&bold=true&size=128&name=${encodeURIComponent(profile?.nombre || 'U')}`}
+                      alt="Perfil"
+                      className="w-full h-full rounded-full object-cover"
+                      style={{ border: '1px solid rgba(255,255,255,0.08)' }}
+                    />
+                    <div className="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full border-2"
+                      style={{ background: '#34d399', borderColor: 'var(--bg-main)' }}
+                    />
+                  </div>
+                  <span className="text-[13px] font-semibold text-white/70">{profile?.nombre?.split(' ')[0] || 'Usuario'}</span>
                 </div>
+                <SidebarHeaderButtons />
               </div>
-              <SidebarHeaderButtons />
+
+              {/* Stories Desktop */}
+              <section className="rounded-2xl p-4" style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.04)' }}>
+                <div className="flex items-center gap-2 mb-4">
+                  <div className="w-1.5 h-1.5 rounded-full" style={{ background: 'var(--neon-pink)' }} />
+                  <h3 className="text-[11px] font-semibold uppercase tracking-wider" style={{ color: 'rgba(255,255,255,0.35)' }}>Historias</h3>
+                </div>
+                <StoriesRow currentUserAvatar={profile?.avatar_url} />
+              </section>
+
+              {/* Sugerencias */}
+              <section className="rounded-2xl p-4" style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.04)' }}>
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-[11px] font-semibold uppercase tracking-wider" style={{ color: 'rgba(255,255,255,0.35)' }}>Sugerencias</h3>
+                  <button className="text-[11px] font-semibold transition-opacity hover:opacity-70" style={{ color: 'var(--neon-pink)' }}>
+                    Ver todo
+                  </button>
+                </div>
+                <RecentFollowers />
+              </section>
+
+              {/* AdSense sidebar */}
+              <div id="ad-slot-sidebar" className="w-full rounded-2xl overflow-hidden min-h-[250px] flex flex-col justify-center"
+                style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.04)' }}
+              >
+                <AdSenseUnit 
+                  client="ca-pub-8388922041059415" 
+                  slot="6257617311" 
+                  format="fluid" 
+                  layoutKey="-73+ex-1f-2m+af"
+                />
+              </div>
+
+              {/* Publicar */}
+              <CreatePostModal avatarUrl={profile?.avatar_url} />
+
+              {/* Footer */}
+              <footer className="px-1 pb-4">
+                <div className="flex flex-wrap gap-x-3 gap-y-1 text-[10px] font-medium" style={{ color: 'rgba(255,255,255,0.12)' }}>
+                  <a href="#" className="hover:text-white/30 transition-colors">Acerca de</a>
+                  <a href="#" className="hover:text-white/30 transition-colors">Ayuda</a>
+                  <a href="#" className="hover:text-white/30 transition-colors">Privacidad</a>
+                  <a href="#" className="hover:text-white/30 transition-colors">Términos</a>
+                </div>
+                <p className="text-[10px] mt-2" style={{ color: 'rgba(255,255,255,0.08)' }}>© 2026 SmarTune</p>
+              </footer>
             </div>
-
-            {/* ── Stories Desktop ── */}
-            <section className="bg-[#111315] border border-white/[0.05] rounded-2xl p-4">
-              <div className="flex items-center gap-2 mb-4">
-                <div className="w-2 h-2 rounded-full bg-gradient-to-r from-[#f6339a] to-[#9810fa]" />
-                <h3 className="text-[13px] font-bold text-white/80">Historias</h3>
-              </div>
-              <StoriesRow currentUserAvatar={profile?.avatar_url} />
-            </section>
-
-            {/* ── Friend Suggestions ── */}
-            {/* CAMBIO: Título "Friend Suggestions" + "See All →" como en la foto */}
-            <section className="bg-[#111315] border border-white/[0.05] rounded-2xl p-4">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-[13px] font-bold text-white/80">Friend Suggestions</h3>
-                <button className="text-[12px] font-bold text-[#f6339a] hover:text-[#f6339a]/80 flex items-center gap-1 transition-colors">
-                  See All
-                  <svg viewBox="0 0 24 24" className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth="2.5">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 12h14M12 5l7 7-7 7" />
-                  </svg>
-                </button>
-              </div>
-              <RecentFollowers />
-            </section>
-
-            {/* ── SLOT ANUNCIO GOOGLE ADSENSE (sidebar) ── */}
-            <div id="ad-slot-sidebar" className="w-full rounded-2xl overflow-hidden border border-white/[0.05] bg-[#1a1d23] min-h-[250px] flex flex-col justify-center">
-              <AdSenseUnit 
-                client="ca-pub-8388922041059415" 
-                slot="6257617311" 
-                format="fluid" 
-                layoutKey="-73+ex-1f-2m+af"
-              />
-            </div>
-
-            {/* ── BOTÓN PUBLICAR NUEVO POST (Modal) ── */}
-            <CreatePostModal avatarUrl={profile?.avatar_url} />
-
-            {/* Footer */}
-            <footer className="px-1 pb-4">
-              <div className="flex flex-wrap gap-x-3 gap-y-1 text-[11px] text-white/20 font-medium">
-                <a href="#" className="hover:text-white/50 transition-colors">Acerca de</a>
-                <a href="#" className="hover:text-white/50 transition-colors">Ayuda</a>
-                <a href="#" className="hover:text-white/50 transition-colors">Privacidad</a>
-                <a href="#" className="hover:text-white/50 transition-colors">Términos</a>
-              </div>
-              <p className="text-[11px] text-white/15 mt-2">© 2026 SmarTune. Todos los derechos reservados.</p>
-            </footer>
-          </div>
-        </aside>
+          </aside>
 
         </div>
       </div>
-
-      {/* ── BOTTOM NAV (móvil) ── */}
-      {/* Se mantiene el componente BottomNav existente importado en layout */}
     </div>
   );
 }

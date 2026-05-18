@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import AuthGatekeeper from '@/components/AuthGatekeeper';
 import { createClient } from '@/utils/supabase/client';
 import Link from 'next/link';
+import styles from './page.module.css';
 
 interface Song {
   id: string;
@@ -12,14 +13,23 @@ interface Song {
   coverUrl: string;
 }
 
+/** Decode HTML entities from YouTube titles */
+function decodeHtml(html: string): string {
+  if (typeof document === 'undefined') return html;
+  const txt = document.createElement('textarea');
+  txt.innerHTML = html;
+  return txt.value;
+}
+
 export default function MusicSwipePage() {
   const [songs, setSongs] = useState<Song[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [loading, setLoading] = useState(true);
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<any>(undefined);
   const [counts, setCounts] = useState({ likes: 0, views: 0, discards: 0 });
   const [error, setError] = useState<string | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [swipeAnim, setSwipeAnim] = useState<'left' | 'right' | null>(null);
   
   const playerRef = useRef<any>(null);
   const supabase = createClient();
@@ -66,7 +76,7 @@ export default function MusicSwipePage() {
         setError(data.error);
       } else if (Array.isArray(data)) {
         setSongs(data);
-        setCurrentIndex(0); // Reset index on new fetch
+        setCurrentIndex(0);
       }
     } catch (err: any) {
       setError("Error de conexión con el servidor");
@@ -97,6 +107,8 @@ export default function MusicSwipePage() {
     const currentSong = songs[currentIndex];
     if (!currentSong) return;
 
+    setSwipeAnim(action === 'like' ? 'right' : 'left');
+
     try {
       const res = await fetch('/api/swipe', {
         method: 'POST',
@@ -119,15 +131,15 @@ export default function MusicSwipePage() {
       }
     }
     setIsPlaying(false);
-    
-    // Increment index and check if we need more songs
-    const nextIndex = currentIndex + 1;
-    setCurrentIndex(nextIndex);
 
-    // Infinite swipe: fetch more when 3 songs left
-    if (nextIndex >= songs.length - 3) {
-      fetchMoreSongs();
-    }
+    setTimeout(() => {
+      setSwipeAnim(null);
+      const nextIndex = currentIndex + 1;
+      setCurrentIndex(nextIndex);
+      if (nextIndex >= songs.length - 3) {
+        fetchMoreSongs();
+      }
+    }, 300);
   };
 
   const fetchMoreSongs = async () => {
@@ -136,7 +148,6 @@ export default function MusicSwipePage() {
       const res = await fetch(url);
       const data = await res.json();
       if (Array.isArray(data)) {
-        // Append new unique songs
         setSongs(prev => {
           const newSongs = data.filter(s => !prev.find(p => p.id === s.id));
           return [...prev, ...newSongs];
@@ -176,7 +187,6 @@ export default function MusicSwipePage() {
             onStateChange: (event: any) => {
               if (event.data === (window as any).YT.PlayerState.PLAYING) {
                 setIsPlaying(true);
-                // Clear any existing timeout
                 if (timeoutId) clearTimeout(timeoutId);
                 timeoutId = setTimeout(() => {
                   try {
@@ -210,10 +220,10 @@ export default function MusicSwipePage() {
     }
   };
 
-  if (loading) {
+  if (user === undefined) {
     return (
-      <div className="flex h-[80vh] items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#f6339a]"></div>
+      <div className={styles.loaderWrap}>
+        <div className={styles.loader} />
       </div>
     );
   }
@@ -221,7 +231,7 @@ export default function MusicSwipePage() {
   if (!user) {
     return (
       <div style={{ padding: '40px 0' }}>
-                <AuthGatekeeper 
+        <AuthGatekeeper 
           iconNode={
             <div style={{ width: 80, height: 80, borderRadius: '50%', border: '2px solid var(--neon-pink)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--neon-pink)" strokeWidth="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
@@ -242,143 +252,151 @@ export default function MusicSwipePage() {
   }
 
   const currentSong = songs[currentIndex];
+  const genres = ['Pop', 'Phonk', 'Trap', 'Rock', 'R&B'];
 
   return (
-    <div className="flex flex-col min-h-screen">
-            
-      <main className="flex-1 flex flex-col items-center justify-center p-4 md:p-8 relative">
-        
-        <div className="w-full max-w-4xl flex justify-between items-center mb-4">
-          <div>
-            <h1 className="text-3xl md:text-4xl font-black text-white tracking-tight">
-              Music<span className="text-[#f6339a]">Swipe</span>
-            </h1>
-            <p className="text-gray-400 font-medium">Tinder de Música • SmarTune</p>
-          </div>
-          <Link href="/favoritos/playlist" className="px-6 py-2 bg-[#1f1f1f] border border-white/10 rounded-full text-sm font-bold text-white hover:border-[#f6339a] transition-all shadow-lg">
-            Mi Playlist 🎥
-          </Link>
+    <div className={styles.page}>
+      {/* Header */}
+      <header className={styles.header}>
+        <div className={styles.headerLeft}>
+          <h1 className={styles.title}>
+            Music<span>Swipe</span>
+          </h1>
+          <p className={styles.subtitle}>Descubre · Escucha · Guarda</p>
         </div>
+        <Link href="/favoritos/playlist" className={styles.playlistBtn}>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M9 18V5l12-2v13" /><circle cx="6" cy="18" r="3" /><circle cx="18" cy="16" r="3" />
+          </svg>
+          Mi Playlist
+        </Link>
+      </header>
 
-        {/* Genre Filters */}
-        <div className="flex gap-3 mb-8">
-          {['Pop', 'Phonk', 'Trap'].map((genre) => (
-            <button
-              key={genre}
-              onClick={() => handleGenreChange(genre)}
-              className={`px-6 py-2 rounded-full text-xs font-bold transition-all border ${
-                selectedGenre === genre 
-                  ? 'bg-[#f6339a] border-[#f6339a] text-white shadow-[0_0_15px_rgba(246,51,154,0.4)]' 
-                  : 'bg-[#1f1f1f] border-white/10 text-gray-400 hover:border-white/30'
-              }`}
-            >
-              {genre}
+      {/* Genre Pills */}
+      <div className={styles.genreRow}>
+        {genres.map((genre) => (
+          <button
+            key={genre}
+            onClick={() => handleGenreChange(genre)}
+            className={`${styles.genrePill} ${selectedGenre === genre ? styles.genreActive : ''}`}
+          >
+            {genre}
+          </button>
+        ))}
+      </div>
+
+      {/* YouTube Hidden Player */}
+      <div id="youtube-player" className={styles.hidden} />
+
+      {/* Main Card Area */}
+      <div className={styles.cardArea}>
+        {loading ? (
+          <div className={styles.emptyCard} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <div className={styles.loader} />
+          </div>
+        ) : error ? (
+          <div className={styles.errorCard}>
+            <span className={styles.errorIcon}>⚠</span>
+            <p className={styles.errorText}>{error}</p>
+            <button onClick={() => fetchSongs()} className={styles.retryBtn}>
+              Reintentar
             </button>
-          ))}
-        </div>
+          </div>
+        ) : currentSong ? (
+          <div
+            className={`${styles.card} ${swipeAnim === 'left' ? styles.swipeLeft : ''} ${swipeAnim === 'right' ? styles.swipeRight : ''}`}
+          >
+            {/* Cover */}
+            <div className={styles.coverWrap}>
+              <img src={currentSong.coverUrl} alt={currentSong.title} className={styles.coverImg} />
+              <div className={styles.coverOverlay} />
 
-        {/* YouTube Hidden Player */}
-        <div id="youtube-player" className="hidden"></div>
-
-        {/* Swipe Card */}
-        <div className="w-full max-w-sm relative">
-          {error ? (
-            <div className="text-center p-8 bg-red-500/10 rounded-3xl border border-red-500/20">
-              <p className="text-red-500 font-bold mb-4">⚠️ {error}</p>
-              <button 
-                onClick={() => fetchSongs()} 
-                className="px-6 py-2 bg-red-500 text-white rounded-lg font-bold"
-              >
-                Reintentar
-              </button>
-            </div>
-          ) : currentSong ? (
-            <div className="bg-[#1f1f1f] rounded-[2.5rem] shadow-2xl overflow-hidden border border-white/5 transform transition-all duration-300">
-              <div className="aspect-square w-full relative">
-                <img src={currentSong.coverUrl} alt={currentSong.title} className="w-full h-full object-cover" />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#1f1f1f] via-transparent to-transparent"></div>
-                
-                {/* Play/Pause Button Overlay */}
-                <button 
-                  onClick={togglePlay}
-                  className="absolute inset-0 flex items-center justify-center bg-black/20 group hover:bg-black/40 transition-all opacity-100 md:opacity-0 md:group-hover:opacity-100"
-                >
-                  <div className={`w-20 h-20 rounded-full flex items-center justify-center backdrop-blur-md border border-white/30 shadow-2xl transition-transform ${isPlaying ? 'scale-110' : 'scale-100 hover:scale-110'}`}>
-                    {isPlaying ? (
-                      <svg width="32" height="32" viewBox="0 0 24 24" fill="white">
-                        <rect x="6" y="4" width="4" height="16" />
-                        <rect x="14" y="4" width="4" height="16" />
-                      </svg>
-                    ) : (
-                      <svg width="32" height="32" viewBox="0 0 24 24" fill="white" className="ml-1">
-                        <path d="M8 5v14l11-7z" />
-                      </svg>
-                    )}
-                  </div>
-                </button>
-
-                <div className="absolute bottom-8 left-8 right-8 pointer-events-none">
-                  <h2 className="text-white text-2xl font-bold truncate mb-1 text-shadow-lg">{currentSong.title}</h2>
-                  <p className="text-gray-300 font-bold tracking-wide">{currentSong.artist}</p>
+              {/* Play Button */}
+              <button onClick={togglePlay} className={styles.playBtn}>
+                <div className={`${styles.playCircle} ${isPlaying ? styles.playing : ''}`}>
+                  {isPlaying ? (
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="white">
+                      <rect x="6" y="4" width="4" height="16" rx="1" />
+                      <rect x="14" y="4" width="4" height="16" rx="1" />
+                    </svg>
+                  ) : (
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="white" style={{ marginLeft: 2 }}>
+                      <path d="M8 5v14l11-7z" />
+                    </svg>
+                  )}
                 </div>
-              </div>
+              </button>
 
-              <div className="p-8 flex justify-between items-center gap-6">
-                <button 
-                  onClick={() => handleSwipe('discard')}
-                  className="flex-1 h-16 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center hover:bg-red-50/10 hover:border-red-500/50 group transition-all"
-                >
-                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" className="text-gray-400 group-hover:text-red-500 transition-colors" strokeWidth="3" strokeLinecap="round">
-                    <path d="M18 6L6 18M6 6l12 12" />
-                  </svg>
-                </button>
-                
-                <button 
-                  onClick={() => handleSwipe('like')}
-                  className="flex-1 h-16 rounded-2xl bg-gradient-to-r from-[#f6339a] to-[#9810fa] flex items-center justify-center shadow-[0_10px_20px_rgba(246,51,154,0.3)] hover:scale-105 active:scale-95 transition-all"
-                >
-                  <svg width="28" height="28" viewBox="0 0 24 24" fill="white">
-                    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
-                  </svg>
-                </button>
+              {/* Sound wave indicator */}
+              {isPlaying && (
+                <div className={styles.soundWave}>
+                  <span /><span /><span /><span />
+                </div>
+              )}
+
+              {/* Song Info on Cover */}
+              <div className={styles.songInfo}>
+                <h2 className={styles.songTitle}>{decodeHtml(currentSong.title)}</h2>
+                <p className={styles.songArtist}>{decodeHtml(currentSong.artist)}</p>
               </div>
             </div>
-          ) : (
-            <div className="text-center p-12 bg-[#1f1f1f] rounded-3xl border border-dashed border-white/10 max-w-sm">
-              <div className="w-20 h-20 bg-white/5 rounded-full flex items-center justify-center mx-auto mb-6">
-                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="gray" strokeWidth="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
-              </div>
-              <p className="text-white text-xl font-bold mb-2">¡Todo explorado por ahora!</p>
-              <p className="text-gray-500 font-medium mb-8">Has visto todas las recomendaciones actuales. ¡Vuelve a cargar para buscar más éxitos!</p>
-              <button 
-                onClick={() => fetchSongs()} 
-                className="w-full py-4 bg-gradient-to-r from-[#f6339a] to-[#9810fa] text-white font-bold rounded-2xl hover:scale-105 transition-all shadow-lg"
+
+            {/* Action Buttons */}
+            <div className={styles.actions}>
+              <button
+                onClick={() => handleSwipe('discard')}
+                className={styles.actionBtn}
+                aria-label="Descartar"
               >
-                Volver a cargar
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                  <path d="M18 6L6 18M6 6l12 12" />
+                </svg>
+              </button>
+
+              <button
+                onClick={() => handleSwipe('like')}
+                className={`${styles.actionBtn} ${styles.likeBtn}`}
+                aria-label="Me gusta"
+              >
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+                </svg>
               </button>
             </div>
-          )}
-        </div>
+          </div>
+        ) : (
+          <div className={styles.emptyCard}>
+            <div className={styles.emptyIcon}>
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                <path d="M9 18V5l12-2v13" /><circle cx="6" cy="18" r="3" /><circle cx="18" cy="16" r="3" />
+              </svg>
+            </div>
+            <p className={styles.emptyTitle}>¡Todo explorado!</p>
+            <p className={styles.emptySubtitle}>Vuelve a cargar para descubrir más música</p>
+            <button onClick={() => fetchSongs()} className={styles.reloadBtn}>
+              Cargar más
+            </button>
+          </div>
+        )}
+      </div>
 
-        {/* Stats Bar */}
-        <div className="mt-12 flex items-center gap-8 bg-[#1f1f1f] px-10 py-5 rounded-full border border-white/5 shadow-xl">
-          <div className="flex flex-col items-center">
-            <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1">Likes</span>
-            <span className="text-xl font-black text-[#f6339a]">{counts?.likes ?? 0}</span>
-          </div>
-          <div className="w-px h-8 bg-white/10"></div>
-          <div className="flex flex-col items-center">
-            <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1">Vistas</span>
-            <span className="text-xl font-black text-white">{counts?.views ?? 0}</span>
-          </div>
-          <div className="w-px h-8 bg-white/10"></div>
-          <div className="flex flex-col items-center">
-            <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1">Pasadas</span>
-            <span className="text-xl font-black text-gray-400">{counts?.discards ?? 0}</span>
-          </div>
+      {/* Stats */}
+      <div className={styles.stats}>
+        <div className={styles.stat}>
+          <span className={styles.statValue} style={{ color: 'var(--neon-pink)' }}>{counts?.likes ?? 0}</span>
+          <span className={styles.statLabel}>Likes</span>
         </div>
-
-      </main>
+        <div className={styles.statDivider} />
+        <div className={styles.stat}>
+          <span className={styles.statValue}>{counts?.views ?? 0}</span>
+          <span className={styles.statLabel}>Vistas</span>
+        </div>
+        <div className={styles.statDivider} />
+        <div className={styles.stat}>
+          <span className={styles.statValue} style={{ color: 'var(--text-secondary)' }}>{counts?.discards ?? 0}</span>
+          <span className={styles.statLabel}>Pasadas</span>
+        </div>
+      </div>
     </div>
   );
 }

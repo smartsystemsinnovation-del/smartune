@@ -229,22 +229,21 @@ export default function PostCard({ post, currentUserId, currentUserAvatar }: { p
   if (isDeleted) return null;
 
   return (
-    // Card: fondo oscuro #16181c, sin borde — igual a foto 2
-    <article className="w-full bg-[#16181c] rounded-2xl overflow-visible shadow-xl border border-white/5">
+    <article className="w-full rounded-2xl overflow-visible transition-colors hover:border-white/[0.06]" style={{ background: 'var(--bg-card)', border: '1px solid rgba(255,255,255,0.04)' }}>
 
       {/* ══ HEADER ══ */}
-      <div className="flex items-center justify-between px-4 pt-4 pb-4">
+      <div className="flex items-center justify-between px-4 pt-4 pb-3">
         <Link href={`/profile/${post.user_id}`} className="flex items-center gap-3 min-w-0 flex-1">
           {/* Avatar */}
-          <div className={`w-11 h-11 rounded-full flex-shrink-0 p-[2px] ${isProfesor ? 'bg-gradient-to-tr from-[#f6339a] to-[#9810fa]' : 'bg-white/[0.08]'}`}>
-            <div className="w-full h-full rounded-full overflow-hidden bg-[#16181c]">
+          <div className={`w-10 h-10 rounded-full flex-shrink-0 p-[1.5px] ${isProfesor ? 'bg-gradient-to-tr from-[#f6339a] to-[#9810fa]' : 'bg-white/[0.06]'}`}>
+            <div className="w-full h-full rounded-full overflow-hidden" style={{ background: 'var(--bg-card)' }}>
               <img src={avatarSrc} alt={post.username} className="w-full h-full object-cover" />
             </div>
           </div>
           {/* Nombre + Rol · Fecha */}
           <div className="min-w-0">
             <div className="flex items-center gap-1.5 flex-wrap">
-              <span className="text-[15px] font-bold text-white leading-tight">{post.username || 'Usuario'}</span>
+              <span className="text-[14px] font-semibold text-white leading-tight">{post.username || 'Usuario'}</span>
               {isProfesor && (
                 <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 text-[#3B82F6] flex-shrink-0" fill="currentColor">
                   <path d="M9 12l2 2 4-4m6 2a9 9 0 1 1-18 0 9 9 0 0 1 18 0z" />
@@ -256,7 +255,7 @@ export default function PostCard({ post, currentUserId, currentUserAvatar }: { p
                 </button>
               )}
             </div>
-            <p className="text-[13px] text-white/40 leading-tight mt-0.5">
+            <p className="text-[12px] text-white/35 leading-tight mt-0.5">
               {isProfesor ? 'Profesor' : 'Estudiante'}{dateStr ? ` · ${dateStr}` : ''}
             </p>
           </div>
@@ -332,8 +331,8 @@ export default function PostCard({ post, currentUserId, currentUserAvatar }: { p
 
       {/* ══ TEXTO con hashtags coloreados ══ */}
       {post.content && (
-        <div className="px-4 pb-4">
-          <p className="text-[14px] text-white/85 leading-relaxed whitespace-pre-wrap break-words">
+        <div className="px-4 pb-3">
+          <p className="text-[14px] text-white/75 leading-relaxed whitespace-pre-wrap break-words">
             {post.content.split(' ').map((word: string, i: number) =>
               word.startsWith('#')
                 ? <span key={i} className="text-[#f6339a] hover:underline cursor-pointer">{word} </span>
@@ -347,10 +346,10 @@ export default function PostCard({ post, currentUserId, currentUserAvatar }: { p
       {post.image_url && (
         <div className="px-4 pb-5">
           <div
-            className="w-full rounded-xl overflow-hidden bg-black/40 max-h-[500px] cursor-zoom-in"
+            className="w-full overflow-hidden max-h-[500px] cursor-zoom-in" style={{ borderRadius: '16px', background: 'rgba(0,0,0,0.3)' }}
             onClick={() => setLightboxImg(post.image_url)}
           >
-            <img src={post.image_url} alt="Post media" className="w-full h-full object-cover hover:opacity-95 transition-opacity" />
+            <img src={post.image_url} alt="Post media" className="w-full h-full object-cover hover:scale-[1.01] transition-transform duration-300" />
           </div>
         </div>
       )}
@@ -363,8 +362,8 @@ export default function PostCard({ post, currentUserId, currentUserAvatar }: { p
       )}
 
       {/* ══ STATS ROW — centrado con padding vertical ══ */}
-      <div className="relative border-t border-white/[0.06] flex items-center justify-center" style={{ paddingTop: '20px', paddingBottom: '20px' }}>
-        <div className="flex items-center justify-center gap-10">
+      <div className="relative border-t border-white/[0.04] flex items-center justify-center" style={{ paddingTop: '14px', paddingBottom: '14px' }}>
+        <div className="flex items-center justify-center gap-8">
           {/* Like */}
           <button
             onClick={handleLike}
@@ -378,7 +377,7 @@ export default function PostCard({ post, currentUserId, currentUserAvatar }: { p
             } : { color: 'rgba(255,255,255,0.45)' }}
           >
             <ThumbUpIcon filled={hasLiked} />
-            <span className="text-[13px] font-medium tracking-tight">{fmtCount(likesCount)} LIKES</span>
+            <span className="text-[12px] font-medium tracking-wide">{fmtCount(likesCount)} likes</span>
           </button>
           {/* Comments */}
           <button
@@ -393,7 +392,7 @@ export default function PostCard({ post, currentUserId, currentUserAvatar }: { p
             } : { color: 'rgba(255,255,255,0.45)' }}
           >
             <CommentBubbleIcon />
-            <span className="text-[13px] font-medium tracking-tight">{fmtCount(Number(post.comments_count) || 0)} COMENTARIOS</span>
+            <span className="text-[12px] font-medium tracking-wide">{fmtCount(Number(post.comments_count) || 0)} comentarios</span>
           </button>
           {/* Share */}
           <button
@@ -402,7 +401,7 @@ export default function PostCard({ post, currentUserId, currentUserAvatar }: { p
             style={{ color: 'rgba(255,255,255,0.45)' }}
           >
             <ForwardIcon />
-            <span className="text-[13px] font-medium tracking-tight hidden sm:inline">SHARE</span>
+            <span className="text-[12px] font-medium tracking-wide hidden sm:inline">compartir</span>
           </button>
         </div>
         {/* Bookmark */}
@@ -414,7 +413,7 @@ export default function PostCard({ post, currentUserId, currentUserAvatar }: { p
       {/* ══ COMMENT INPUT — separado con margen superior (mt-3) ══
           [avatar] [─── entrada con clip/emoji ───] [➤]
       */}
-      <div className="px-5 pb-6 mt-3">
+      <div className="px-4 pb-5 mt-2">
         <form onSubmit={handleAddComment} className="flex items-center gap-3">
           {/* Avatar */}
           <div className="w-9 h-9 rounded-full overflow-hidden flex-shrink-0 bg-[#0d0f12]">
@@ -441,7 +440,7 @@ export default function PostCard({ post, currentUserId, currentUserAvatar }: { p
               </div>
             )}
 
-            <div className="bg-[#1e2229] border border-white/5 rounded-full px-4 py-2.5 flex items-center gap-2.5 min-w-0 transition-colors focus-within:border-white/10">
+            <div className="bg-white/[0.03] border border-white/[0.05] rounded-full px-4 py-2.5 flex items-center gap-2.5 min-w-0 transition-colors focus-within:border-[#f6339a]/20">
               {/* Input */}
               <input
                 type="text"
@@ -486,16 +485,16 @@ export default function PostCard({ post, currentUserId, currentUserAvatar }: { p
             animate={{ height: 'auto', opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
             transition={{ duration: 0.2 }}
-            className="border-t border-white/[0.05] bg-[#0d0f12] overflow-hidden rounded-b-2xl"
+            className="border-t border-white/[0.04] overflow-hidden rounded-b-2xl" style={{ background: 'rgba(0,0,0,0.15)' }}
           >
             <div className="max-h-[300px] overflow-y-auto p-4 flex flex-col gap-3">
               {comments.map((c: any, i: number) => (
                 <div key={i} className="flex gap-2">
-                  <div className="w-7 h-7 rounded-full overflow-hidden flex-shrink-0 bg-[#16181c] mt-0.5">
+                  <div className="w-7 h-7 rounded-full overflow-hidden flex-shrink-0 bg-[#111315] mt-0.5">
                     <img src={c.usuarios?.avatar_url || DEFAULT_AVATAR + 'C'} alt="" className="w-full h-full object-cover" />
                   </div>
                   <div className="flex-1">
-                    <div className="bg-[#1e2229] rounded-[14px] rounded-tl-sm px-3 py-2 inline-block min-w-[120px]">
+                    <div className="bg-white/[0.04] rounded-[14px] rounded-tl-sm px-3 py-2 inline-block min-w-[120px]">
                       <p className="text-[11px] font-bold text-white mb-0.5">{c.usuarios?.nombre}</p>
                       {c.content && <p className="text-[13px] text-white/85 leading-snug whitespace-pre-wrap">{c.content}</p>}
                       {c.image_url && <img src={c.image_url} alt="Comentario media" className="mt-2 w-full max-w-[200px] rounded-lg border border-white/5" />}

@@ -66,31 +66,32 @@ export default function InstantCallButton({ targetUserId, teacherName, teacherAv
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        gap: '8px',
-        padding: '14px 24px',
+        gap: '6px',
+        padding: '10px 18px',
         background: 'transparent',
-        border: '1px solid var(--neon-pink)',
-        color: 'var(--neon-pink)',
-        borderRadius: '12px',
+        border: '1px solid rgba(255, 255, 255, 0.08)',
+        color: 'rgba(255, 255, 255, 0.5)',
+        borderRadius: '10px',
         cursor: loading ? 'not-allowed' : 'pointer',
-        fontWeight: 600,
-        fontSize: '15px',
-        transition: 'all 0.3s',
-        boxShadow: 'inset 0 0 10px rgba(246, 51, 154, 0.1)'
+        fontWeight: 500,
+        fontSize: '13px',
+        fontFamily: 'inherit',
+        transition: 'all 0.2s',
+        whiteSpace: 'nowrap' as const,
       }}
       onMouseOver={(e) => {
-        e.currentTarget.style.background = 'rgba(246, 51, 154, 0.1)';
-        e.currentTarget.style.boxShadow = 'inset 0 0 15px rgba(246, 51, 154, 0.3)';
+        e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.18)';
+        e.currentTarget.style.color = 'rgba(255, 255, 255, 0.8)';
       }}
       onMouseOut={(e) => {
-        e.currentTarget.style.background = 'transparent';
-        e.currentTarget.style.boxShadow = 'inset 0 0 10px rgba(246, 51, 154, 0.1)';
+        e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.08)';
+        e.currentTarget.style.color = 'rgba(255, 255, 255, 0.5)';
       }}
     >
       {loading ? (
-        <><Loader2 size={18} className="animate-spin" /> Conectando...</>
+        <><Loader2 size={14} className="animate-spin" /> Conectando…</>
       ) : (
-        <><PhoneCall size={18} /> Llamada Instantánea</>
+        <><PhoneCall size={14} strokeWidth={1.5} /> Llamada</>
       )}
     </button>
   );

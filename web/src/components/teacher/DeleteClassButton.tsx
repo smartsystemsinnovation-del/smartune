@@ -35,28 +35,30 @@ export default function DeleteClassButton({ classId }: { classId: string }) {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        gap: '8px',
-        padding: '10px 16px',
-        background: 'rgba(255, 0, 122, 0.1)',
-        border: '1px solid var(--neon-pink)',
-        color: 'var(--neon-pink)',
-        borderRadius: '8px',
-        cursor: 'pointer',
-        fontSize: '14px',
-        fontWeight: 600,
-        transition: 'all 0.3s',
-        opacity: isDeleting ? 0.5 : 1
+        gap: '6px',
+        padding: '10px 18px',
+        background: 'transparent',
+        border: '1px solid rgba(255, 255, 255, 0.08)',
+        color: 'rgba(255, 255, 255, 0.4)',
+        borderRadius: '10px',
+        cursor: isDeleting ? 'not-allowed' : 'pointer',
+        fontSize: '13px',
+        fontWeight: 500,
+        fontFamily: 'inherit',
+        transition: 'all 0.2s',
+        opacity: isDeleting ? 0.4 : 1,
+        whiteSpace: 'nowrap' as const,
       }}
       onMouseOver={(e) => {
-        e.currentTarget.style.background = 'var(--neon-pink)';
-        e.currentTarget.style.color = 'white';
+        e.currentTarget.style.borderColor = 'rgba(255, 80, 80, 0.4)';
+        e.currentTarget.style.color = 'rgba(255, 100, 100, 0.9)';
       }}
       onMouseOut={(e) => {
-        e.currentTarget.style.background = 'rgba(255, 0, 122, 0.1)';
-        e.currentTarget.style.color = 'var(--neon-pink)';
+        e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.08)';
+        e.currentTarget.style.color = 'rgba(255, 255, 255, 0.4)';
       }}
     >
-      <Trash2 size={16} /> {isDeleting ? 'Eliminando...' : 'Eliminar Clase'}
+      <Trash2 size={14} strokeWidth={1.5} /> {isDeleting ? 'Eliminando…' : 'Eliminar'}
     </button>
   );
 }

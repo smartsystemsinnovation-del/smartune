@@ -22,7 +22,10 @@ interface Song {
   title: string;
   artist: string;
   coverUrl: string;
+  genre?: string;
 }
+
+const ALL_GENRES = ['Todas', 'Pop', 'Rock', 'Clásica', 'Jazz', 'Latino', 'Electrónica'];
 
 export default function SmarTilesGame() {
   const [isPlaying, setIsPlaying] = useState(false);
@@ -35,6 +38,8 @@ export default function SmarTilesGame() {
   const [showModal, setShowModal] = useState(false);
   const [likedSongs, setLikedSongs] = useState<Song[]>([]);
   const [loadingSongs, setLoadingSongs] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedGenre, setSelectedGenre] = useState('Todas');
   const [selectedSong, setSelectedSong] = useState<Song | null>(null);
   const playerRef = useRef<any>(null);
 
@@ -383,62 +388,155 @@ export default function SmarTilesGame() {
                </div>
              )}
 
-             {/* Song Selection Modal */}
-             {showModal && (
-               <div className="fixed inset-0 z-[100] bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
-                 <div className="bg-[#151515] border border-white/10 rounded-2xl p-6 w-full max-w-2xl max-h-[80vh] flex flex-col shadow-2xl">
-                   
-                   <div className="flex justify-between items-center mb-6">
-                     <div>
-                       <h2 className="text-2xl font-black text-white flex items-center gap-2">
-                         Tu Playlist <span className="text-[#f6339a]">MusiSwipe</span>
-                       </h2>
-                       <p className="text-white/40 text-sm mt-1">Elige una pista para jugar en Smar-Tiles</p>
-                     </div>
-                     <button 
-                       onClick={() => setShowModal(false)}
-                       className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-white/50 hover:text-white hover:bg-white/10 transition-colors"
-                     >
-                       ✕
-                     </button>
-                   </div>
+              {/* ── Song Selection Modal ── */}
+              {showModal && (
+                <div className="fixed inset-0 z-[100] bg-black/90 backdrop-blur-xl flex items-center justify-center p-4">
+                  <div className="bg-[#0a0a0a] border border-white/[0.04] rounded-2xl w-full max-w-[520px] max-h-[82vh] flex flex-col overflow-hidden shadow-2xl shadow-black/60">
 
-                   <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar">
-                     {loadingSongs ? (
-                       <div className="h-40 flex items-center justify-center text-white/50">Cargando pistas...</div>
-                     ) : likedSongs.length === 0 ? (
-                       <div className="h-40 flex flex-col items-center justify-center text-center">
-                         <div className="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center mb-3 text-white/30">🎵</div>
-                         <p className="text-white/60 font-medium">Aún no tienes canciones favoritas.</p>
-                         <p className="text-white/40 text-sm mt-1">Ve a Explorar y desliza algunas canciones en MusiSwipe.</p>
-                       </div>
-                     ) : (
-                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                         {likedSongs.map((song) => (
-                           <button
-                             key={song.id}
-                             onClick={() => startGame(song)}
-                             className="flex items-center gap-3 p-3 rounded-xl bg-white/[0.03] border border-white/5 hover:border-[#f6339a]/50 hover:bg-white/[0.06] transition-all text-left group"
-                           >
-                             <img src={song.coverUrl} alt={song.title} className="w-12 h-12 rounded-lg object-cover shadow-md group-hover:scale-105 transition-transform" />
-                             <div className="flex-1 min-w-0">
-                               <p className="text-white font-bold text-sm truncate">{song.title}</p>
-                               <p className="text-white/40 text-xs truncate">{song.artist}</p>
-                             </div>
-                             <div className="w-8 h-8 rounded-full bg-[#f6339a]/10 text-[#f6339a] flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                               ▶
-                             </div>
-                           </button>
-                         ))}
-                       </div>
-                     )}
-                   </div>
-                 </div>
-               </div>
-             )}
-           </div>
-        </div>
-      </div>
-    </div>
-  );
+                    {/* ── Header ── */}
+                    <div className="flex items-start justify-between px-6 pt-5 pb-1">
+                      <div>
+                        <h2 className="text-lg font-semibold text-white tracking-tight leading-none">Elige tu canción</h2>
+                        <p className="text-zinc-500 text-xs mt-1.5 font-normal">{likedSongs.length} pistas disponibles</p>
+                      </div>
+                      <button
+                        onClick={() => { setShowModal(false); setSearchQuery(''); setSelectedGenre('Todas'); }}
+                        className="w-7 h-7 rounded-full flex items-center justify-center text-zinc-500 hover:text-white hover:bg-white/[0.06] transition-all duration-200 -mt-0.5"
+                      >
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+                      </button>
+                    </div>
+
+                    {/* ── Search Bar ── */}
+                    <div className="px-6 pt-3 pb-1">
+                      <div className="flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl bg-white/[0.03] border border-white/[0.04] focus-within:border-[#f6339a]/20 transition-colors duration-300">
+                        <svg className="shrink-0 text-zinc-600" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+                        <input
+                          type="text"
+                          placeholder="Buscar por nombre o artista..."
+                          value={searchQuery}
+                          onChange={(e) => setSearchQuery(e.target.value)}
+                          className="flex-1 bg-transparent border-none outline-none text-white text-[13px] placeholder:text-zinc-600 font-normal"
+                        />
+                        {searchQuery && (
+                          <button onClick={() => setSearchQuery('')} className="text-zinc-500 hover:text-white transition-colors text-xs">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+                          </button>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* ── Genre Tabs ── */}
+                    <div className="px-6 pt-2 pb-3 flex gap-1 overflow-x-auto no-scrollbar">
+                      {ALL_GENRES.map(genre => (
+                        <button
+                          key={genre}
+                          onClick={() => setSelectedGenre(genre)}
+                          className={`relative px-3 py-1.5 text-[11px] font-medium tracking-wide whitespace-nowrap transition-all duration-200 rounded-md ${
+                            genre === selectedGenre
+                              ? 'text-[#f6339a]'
+                              : 'text-zinc-500 hover:text-zinc-300'
+                          }`}
+                        >
+                          {genre}
+                          {genre === selectedGenre && (
+                            <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-3.5 h-[2px] rounded-full bg-[#f6339a]" />
+                          )}
+                        </button>
+                      ))}
+                    </div>
+
+                    {/* ── Separator ── */}
+                    <div className="h-px bg-white/[0.03] mx-5" />
+
+                    {/* ── Song List ── */}
+                    <div className="relative flex-1 min-h-0 overflow-hidden">
+                      <div className="h-full overflow-y-auto no-scrollbar px-4 pt-2 pb-10">
+                        {loadingSongs ? (
+                          <div className="h-40 flex items-center justify-center">
+                            <div className="w-5 h-5 rounded-full border-2 border-white/[0.06] border-t-[#f6339a] animate-spin" />
+                          </div>
+                        ) : (() => {
+                          const decodeHTML = (str: string) => {
+                            const txt = document.createElement('textarea');
+                            txt.innerHTML = str;
+                            return txt.value;
+                          };
+                          const q = searchQuery.toLowerCase().trim();
+                          const filtered = likedSongs.filter(song => {
+                            const matchGenre = selectedGenre === 'Todas' || (song.genre || '').toLowerCase() === selectedGenre.toLowerCase();
+                            const matchSearch = !q || song.title.toLowerCase().includes(q) || song.artist.toLowerCase().includes(q);
+                            return matchGenre && matchSearch;
+                          });
+
+                          if (likedSongs.length === 0) return (
+                            <div className="h-44 flex flex-col items-center justify-center text-center gap-2">
+                              <div className="w-11 h-11 rounded-full bg-white/[0.03] flex items-center justify-center">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-zinc-600"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+                              </div>
+                              <p className="text-zinc-400 text-[13px] font-medium">Sin canciones favoritas</p>
+                              <p className="text-zinc-600 text-[11px]">Desliza canciones en MusiSwipe primero</p>
+                            </div>
+                          );
+
+                          if (filtered.length === 0) return (
+                            <div className="h-44 flex flex-col items-center justify-center text-center gap-2">
+                              <p className="text-zinc-400 text-[13px] font-medium">Sin resultados</p>
+                              <p className="text-zinc-600 text-[11px]">Prueba con otro término</p>
+                              <button
+                                onClick={() => { setSearchQuery(''); setSelectedGenre('Todas'); }}
+                                className="mt-1 text-[#f6339a] text-[12px] font-medium hover:underline bg-transparent border-none cursor-pointer"
+                              >Limpiar filtros</button>
+                            </div>
+                          );
+
+                          return (
+                            <div className="flex flex-col gap-0.5">
+                              {filtered.map(song => (
+                                <button
+                                  key={song.id}
+                                  onClick={() => startGame(song)}
+                                  className="group flex items-center gap-3 w-full text-left px-3 py-2.5 rounded-xl bg-transparent hover:bg-white/[0.03] transition-all duration-200 cursor-pointer border-none font-[inherit]"
+                                >
+                                  {/* Cover with fallback */}
+                                  <div className="relative w-11 h-11 rounded-lg overflow-hidden bg-white/[0.04] shrink-0">
+                                    <img
+                                      src={song.coverUrl}
+                                      alt=""
+                                      className="w-full h-full object-cover"
+                                      onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; (e.target as HTMLImageElement).nextElementSibling?.classList.remove('hidden'); }}
+                                    />
+                                    <div className="hidden absolute inset-0 flex items-center justify-center bg-white/[0.03]">
+                                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-zinc-600"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+                                    </div>
+                                  </div>
+
+                                  {/* Song info */}
+                                  <div className="flex-1 min-w-0">
+                                    <p className="text-[13px] font-medium text-white truncate leading-tight">{decodeHTML(song.title)}</p>
+                                    <p className="text-[11px] text-zinc-500 truncate mt-0.5 leading-tight">{decodeHTML(song.artist)}{song.genre ? ` · ${song.genre}` : ''}</p>
+                                  </div>
+
+                                  {/* Play button */}
+                                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#f6339a] to-[#9810fa] flex items-center justify-center shrink-0 opacity-40 group-hover:opacity-100 group-hover:scale-105 transition-all duration-200 shadow-lg shadow-[#f6339a]/10">
+                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z"/></svg>
+                                  </div>
+                                </button>
+                              ))}
+                            </div>
+                          );
+                        })()}
+                      </div>
+
+                      {/* ── Bottom fade ── */}
+                      <div className="absolute bottom-0 left-0 right-0 h-14 bg-gradient-to-t from-[#0a0a0a] via-[#0a0a0a]/80 to-transparent pointer-events-none z-10" />
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+         </div>
+       </div>
+     </div>
+   );
 }
