@@ -5,6 +5,7 @@ import Script from "next/script";
 import Sidebar from "@/components/Sidebar";
 import Navigation from "@/components/Navigation";
 import RealtimeListener from "@/components/RealtimeListener";
+import AdsterraInterstitialModal from "@/components/AdsterraInterstitialModal";
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
@@ -40,6 +41,7 @@ export default function RootLayout({
         </div>
         <Analytics />
         <RealtimeListener />
+        <AdsterraInterstitialModal />
       </body>
     </html>
   );

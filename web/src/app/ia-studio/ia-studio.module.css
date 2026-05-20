@@ -1,0 +1,356 @@
+/* ── IA Studio — CSS Module ── */
+
+/* Custom Scrollbar */
+.customScrollbar::-webkit-scrollbar {
+  width: 5px;
+  height: 4px;
+}
+.customScrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.customScrollbar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 10px;
+}
+.customScrollbar:hover::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+/* Custom Audio Player */
+.audioPlayer {
+  height: 36px;
+  outline: none;
+  width: 100%;
+  border-radius: 999px;
+}
+.audioPlayer::-webkit-media-controls-panel {
+  background-color: transparent;
+  padding: 0 10px;
+}
+.audioPlayer::-webkit-media-controls-play-button,
+.audioPlayer::-webkit-media-controls-current-time-display,
+.audioPlayer::-webkit-media-controls-time-remaining-display,
+.audioPlayer::-webkit-media-controls-mute-button {
+  filter: invert(100%);
+  opacity: 0.6;
+  transition: opacity 0.3s;
+}
+.audioPlayer::-webkit-media-controls-play-button:hover,
+.audioPlayer::-webkit-media-controls-mute-button:hover {
+  opacity: 1;
+}
+.audioPlayer::-webkit-media-controls-timeline,
+.audioPlayer::-webkit-media-controls-volume-slider {
+  filter: invert(100%) sepia(80%) saturate(5000%) hue-rotate(290deg) brightness(1.1);
+}
+
+/* Typing Indicator Dots */
+.typingDot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  animation: typingPulse 1.4s ease-in-out infinite;
+}
+.typingDot:nth-child(1) {
+  background: #f6339a;
+  animation-delay: 0s;
+}
+.typingDot:nth-child(2) {
+  background: #9810fa;
+  animation-delay: 0.2s;
+}
+.typingDot:nth-child(3) {
+  background: #0e9eef;
+  animation-delay: 0.4s;
+}
+
+@keyframes typingPulse {
+  0%, 60%, 100% {
+    transform: translateY(0);
+    opacity: 0.4;
+  }
+  30% {
+    transform: translateY(-6px);
+    opacity: 1;
+  }
+}
+
+/* Background gradient */
+.bgGradient {
+  background:
+    radial-gradient(ellipse 60% 50% at 50% 0%, rgba(246, 51, 154, 0.06) 0%, transparent 70%),
+    radial-gradient(ellipse 40% 40% at 80% 20%, rgba(152, 16, 250, 0.04) 0%, transparent 60%),
+    radial-gradient(ellipse 30% 50% at 10% 80%, rgba(14, 158, 239, 0.03) 0%, transparent 60%);
+}
+
+/* Suggestion chip */
+.suggestionChip {
+  padding: 10px 18px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.02);
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 13px;
+  font-weight: 400;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: left;
+  line-height: 1.4;
+}
+.suggestionChip:hover {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(246, 51, 154, 0.2);
+  color: rgba(255, 255, 255, 0.8);
+  transform: translateY(-1px);
+}
+
+/* Inspiration chip (compositor) */
+.inspirationChip {
+  padding: 8px 16px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.02);
+  color: rgba(255, 255, 255, 0.45);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+.inspirationChip:hover {
+  background: rgba(246, 51, 154, 0.08);
+  border-color: rgba(246, 51, 154, 0.25);
+  color: rgba(255, 255, 255, 0.85);
+}
+
+/* Mode tab */
+.modeTab {
+  position: relative;
+  padding: 10px 24px;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  color: rgba(255, 255, 255, 0.35);
+  cursor: pointer;
+  transition: color 0.3s ease;
+  background: none;
+  border: none;
+  white-space: nowrap;
+}
+.modeTab:hover {
+  color: rgba(255, 255, 255, 0.7);
+}
+.modeTabActive {
+  color: #f6339a;
+}
+
+/* Active tab underline */
+.tabUnderline {
+  position: absolute;
+  bottom: 0;
+  left: 12px;
+  right: 12px;
+  height: 2px;
+  background: linear-gradient(90deg, #f6339a, #9810fa);
+  border-radius: 2px 2px 0 0;
+}
+
+/* Input wrapper */
+.inputWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background: rgba(31, 31, 31, 0.8);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 16px;
+  padding: 6px 6px 6px 0;
+  transition: all 0.4s ease;
+}
+.inputWrapper:focus-within {
+  border-color: rgba(246, 51, 154, 0.3);
+  box-shadow: 0 0 0 3px rgba(246, 51, 154, 0.06), 0 8px 32px rgba(0, 0, 0, 0.3);
+  background: rgba(31, 31, 31, 0.95);
+}
+
+/* Composer textarea wrapper */
+.composerWrapper {
+  position: relative;
+  background: rgba(31, 31, 31, 0.6);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 24px;
+  padding: 4px;
+  transition: all 0.4s ease;
+}
+.composerWrapper:focus-within {
+  border-color: rgba(246, 51, 154, 0.25);
+  box-shadow: 0 0 0 3px rgba(246, 51, 154, 0.05), 0 12px 40px rgba(0, 0, 0, 0.3);
+  background: rgba(31, 31, 31, 0.85);
+}
+
+/* Result card */
+.resultCard {
+  background: rgba(31, 31, 31, 0.5);
+  backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 20px;
+  padding: 20px;
+  position: relative;
+  overflow: hidden;
+}
+.resultCard::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 200px;
+  height: 200px;
+  background: radial-gradient(circle, rgba(246, 51, 154, 0.06) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+/* Send button */
+.sendButton {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  background: linear-gradient(135deg, #f6339a, #9810fa);
+  color: white;
+}
+.sendButton:hover:not(:disabled) {
+  transform: scale(1.05);
+  box-shadow: 0 4px 20px rgba(246, 51, 154, 0.35);
+}
+.sendButton:active:not(:disabled) {
+  transform: scale(0.95);
+}
+.sendButton:disabled {
+  opacity: 0.2;
+  cursor: not-allowed;
+}
+
+/* Composer send button (larger) */
+.composerSendButton {
+  composes: sendButton;
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+}
+
+@media (min-width: 640px) {
+  .composerSendButton {
+    width: 52px;
+    height: 52px;
+  }
+}
+
+/* User message bubble */
+.userBubble {
+  max-width: 72%;
+  padding: 12px 18px;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.6;
+  border-radius: 18px 18px 4px 18px;
+  word-break: break-word;
+  background: linear-gradient(135deg, rgba(246, 51, 154, 0.12), rgba(152, 16, 250, 0.08));
+  color: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(246, 51, 154, 0.12);
+}
+
+/* AI message */
+.aiBubble {
+  max-width: 85%;
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+.aiAvatar {
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  margin-top: 2px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, rgba(246, 51, 154, 0.15), rgba(152, 16, 250, 0.1));
+  border: 1px solid rgba(246, 51, 154, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.aiText {
+  font-size: 14px;
+  font-weight: 300;
+  line-height: 1.7;
+  color: rgba(255, 255, 255, 0.82);
+  word-break: break-word;
+  white-space: pre-wrap;
+  padding-top: 2px;
+}
+
+@media (min-width: 640px) {
+  .userBubble {
+    max-width: 60%;
+  }
+  .aiBubble {
+    max-width: 75%;
+  }
+  .aiText {
+    font-size: 15px;
+  }
+}
+
+/* Heart button */
+.heartButton {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.03);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255, 255, 255, 0.4);
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+.heartButton:hover {
+  color: #f6339a;
+  background: rgba(246, 51, 154, 0.1);
+  border-color: rgba(246, 51, 154, 0.25);
+}
+.heartButton:active {
+  transform: scale(0.9);
+}
+
+/* Status badge */
+.statusBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  background: rgba(246, 51, 154, 0.1);
+  color: #f6339a;
+  border: 1px solid rgba(246, 51, 154, 0.15);
+}
+.statusBadge::before {
+  content: '';
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #f6339a;
+}

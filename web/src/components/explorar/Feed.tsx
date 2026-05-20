@@ -7,6 +7,7 @@ import PostCard from './PostCard';
 import { motion, Variants } from 'framer-motion';
 import { getFeed } from '@/actions/socialActions';
 import React from 'react';
+import AdsterraSponsoredCard from '../AdsterraSponsoredCard';
 
 const POSTS_PER_PAGE = 5;
 const AD_EVERY = 5;
@@ -25,13 +26,7 @@ const EmptyIcon = () => (
 /* ── Ad Slot Component ── */
 function AdSlot({ index }: { index: number }) {
   return (
-    <div
-      id={`ad-slot-feed-${index}`}
-      className="w-full bg-white/[0.02] border border-white/[0.04] rounded-2xl min-h-[90px] flex items-center justify-center"
-      aria-label="Espacio publicitario"
-    >
-      <span className="text-[10px] text-white/8 select-none uppercase tracking-widest">Publicidad</span>
-    </div>
+    <AdsterraSponsoredCard isFeed={true} />
   );
 }
 

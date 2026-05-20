@@ -9,6 +9,7 @@ import AuthGatekeeper from '@/components/AuthGatekeeper';
 import { getFeed } from '@/actions/socialActions';
 import Script from 'next/script';
 import AdSenseUnit from '@/components/AdSenseUnit';
+import AdsterraSponsoredCard from '@/components/AdsterraSponsoredCard';
 
 export default async function ExplorarPage() {
   const supabase = await createClient();
@@ -73,14 +74,9 @@ export default async function ExplorarPage() {
               <CreatePostModal avatarUrl={profile?.avatar_url} />
             </div>
 
-            {/* AdSense in-feed */}
-            <div id="ad-slot-feed" className="w-full rounded-2xl overflow-hidden mb-6 border border-white/[0.04] bg-white/[0.02] min-h-[90px] flex flex-col justify-center">
-              <AdSenseUnit 
-                client="ca-pub-8388922041059415" 
-                slot="6257617311" 
-                format="fluid" 
-                layoutKey="-73+ex-1f-2m+af"
-              />
+            {/* Adsterra Sponsored In-Feed Card */}
+            <div className="w-full mb-6">
+              <AdsterraSponsoredCard isFeed={true} />
             </div>
 
             {/* Feed */}
@@ -136,17 +132,8 @@ export default async function ExplorarPage() {
                 <RecentFollowers />
               </section>
 
-              {/* AdSense sidebar */}
-              <div id="ad-slot-sidebar" className="w-full rounded-2xl overflow-hidden min-h-[250px] flex flex-col justify-center"
-                style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.04)' }}
-              >
-                <AdSenseUnit 
-                  client="ca-pub-8388922041059415" 
-                  slot="6257617311" 
-                  format="fluid" 
-                  layoutKey="-73+ex-1f-2m+af"
-                />
-              </div>
+              {/* Adsterra Sidebar Sponsored Card */}
+              <AdsterraSponsoredCard />
 
               {/* Publicar */}
               <CreatePostModal avatarUrl={profile?.avatar_url} />
@@ -163,7 +150,6 @@ export default async function ExplorarPage() {
               </footer>
             </div>
           </aside>
-
         </div>
       </div>
     </div>
