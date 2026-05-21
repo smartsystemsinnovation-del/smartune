@@ -24,8 +24,7 @@ export default function AdsterraInterstitialModal() {
       const lastAdTime = Number(sessionStorage.getItem('adsterra-last-ad-time') || Date.now());
       const elapsed = Date.now() - lastAdTime;
 
-      const isExplorar = pathname === '/explorar';
-      const delay = isExplorar ? 12000 : 30000;
+      const delay = 120000; // Aumentado a 2 minutos (120,000 ms)
 
       if (elapsed >= delay) {
         setTimeLeft(5);
