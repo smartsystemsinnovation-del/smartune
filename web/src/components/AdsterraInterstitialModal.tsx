@@ -94,11 +94,11 @@ export default function AdsterraInterstitialModal() {
             style={{
               position: 'relative',
               width: '100%',
-              maxWidth: 360,
+              maxWidth: 480,
               background: '#161616',
               border: '1px solid rgba(255, 255, 255, 0.06)',
-              borderRadius: 20,
-              padding: '28px 24px 24px',
+              borderRadius: 24,
+              padding: '36px 32px 32px',
               overflow: 'hidden',
             }}
           >
@@ -107,8 +107,8 @@ export default function AdsterraInterstitialModal() {
               style={{
                 position: 'absolute',
                 top: 0,
-                left: 24,
-                right: 24,
+                left: 32,
+                right: 32,
                 height: 1,
                 background: 'linear-gradient(90deg, transparent, var(--neon-pink, #f6339a), var(--neon-purple, #9810fa), transparent)',
                 opacity: 0.4,
@@ -116,12 +116,12 @@ export default function AdsterraInterstitialModal() {
             />
 
             {/* Header */}
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                 <span
                   style={{
-                    width: 5,
-                    height: 5,
+                    width: 6,
+                    height: 6,
                     borderRadius: '50%',
                     background: 'var(--neon-pink, #f6339a)',
                     opacity: 0.6,
@@ -129,7 +129,7 @@ export default function AdsterraInterstitialModal() {
                 />
                 <span
                   style={{
-                    fontSize: 9,
+                    fontSize: 11,
                     fontWeight: 700,
                     textTransform: 'uppercase' as const,
                     letterSpacing: '0.12em',
@@ -140,7 +140,7 @@ export default function AdsterraInterstitialModal() {
                 </span>
               </div>
 
-              <div style={{ fontSize: 11, color: 'rgba(255, 255, 255, 0.2)', fontVariantNumeric: 'tabular-nums' }}>
+              <div style={{ fontSize: 13, color: 'rgba(255, 255, 255, 0.2)', fontVariantNumeric: 'tabular-nums' }}>
                 {!canClose ? (
                   <span>{timeLeft}s</span>
                 ) : (
@@ -150,9 +150,9 @@ export default function AdsterraInterstitialModal() {
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      width: 24,
-                      height: 24,
-                      borderRadius: 8,
+                      width: 30,
+                      height: 30,
+                      borderRadius: 10,
                       background: 'rgba(255, 255, 255, 0.04)',
                       border: 'none',
                       cursor: 'pointer',
@@ -168,7 +168,7 @@ export default function AdsterraInterstitialModal() {
                       e.currentTarget.style.color = 'rgba(255, 255, 255, 0.35)';
                     }}
                   >
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
                       <line x1="18" y1="6" x2="6" y2="18" />
                       <line x1="6" y1="6" x2="18" y2="18" />
                     </svg>
@@ -178,22 +178,22 @@ export default function AdsterraInterstitialModal() {
             </div>
 
             {/* Content */}
-            <div style={{ marginBottom: 24 }}>
+            <div style={{ marginBottom: 32 }}>
               <h3
                 style={{
-                  fontSize: 16,
+                  fontSize: 22,
                   fontWeight: 600,
                   color: 'rgba(255, 255, 255, 0.9)',
                   lineHeight: 1.4,
                   letterSpacing: '-0.02em',
-                  marginBottom: 8,
+                  marginBottom: 12,
                 }}
               >
                 Librería premium de loops y presets
               </h3>
               <p
                 style={{
-                  fontSize: 12.5,
+                  fontSize: 15,
                   fontWeight: 400,
                   color: 'rgba(255, 255, 255, 0.3)',
                   lineHeight: 1.6,
@@ -204,14 +204,14 @@ export default function AdsterraInterstitialModal() {
             </div>
 
             {/* Actions */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
               <button
                 onClick={handleCtaClick}
                 style={{
                   width: '100%',
-                  padding: '11px 16px',
-                  borderRadius: 12,
-                  fontSize: 12,
+                  padding: '14px 20px',
+                  borderRadius: 14,
+                  fontSize: 14,
                   fontWeight: 600,
                   color: '#ffffff',
                   background: 'rgba(246, 51, 154, 0.12)',
@@ -221,7 +221,7 @@ export default function AdsterraInterstitialModal() {
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  gap: 6,
+                  gap: 8,
                   letterSpacing: '-0.01em',
                 }}
                 onMouseEnter={(e) => {
@@ -234,7 +234,7 @@ export default function AdsterraInterstitialModal() {
                 }}
               >
                 <span style={{ color: 'var(--neon-pink, #f6339a)' }}>Acceder al contenido</span>
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--neon-pink, #f6339a)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--neon-pink, #f6339a)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <polyline points="9 18 15 12 9 6" />
                 </svg>
               </button>
@@ -244,9 +244,9 @@ export default function AdsterraInterstitialModal() {
                 disabled={!canClose}
                 style={{
                   width: '100%',
-                  padding: '9px 16px',
-                  borderRadius: 10,
-                  fontSize: 11,
+                  padding: '12px 20px',
+                  borderRadius: 12,
+                  fontSize: 13,
                   fontWeight: 500,
                   color: canClose ? 'rgba(255, 255, 255, 0.3)' : 'rgba(255, 255, 255, 0.15)',
                   background: 'transparent',

@@ -128,21 +128,7 @@ export default function IAStudioPage() {
     >
 
       {/* ── Header Compacto ── */}
-      <header className="w-full relative z-20 flex items-center justify-between px-5 sm:px-8 border-b border-white/[0.04]" style={{ height: '56px' }}>
-
-        {/* Logo */}
-        <div className="flex items-center gap-2.5 shrink-0">
-          <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #f6339a, #9810fa)' }}>
-            <SparklesIcon className="w-3.5 h-3.5 text-white" />
-          </div>
-          <span className="text-[15px] font-bold tracking-tight text-white">
-            Studio
-          </span>
-          <span className="hidden sm:inline-flex items-center gap-1.5 text-[10px] font-medium text-white/25 uppercase tracking-widest ml-2">
-            <span className="w-1 h-1 rounded-full animate-pulse" style={{ backgroundColor: '#f6339a', boxShadow: '0 0 6px #f6339a' }}></span>
-            Gemini
-          </span>
-        </div>
+      <header className="w-full relative z-20 flex items-center justify-center px-5 sm:px-8 border-b border-white/[0.04]" style={{ height: '56px' }}>
 
         {/* Mode Tabs */}
         <div className="flex items-center">
@@ -166,7 +152,7 @@ export default function IAStudioPage() {
       </header>
 
       {/* ── Contenido Principal ── */}
-      <main className={`flex-1 relative z-10 flex flex-col w-full max-w-[860px] mx-auto px-4 sm:px-6 ${mode === 'generate' ? 'items-center justify-center' : ''}`} style={{ height: 'calc(100vh - 56px)' }}>
+      <main className={`flex-1 relative z-10 flex flex-col w-full max-w-[860px] mx-auto self-center px-4 sm:px-6 ${mode === 'generate' ? 'items-center justify-center' : ''}`} style={{ height: 'calc(100vh - 56px)' }}>
         <AnimatePresence mode="wait">
 
           {/* ═══════ MODO: COMPOSITOR ═══════ */}
@@ -287,24 +273,24 @@ export default function IAStudioPage() {
             >
               {chatHistory.length === 0 ? (
                 /* ── Empty State ── */
-                <div className="flex-1 flex flex-col items-center justify-center gap-8 pb-8 px-4">
+                <div className="flex-1 flex flex-col items-center justify-center gap-10 pb-12 px-4">
                   {/* Icon + Title */}
-                  <div className="flex flex-col items-center text-center space-y-4">
-                    <div className="w-14 h-14 rounded-2xl flex items-center justify-center" style={{ background: 'linear-gradient(135deg, rgba(246,51,154,0.1), rgba(152,16,250,0.08))', border: '1px solid rgba(246,51,154,0.1)' }}>
-                      <SparklesIcon className="w-6 h-6 text-[#f6339a]/60" />
+                  <div className="flex flex-col items-center text-center space-y-5">
+                    <div className="w-20 h-20 rounded-3xl flex items-center justify-center" style={{ background: 'linear-gradient(135deg, rgba(246,51,154,0.15), rgba(152,16,250,0.12))', border: '1px solid rgba(246,51,154,0.18)' }}>
+                      <SparklesIcon className="w-9 h-9 text-[#f6339a]" />
                     </div>
                     <div>
-                      <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-white/90 mb-1.5">
+                      <h2 className="text-2xl sm:text-4xl font-extrabold tracking-tight text-white mb-2">
                         Asistente de Producción Musical
                       </h2>
-                      <p className="text-[13px] text-white/35 font-light max-w-sm leading-relaxed">
+                      <p className="text-[15px] sm:text-[16px] text-white/40 font-light max-w-xl leading-relaxed">
                         Consulta sobre teoría musical, técnicas de mezcla, estructura armónica y producción.
                       </p>
                     </div>
                   </div>
 
                   {/* Suggestion Chips Grid */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 w-full max-w-lg">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full max-w-2xl">
                     {CHAT_SUGGESTIONS.map((sug) => (
                       <button
                         key={sug}
@@ -317,19 +303,19 @@ export default function IAStudioPage() {
                   </div>
 
                   {/* Input */}
-                  <form onSubmit={handleAction} className={`w-full max-w-lg ${styles.inputWrapper}`}>
+                  <form onSubmit={handleAction} className={`w-full max-w-2xl ${styles.inputWrapper}`}>
                     <input
                       value={prompt}
                       onChange={(e) => setPrompt(e.target.value)}
                       placeholder="Escribe tu consulta..."
-                      className="flex-1 min-w-0 bg-transparent py-3 px-5 text-[14px] sm:text-[15px] outline-none text-white placeholder:text-white/25 font-light"
+                      className="flex-1 min-w-0 bg-transparent py-4 px-6 text-[15px] sm:text-[16px] outline-none text-white placeholder:text-white/25 font-light"
                     />
                     <button
                       type="submit"
                       disabled={isGenerating || !prompt.trim()}
                       className={styles.sendButton}
                     >
-                      <SendIcon className="w-4 h-4" />
+                      <SendIcon className="w-5 h-5" />
                     </button>
                   </form>
                 </div>
@@ -374,20 +360,20 @@ export default function IAStudioPage() {
                   </div>
 
                   {/* Input bar */}
-                  <div className="shrink-0 px-1 pb-4 pt-2">
+                  <div className="shrink-0 px-1 pb-16 sm:pb-24 pt-4">
                     <form onSubmit={handleAction} className={`w-full max-w-3xl mx-auto ${styles.inputWrapper}`}>
                       <input
                         value={prompt}
                         onChange={(e) => setPrompt(e.target.value)}
                         placeholder="Escribe tu consulta..."
-                        className="flex-1 min-w-0 bg-transparent py-3 px-5 text-[14px] sm:text-[15px] outline-none text-white placeholder:text-white/25 font-light"
+                        className="flex-1 min-w-0 bg-transparent py-4 px-6 text-[15px] sm:text-[16px] outline-none text-white placeholder:text-white/25 font-light"
                       />
                       <button
                         type="submit"
                         disabled={isGenerating || !prompt.trim()}
                         className={styles.sendButton}
                       >
-                        <SendIcon className="w-4 h-4" />
+                        <SendIcon className="w-5 h-5" />
                       </button>
                     </form>
                   </div>
