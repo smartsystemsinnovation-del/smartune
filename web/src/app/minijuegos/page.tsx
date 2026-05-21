@@ -189,20 +189,42 @@ export default function ArcadeLobbyPage() {
               </div>
             </motion.div>
  
-            {/* Juego 3: Batalla de Escalas */}
+            {/* Juego 3: Sight-Reading Dash */}
             <motion.div variants={itemVariants} className="h-full">
               <div className="h-full bg-[#0f0f0f] rounded-[24px] p-7 border border-white/[0.05] flex flex-col group transition-all duration-300 hover:border-white/[0.1] hover:bg-[#151515]">
-                <div className="w-full h-40 bg-black/50 rounded-xl mb-5 flex items-center justify-center border border-white/5 relative overflow-hidden group-hover:border-[#9810fa]/20 transition-colors">
+                <div className="w-full h-40 bg-black/50 rounded-xl mb-5 flex items-center justify-center border border-white/5 relative overflow-hidden group-hover:border-[#00ffff]/20 transition-colors">
                   <div className="absolute inset-0 flex items-center justify-center">
-                    <svg className="w-14 h-14 text-[#9810fa] opacity-40 group-hover:opacity-80 transition-opacity group-hover:scale-110 duration-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                    <svg className="w-14 h-14 text-[#00ffff] opacity-40 group-hover:opacity-80 transition-opacity group-hover:scale-110 duration-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="1.5">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" />
+                    </svg>
                   </div>
                 </div>
-                <h3 className="text-xl font-bold text-white mb-2">Batalla de Escalas</h3>
-                <p className="text-[15px] text-white/40 mb-5 line-clamp-2 leading-relaxed">Compite contra tus amigos para ver quién digita las escalas más rápido.</p>
+                <h3 className="text-xl font-bold text-white mb-2 flex items-center justify-between">
+                  Sight-Reading Dash
+                  <span className="px-2 py-0.5 rounded text-[8px] uppercase tracking-widest font-black bg-[#00ffff]/10 text-[#00ffff] border border-[#00ffff]/20">Nuevo</span>
+                </h3>
+                <p className="text-[15px] text-white/40 mb-5 line-clamp-2 leading-relaxed">Aprende a leer notas en el pentagrama al instante con este juego de velocidad y precisión visual.</p>
                 <div className="mt-auto">
-                  <div className="inline-flex items-center gap-1.5 px-4 py-2 bg-white/5 text-white/40 font-semibold text-[13px] rounded-lg border border-white/5">
-                    <CodeIcon /> En Desarrollo
-                  </div>
+                  <Link href="/minijuegos/sight-reading-dash" className="w-full inline-block">
+                    <motion.button
+                      whileTap={{ scale: 0.96 }}
+                      className="w-full flex items-center justify-center gap-2 transition-all duration-200 hover:brightness-110 active:scale-95"
+                      style={{
+                        background: 'linear-gradient(90deg, #00ffff 0%, #9810fa 100%)',
+                        color: '#ffffff',
+                        padding: '9px 18px',
+                        borderRadius: '10px',
+                        fontSize: '12px',
+                        fontWeight: 700,
+                        border: 'none',
+                        boxShadow: '0 0 15px rgba(0,255,255,0.25)',
+                        cursor: 'pointer'
+                      }}
+                    >
+                      <PlayIcon />
+                      Jugar ahora <span style={{ fontSize: '15px', fontWeight: 'bold' }}>+</span>
+                    </motion.button>
+                  </Link>
                 </div>
               </div>
             </motion.div>
