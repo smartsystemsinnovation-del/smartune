@@ -5,6 +5,7 @@ import Script from "next/script";
 import Sidebar from "@/components/Sidebar";
 import Navigation from "@/components/Navigation";
 import RealtimeListener from "@/components/RealtimeListener";
+import NotificationWidget from "@/components/NotificationWidget";
 import AdsterraInterstitialModal from "@/components/AdsterraInterstitialModal";
 import "./globals.css";
 
@@ -41,6 +42,7 @@ export default function RootLayout({
         </div>
         <Analytics />
         <RealtimeListener />
+        <NotificationWidget />
         <AdsterraInterstitialModal />
       </body>
     </html>
