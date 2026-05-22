@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from 'react';
+import { saveMinigameStat } from '@/actions/minigameActions';
 
 // Constants
 const LANES = 4;
@@ -134,6 +135,9 @@ export default function SmarTilesGame() {
       playerRef.current.pauseVideo();
     }
     
+    // Guardar estadísticas en base de datos
+    saveMinigameStat("smar-tiles", score, null, null);
+
     // Check Top Score
     if (score > highScore) {
       setHighScore(score);
