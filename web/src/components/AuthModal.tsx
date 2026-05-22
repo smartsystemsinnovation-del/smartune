@@ -123,8 +123,12 @@ export default function AuthModal({ onClose, initialMode = 'login' }: AuthModalP
         }
 
       } else {
+        let loginEmail = email;
+        if (email.trim().toLowerCase() === 'admin') {
+          loginEmail = 'admin@smartune.app';
+        }
         const { error } = await supabase.auth.signInWithPassword({
-          email,
+          email: loginEmail,
           password,
         });
         if (error) throw error;
@@ -179,7 +183,7 @@ export default function AuthModal({ onClose, initialMode = 'login' }: AuthModalP
           <div className={styles.inputGroup}>
             <label>Correo Electrónico</label>
             <input 
-              type="email" 
+              type="text" 
               placeholder="ludwig@smartune.app" 
               value={email}
               onChange={(e) => setEmail(e.target.value)}

@@ -70,108 +70,122 @@ export default function Sidebar() {
           <h1 className={styles.logo}>SmarTune</h1>
         </div>
         
-        <div className={styles.menuSection}>
-          <p className={styles.sectionTitle}>Menu</p>
-          <nav className={styles.navGroup}>
-            <Link href="/" className={`${styles.navItem} ${isActive('/') ? styles.active : ''}`} onClick={() => setIsOpen(false)}>
-              <span className={styles.icon}>🏠</span>
-              Home
-            </Link>
-            <Link href="/explorar" className={`${styles.navItem} ${isPrefixActive('/explorar') ? styles.active : ''}`} onClick={() => setIsOpen(false)}>
-              <span className={styles.icon}>🧭</span>
-              Descubre
-            </Link>
-            {userRole !== 'profesor' && (
-              <Link href="/profesores" className={`${styles.navItem} ${isPrefixActive('/profesores') ? styles.active : ''}`} onClick={() => setIsOpen(false)}>
-                <span className={styles.icon}>👨‍🏫</span>
-                Profesores
-              </Link>
-            )}
-            <Link href="/premium" className={`${styles.navItemPremium} ${isPrefixActive('/premium') ? styles.activePremium : ''}`} onClick={() => setIsOpen(false)}>
-              <span className={styles.icon}>⭐️</span>
-              Premium
-            </Link>
-            {user && (
-              <>
-                <Link href="/minijuegos" className={`${styles.navItem} ${isPrefixActive('/minijuegos') ? styles.active : ''}`} onClick={() => setIsOpen(false)}>
-                  <span className={styles.icon}>🎮</span>
-                  Minijuegos
-                </Link>
-                {userRole === 'profesor' && (
-                  <Link href="/teacher/clases" className={`${styles.navItem} ${isPrefixActive('/teacher/clases') ? styles.active : ''}`} onClick={() => setIsOpen(false)}>
-                    <span className={styles.icon}>📚</span>
-                    Clases
-                  </Link>
-                )}
-                <Link href="/ia-studio" className={`${styles.navItem} ${isPrefixActive('/ia-studio') ? styles.active : ''}`} onClick={() => setIsOpen(false)}>
-                  <span className={styles.icon}>🪄</span>
-                  IA Studio
-                </Link>
-              </>
-            )}
-          </nav>
-        </div>
-
-        <div className={styles.menuSection}>
-          <p className={styles.sectionTitle}>Favoritos y Playlist</p>
-          <nav className={styles.navGroup}>
-            <Link href="/favoritos" className={`${styles.navItem} ${pathname === '/favoritos' ? styles.active : ''}`} onClick={() => setIsOpen(false)}>
-              <span className={styles.icon}>❤️</span>
-              MusicSwipe
-            </Link>
-            <Link href="/favoritos/playlist" className={`${styles.navItem} ${pathname === '/favoritos/playlist' ? styles.active : ''}`} onClick={() => setIsOpen(false)}>
-              <span className={styles.icon}>🎵</span>
-              Mi Playlist
-            </Link>
-            <Link href="/playlist/crear" className={`${styles.navItemAdd} ${pathname === '/playlist/crear' ? styles.active : ''}`} onClick={() => setIsOpen(false)}>
-              <span className={styles.icon}>➕</span>
-              Añadir playlist
-            </Link>
-          </nav>
-        </div>
-
-        <div className={styles.menuSection}>
-          <p className={styles.sectionTitle}>Actualizaciones</p>
-          <nav className={styles.navGroup}>
-            <Link href="/novedades" className={`${styles.navItem} ${isPrefixActive('/novedades') ? styles.active : ''}`} onClick={() => setIsOpen(false)}>
-              <span className={styles.icon}>🕒</span>
-              Novedades
-            </Link>
-          </nav>
-        </div>
-
-        <div className={styles.spacer} />
-
-        {userRole === 'profesor' ? (
+        {userRole === 'administrador' ? (
           <div className={styles.menuSection}>
-            <p className={styles.sectionTitle}>Panel de Control Profesor</p>
+            <p className={styles.sectionTitle}>Panel Administrador</p>
             <nav className={styles.navGroup}>
-              <Link href="/teacher/dashboard" className={`${styles.navItem} ${isActive('/teacher/dashboard') ? styles.active : ''}`} onClick={() => setIsOpen(false)}>
-                <span className={styles.icon}><LayoutDashboard size={18} /></span>
-                Dashboard
-              </Link>
-              <Link href="/teacher/clases" className={`${styles.navItem} ${isActive('/teacher/clases') ? styles.active : ''}`} onClick={() => setIsOpen(false)}>
-                <span className={styles.icon} style={{ display: 'flex', gap: '4px' }}>
-                  <BookOpen size={18} />
-                  <Calendar size={12} style={{ color: '#4285F4' }} />
-                </span>
-                Clases
-              </Link>
-              <Link href="/teacher/integraciones" className={`${styles.navItem} ${isActive('/teacher/integraciones') ? styles.active : ''}`} onClick={() => setIsOpen(false)}>
-                <span className={styles.icon} style={{ display: 'flex', gap: '4px' }}>
-                  <Settings size={18} />
-                  <Video size={12} style={{ color: '#34A853' }} />
-                </span>
-                Integraciones
+              <Link href="/admin/solicitudes" className={`${styles.navItem} ${isPrefixActive('/admin/solicitudes') ? styles.active : ''}`} onClick={() => setIsOpen(false)}>
+                <span className={styles.icon}>📋</span>
+                Solicitudes
               </Link>
             </nav>
           </div>
         ) : (
-          <div className={styles.bottomSection}>
-            <Link href="/hazte-profesor" className={styles.premiumLink} onClick={() => setIsOpen(false)}>
-              {userRole === 'profesor_pendiente' ? 'SOLICITUD PENDIENTE' : 'HAZTE PROFESOR'}
-            </Link>
-          </div>
+          <>
+            <div className={styles.menuSection}>
+              <p className={styles.sectionTitle}>Menu</p>
+              <nav className={styles.navGroup}>
+                <Link href="/" className={`${styles.navItem} ${isActive('/') ? styles.active : ''}`} onClick={() => setIsOpen(false)}>
+                  <span className={styles.icon}>🏠</span>
+                  Home
+                </Link>
+                <Link href="/explorar" className={`${styles.navItem} ${isPrefixActive('/explorar') ? styles.active : ''}`} onClick={() => setIsOpen(false)}>
+                  <span className={styles.icon}>🧭</span>
+                  Descubre
+                </Link>
+                {userRole !== 'profesor' && (
+                  <Link href="/profesores" className={`${styles.navItem} ${isPrefixActive('/profesores') ? styles.active : ''}`} onClick={() => setIsOpen(false)}>
+                    <span className={styles.icon}>👨‍🏫</span>
+                    Profesores
+                  </Link>
+                )}
+                <Link href="/premium" className={`${styles.navItemPremium} ${isPrefixActive('/premium') ? styles.activePremium : ''}`} onClick={() => setIsOpen(false)}>
+                  <span className={styles.icon}>⭐️</span>
+                  Premium
+                </Link>
+                {user && (
+                  <>
+                    <Link href="/minijuegos" className={`${styles.navItem} ${isPrefixActive('/minijuegos') ? styles.active : ''}`} onClick={() => setIsOpen(false)}>
+                      <span className={styles.icon}>🎮</span>
+                      Minijuegos
+                    </Link>
+                    {userRole === 'profesor' && (
+                      <Link href="/teacher/clases" className={`${styles.navItem} ${isPrefixActive('/teacher/clases') ? styles.active : ''}`} onClick={() => setIsOpen(false)}>
+                        <span className={styles.icon}>📚</span>
+                        Clases
+                      </Link>
+                    )}
+                    <Link href="/ia-studio" className={`${styles.navItem} ${isPrefixActive('/ia-studio') ? styles.active : ''}`} onClick={() => setIsOpen(false)}>
+                      <span className={styles.icon}>🪄</span>
+                      IA Studio
+                    </Link>
+                  </>
+                )}
+              </nav>
+            </div>
+
+            <div className={styles.menuSection}>
+              <p className={styles.sectionTitle}>Favoritos y Playlist</p>
+              <nav className={styles.navGroup}>
+                <Link href="/favoritos" className={`${styles.navItem} ${pathname === '/favoritos' ? styles.active : ''}`} onClick={() => setIsOpen(false)}>
+                  <span className={styles.icon}>❤️</span>
+                  MusicSwipe
+                </Link>
+                <Link href="/favoritos/playlist" className={`${styles.navItem} ${pathname === '/favoritos/playlist' ? styles.active : ''}`} onClick={() => setIsOpen(false)}>
+                  <span className={styles.icon}>🎵</span>
+                  Mi Playlist
+                </Link>
+                <Link href="/playlist/crear" className={`${styles.navItemAdd} ${pathname === '/playlist/crear' ? styles.active : ''}`} onClick={() => setIsOpen(false)}>
+                  <span className={styles.icon}>➕</span>
+                  Añadir playlist
+                </Link>
+              </nav>
+            </div>
+
+            <div className={styles.menuSection}>
+              <p className={styles.sectionTitle}>Actualizaciones</p>
+              <nav className={styles.navGroup}>
+                <Link href="/novedades" className={`${styles.navItem} ${isPrefixActive('/novedades') ? styles.active : ''}`} onClick={() => setIsOpen(false)}>
+                  <span className={styles.icon}>🕒</span>
+                  Novedades
+                </Link>
+              </nav>
+            </div>
+
+            <div className={styles.spacer} />
+
+            {userRole === 'profesor' ? (
+              <div className={styles.menuSection}>
+                <p className={styles.sectionTitle}>Panel de Control Profesor</p>
+                <nav className={styles.navGroup}>
+                  <Link href="/teacher/dashboard" className={`${styles.navItem} ${isActive('/teacher/dashboard') ? styles.active : ''}`} onClick={() => setIsOpen(false)}>
+                    <span className={styles.icon}><LayoutDashboard size={18} /></span>
+                    Dashboard
+                  </Link>
+                  <Link href="/teacher/clases" className={`${styles.navItem} ${isActive('/teacher/clases') ? styles.active : ''}`} onClick={() => setIsOpen(false)}>
+                    <span className={styles.icon} style={{ display: 'flex', gap: '4px' }}>
+                      <BookOpen size={18} />
+                      <Calendar size={12} style={{ color: '#4285F4' }} />
+                    </span>
+                    Clases
+                  </Link>
+                  <Link href="/teacher/integraciones" className={`${styles.navItem} ${isActive('/teacher/integraciones') ? styles.active : ''}`} onClick={() => setIsOpen(false)}>
+                    <span className={styles.icon} style={{ display: 'flex', gap: '4px' }}>
+                      <Settings size={18} />
+                      <Video size={12} style={{ color: '#34A853' }} />
+                    </span>
+                    Integraciones
+                  </Link>
+                </nav>
+              </div>
+            ) : (
+              <div className={styles.bottomSection}>
+                <Link href="/hazte-profesor" className={styles.premiumLink} onClick={() => setIsOpen(false)}>
+                  {userRole === 'profesor_pendiente' ? 'SOLICITUD PENDIENTE' : 'HAZTE PROFESOR'}
+                </Link>
+              </div>
+            )}
+          </>
         )}
       </aside>
       
