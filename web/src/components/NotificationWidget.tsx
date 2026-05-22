@@ -97,7 +97,7 @@ export default function NotificationWidget() {
     initNotifications();
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (_event, session) => {
+      async (_event: unknown, session: { user: any } | null) => {
         if (session?.user) {
           setUserId(session.user.id);
           const res = await getNotifications();
@@ -128,7 +128,7 @@ export default function NotificationWidget() {
           table: 'notifications',
           filter: `user_id=eq.${userId}`
         },
-        (payload) => {
+        (payload: any) => {
           const newNotif = payload.new as NotificationItem;
           
           // Prepend to state
