@@ -1,3 +1,8 @@
+-- 1. Promover cualquier cuenta creada previamente con este correo a administrador
+UPDATE public.usuarios 
+SET rol = 'administrador' 
+WHERE correo = 'admin@smartune.app';
+
 -- Seed the administrator auth user if not exists
 INSERT INTO auth.users (
   instance_id,
